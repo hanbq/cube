@@ -1,0 +1,38 @@
+server:
+  port: 10001
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 305
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+      resolve-lazily: false
+  profiles:
+    active: ${ENV:dev}
+  aop:
+    auto: true
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/docker_postgres
+    username: postgres
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-test-query: select 1
+  jpa:
+#    hibernate:
+##      ddl-auto: update
+    show-sql: true
+
+jasypt. encryptor:
+  key: ${ENCRYPTOR_KEY:test}
+  algorithm: PBEWithMD5AndDES
+
+logging.file.max-history: 3
+logging.file.max-size: 50MB
+logging.file.name: /Users/eden/foapps/logs/cube/cube.log
+logging.level.root: info
