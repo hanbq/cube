@@ -1,73 +1,229 @@
-# React + TypeScript + Vite
+# Cube UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, elegant workflow management system built with React, TypeScript, and Material-UI, featuring a beautiful matcha green theme.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🎨 **Elegant Design**: Matcha green color scheme with sophisticated gradients
+- 🌍 **Internationalization**: Full i18n support with English and Simplified Chinese
+- 📱 **Responsive Layout**: Adaptive design that works on all devices
+- 🔐 **Authentication**: Login system with elegant UI
+- 🧭 **Navigation**: Collapsible sidebar menu with smooth animations
+- 🍞 **Breadcrumb Navigation**: Clear page hierarchy display
+- ⚛️ **Modern Stack**: Built with React 18, TypeScript, and Vite
+- 🎭 **Material-UI**: Professional UI components with custom theming
 
-## React Compiler
+## 🚀 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **UI Library**: Material-UI (MUI) v6
+- **Routing**: React Router v7
+- **Internationalization**: react-i18next
+- **Icons**: Material Icons
+- **Fonts**: Roboto, Playfair Display
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Install dependencies
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Start development server
+npm run dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Build for production
+npm run build
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🎯 Project Structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+cube-ui/
+├── src/
+│   ├── components/          # Reusable components
+│   │   ├── home/           # Home page components
+│   │   │   ├── Header.tsx  # Top navigation bar
+│   │   │   ├── Menu.tsx    # Sidebar navigation
+│   │   │   ├── Main.tsx    # Main content area with breadcrumb
+│   │   │   └── Home.tsx    # Home layout wrapper
+│   │   ├── Login.tsx       # Login page
+│   │   └── LanguageSwitcher.tsx  # Language switcher component
+│   ├── pages/              # Page components
+│   │   ├── Dashboard.tsx   # Dashboard page
+│   │   ├── Workflow.tsx    # Workflow management page
+│   │   ├── User.tsx        # User management page
+│   │   └── Settings.tsx    # Settings page
+│   ├── constants/          # Constants and configurations
+│   │   └── menu.ts         # Menu items configuration
+│   ├── types/              # TypeScript type definitions
+│   │   └── common.ts       # Common type definitions
+│   ├── i18n/               # Internationalization
+│   │   ├── index.ts        # i18n configuration
+│   │   ├── locales/        # Translation files
+│   │   │   ├── zh-CN.ts    # Simplified Chinese
+│   │   │   └── en-US.ts    # English
+│   │   └── README.md       # i18n usage guide
+│   ├── theme/              # Theme configuration
+│   │   └── theme.ts        # Material-UI theme customization
+│   ├── App.tsx             # App component with routing
+│   └── main.tsx            # Application entry point
+├── public/                 # Static assets
+├── index.html             # HTML template
+├── vite.config.ts         # Vite configuration
+├── tsconfig.json          # TypeScript configuration
+└── package.json           # Dependencies and scripts
+```
+
+## 🌍 Internationalization
+
+The application supports multiple languages with persistent storage:
+
+- **Default Language**: English (en-US)
+- **Available Languages**: English, Simplified Chinese
+- **Storage**: Language preference is saved to localStorage
+
+### Adding New Languages
+
+1. Create a new translation file in `src/i18n/locales/`:
+```typescript
+// src/i18n/locales/ja-JP.ts
+export default {
+  translation: {
+    common: { ... },
+    login: { ... },
+    // ... more translations
+  }
+};
+```
+
+2. Register the language in `src/i18n/index.ts`:
+```typescript
+import jaJP from './locales/ja-JP';
+
+i18n.init({
+  resources: {
+    'zh-CN': zhCN,
+    'en-US': enUS,
+    'ja-JP': jaJP,  // Add new language
+  },
+  // ...
+});
+```
+
+3. Add the language option to `LanguageSwitcher.tsx`:
+```typescript
+const languages = [
+  { code: 'zh-CN', label: '简体中文', flag: '🇨🇳' },
+  { code: 'en-US', label: 'English', flag: '🇺🇸' },
+  { code: 'ja-JP', label: '日本語', flag: '🇯🇵' },
+];
+```
+
+See [i18n README](src/i18n/README.md) for detailed usage instructions.
+
+## 🎨 Theme Customization
+
+The application uses a custom Material-UI theme with matcha green colors:
+
+- **Primary Color**: `#2d5016` (Dark Forest Green)
+- **Secondary Color**: `#88b04b` (Matcha Green)
+- **Background**: Soft cream tones with subtle gradients
+
+To customize the theme, edit `src/theme/theme.ts`.
+
+## 📱 Pages
+
+### Login
+- Elegant login form with gradient background
+- Username and password fields with icons
+- Password visibility toggle
+- Language switcher in top-right corner
+
+### Dashboard
+- Overview of system metrics
+- Quick access to common functions
+
+### Workflow Management
+- Create and manage workflows
+- Visual workflow designer
+
+### User Management
+- User CRUD operations
+- Role and permission management
+
+### Settings
+- System configuration
+- User preferences
+
+## 🔧 Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server (default: http://localhost:5173)
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
+
+### Environment Setup
+
+The development server is configured to listen on all network interfaces (0.0.0.0), making it accessible from other devices on your network.
+
+## 🚢 Deployment
+
+```bash
+# Build the application
+npm run build
+
+# The built files will be in the `dist` directory
+# Deploy the contents of `dist` to your web server
+```
+
+## 🎭 Component Patterns
+
+This project uses Class Components with functional wrappers for hooks:
+
+```typescript
+// Class component for logic
+class MyComponentClass extends React.Component<MyComponentProps> {
+  render() {
+    const { t } = this.props;
+    return <div>{t('key')}</div>;
+  }
+}
+
+// Functional wrapper for hooks
+export default function MyComponent(props: Omit<MyComponentProps, 't'>) {
+  const { t } = useTranslation();
+  return <MyComponentClass {...props} t={t} />;
+}
+```
+
+## 📝 License
+
+This project is part of the Cube workflow management system.
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+## 👥 Team
+
+Built with ❤️ by the Cube development team.
+
+---
+
+**Note**: This is the UI component of the Cube system. For the complete system, you'll also need:
+- `cube-api`: Backend REST API
+- `cube-workflow`: Workflow engine
+
+## 📚 Additional Resources
+
+- [React Documentation](https://react.dev/)
+- [Material-UI Documentation](https://mui.com/)
+- [Vite Documentation](https://vitejs.dev/)
+- [React Router Documentation](https://reactrouter.com/)
+- [i18next Documentation](https://www.i18next.com/)
