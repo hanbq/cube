@@ -46,6 +46,18 @@
                 <version>${cube.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.cube</groupId>
+                <artifactId>cube-system-api</artifactId>
+                <version>${cube.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cube</groupId>
+                <artifactId>cube-system-core</artifactId>
+                <version>${cube.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -53,6 +65,8 @@
         <module>cube-api</module>
         <module>cube-server</module>
         <module>cube-workflow</module>
+        <module>cube-system</module>
+        <module>cube-system/cube-system-core</module>
     </modules>
 
 </project>

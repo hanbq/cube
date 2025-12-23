@@ -1,19 +1,52 @@
 package com.cube.bean;
 
-import java.io.Serial;
+import java.time.ZonedDateTime;
 
-public class BaseBean implements java.io.Serializable {
+public class BaseBean{
 
-    @Serial
-    private static final long serialVersionUID = 7836003164128735298L;
+    ZonedDateTime createdTime;
+    String createdBy;
+    ZonedDateTime updatedTime;
+    String updatedBy;
+    Boolean deleted;
 
-    String requestId;
-
-     public String getRequestId() {
-        return requestId;
+    public ZonedDateTime getCreatedTime() {
+        return createdTime;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setCreatedTime(ZonedDateTime createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public ZonedDateTime getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(ZonedDateTime updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }
