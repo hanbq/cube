@@ -13,7 +13,7 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '../LanguageSwitcher';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 interface HeaderProps {
   userName?: string;

@@ -1,7 +1,7 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import Login from './components/Login'
-import Home from './components/home/Home'
+import Login from './pages/Login'
+import Home from './pages/home/Home'
 import Dashboard from './pages/Dashboard'
 import Workflow from './pages/Workflow'
 import User from './pages/User'
