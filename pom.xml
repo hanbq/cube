@@ -67,6 +67,7 @@
         <module>cube-workflow</module>
         <module>cube-system</module>
         <module>cube-system/cube-system-core</module>
+        <module>cube-common</module>
     </modules>
 
 </project>
