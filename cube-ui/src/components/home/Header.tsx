@@ -12,11 +12,14 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 interface HeaderProps {
   userName?: string;
   notificationCount?: number;
   onLogout?: () => void;
+  t?: any;
 }
 
 interface HeaderState {
@@ -24,7 +27,7 @@ interface HeaderState {
   notificationMenuAnchor: HTMLElement | null;
 }
 
-export default class Header extends React.Component<HeaderProps, HeaderState> {
+class HeaderClass extends React.Component<HeaderProps, HeaderState> {
   constructor(props: HeaderProps) {
     super(props);
     this.state = {
@@ -57,7 +60,7 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
   };
 
   render() {
-    const { userName = 'Admin', notificationCount = 0 } = this.props;
+    const { userName = 'Admin', notificationCount = 0, t } = this.props;
     const { userMenuAnchor, notificationMenuAnchor } = this.state;
 
     return (
@@ -73,6 +76,8 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LanguageSwitcher color="inherit" />
+
             <IconButton
               color="inherit"
               onClick={this.handleNotificationMenuOpen}
@@ -106,7 +111,7 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
             }}
           >
             <MenuItem onClick={this.handleNotificationMenuClose}>
-              暂无新通知
+              {t?.('header.noNotifications') || '暂无新通知'}
             </MenuItem>
           </Menu>
 
@@ -124,17 +129,19 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
             }}
           >
             <MenuItem onClick={this.handleUserMenuClose}>
-              个人资料
-            </MenuItem>
-            <MenuItem onClick={this.handleUserMenuClose}>
-              系统设置
+              {t?.('header.profile') || '个人资料'}
             </MenuItem>
             <MenuItem onClick={this.handleLogout}>
-              退出登录
+              {t?.('header.logout') || '退出登录'}
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
     );
   }
+}
+
+export default function Header(props: Omit<HeaderProps, 't'>) {
+  const { t } = useTranslation();
+  return <HeaderClass {...props} t={t} />;
 }

@@ -11,11 +11,13 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { MENU_ITEMS } from '../../constants/menu';
+import { useTranslation } from 'react-i18next';
 
 interface MenuProps {
   onNavigate?: (path: string) => void;
   currentPath?: string;
   onCollapseChange?: (collapsed: boolean) => void;
+  t?: any;
 }
 
 interface MenuState {
@@ -23,7 +25,7 @@ interface MenuState {
   collapsed: boolean;
 }
 
-export default class Menu extends React.Component<MenuProps, MenuState> {
+class MenuClass extends React.Component<MenuProps, MenuState> {
   constructor(props: MenuProps) {
     super(props);
     this.state = {
@@ -70,6 +72,7 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
 
   render() {
     const { selectedItem, collapsed } = this.state;
+    const { t } = this.props;
 
     return (
       <Paper
@@ -95,12 +98,23 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
             background: 'linear-gradient(0deg, rgba(45, 80, 22, 0.15) 0%, rgba(136, 176, 75, 0.25) 15%, rgba(163, 197, 103, 0.2) 30%, transparent 45%, transparent 55%, rgba(163, 197, 103, 0.2) 70%, rgba(136, 176, 75, 0.25) 85%, rgba(45, 80, 22, 0.15) 100%)',
             pointerEvents: 'none',
           },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '3px',
+            height: '100%',
+            background: 'linear-gradient(180deg, rgba(136, 176, 75, 0.3) 0%, rgba(45, 80, 22, 0.5) 15%, rgba(26, 61, 10, 0.6) 30%, rgba(45, 80, 22, 0.7) 50%, rgba(26, 61, 10, 0.6) 70%, rgba(45, 80, 22, 0.5) 85%, rgba(136, 176, 75, 0.3) 100%)',
+            pointerEvents: 'none',
+          },
         }}
       >
         <List sx={{ pt: 2, px: collapsed ? 0.5 : 1, flexGrow: 1 }}>
           {MENU_ITEMS.map((item) => {
             const IconComponent = item.icon as React.ElementType;
             const isSelected = selectedItem === item.id;
+            const label = t?.(`menu.${item.id}`) || item.label;
             const menuItem = (
               <ListItemButton
                 key={item.id}
@@ -122,7 +136,7 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
                 </ListItemIcon>
                 {!collapsed && (
                   <ListItemText
-                    primary={item.label}
+                    primary={label}
                     slotProps={{
                       primary: {
                         fontSize: '0.875rem',
@@ -135,7 +149,7 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
             );
 
             return collapsed ? (
-              <Tooltip key={item.id} title={item.label} placement="right">
+              <Tooltip key={item.id} title={label} placement="right">
                 {menuItem}
               </Tooltip>
             ) : (
@@ -161,4 +175,9 @@ export default class Menu extends React.Component<MenuProps, MenuState> {
       </Paper>
     );
   }
+}
+
+export default function Menu(props: Omit<MenuProps, 't'>) {
+  const { t } = useTranslation();
+  return <MenuClass {...props} t={t} />;
 }

@@ -14,6 +14,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface LoginState {
   username: string;
@@ -21,8 +23,8 @@ interface LoginState {
   showPassword: boolean;
 }
 
-class LoginClass extends React.Component<{ navigate: (path: string) => void }, LoginState> {
-  constructor(props: { navigate: (path: string) => void }) {
+class LoginClass extends React.Component<{ navigate: (path: string) => void; t?: any }, LoginState> {
+  constructor(props: { navigate: (path: string) => void; t?: any }) {
     super(props);
     this.state = {
       username: '',
@@ -56,6 +58,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
 
   render() {
     const { username, password, showPassword } = this.state;
+    const { t } = this.props;
 
     return (
       <Box
@@ -92,6 +95,9 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
           },
         }}
       >
+        <Box sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}>
+          <LanguageSwitcher color="primary" />
+        </Box>
         <Card
           elevation={8}
           sx={{
@@ -156,7 +162,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <TextField
               fullWidth
-              label="用户名"
+              label={t?.('login.username') || '用户名'}
               value={username}
               onChange={this.handleUsernameChange}
               onKeyDown={this.handleKeyPress}
@@ -192,7 +198,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
 
             <TextField
               fullWidth
-              label="密码"
+              label={t?.('login.password') || '密码'}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={this.handlePasswordChange}
@@ -272,7 +278,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
                 },
               }}
             >
-              登录
+              {t?.('login.loginButton') || '登录'}
             </Button>
           </Box>
 
@@ -297,7 +303,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
                 },
               }}
             >
-              忘记密码？
+              {t?.('login.forgotPassword') || '忘记密码？'}
             </Typography>
             <Typography variant="body2" sx={{ color: 'rgba(45, 80, 22, 0.3)' }}>
               |
@@ -313,7 +319,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
                 },
               }}
             >
-              注册账号
+              {t?.('login.register') || '注册账号'}
             </Typography>
           </Box>
         </Card>
@@ -324,5 +330,6 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void }, L
 
 export default function Login() {
   const navigate = useNavigate();
-  return <LoginClass navigate={navigate} />;
+  const { t } = useTranslation();
+  return <LoginClass navigate={navigate} t={t} />;
 }
