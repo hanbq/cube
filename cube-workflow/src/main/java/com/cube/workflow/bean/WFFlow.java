@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Data
-public class Flow<T> {
+public class WFFlow<T> {
 
     Long requestId;
 
