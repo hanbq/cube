@@ -2,33 +2,95 @@ import React from 'react';
 import Header from './Header';
 import Main from './Main';
 import Menu from './Menu';
-import { Box, Container, Grid } from '@mui/material';
+import { Box } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export default class Home extends React.Component {
+interface HomeProps {
+  navigate?: (path: string) => void;
+  currentPath?: string;
+}
+
+class HomeClass extends React.Component<HomeProps> {
+  handleLogout = () => {
+    console.log('退出登录');
+    if (this.props.navigate) {
+      this.props.navigate('/login');
+    }
+  };
+
+  handleNavigate = (path: string) => {
+    if (this.props.navigate) {
+      this.props.navigate(path);
+    }
+  };
+
   render() {
-    return (   
-      <Box 
+    return (
+      <Box
+        sx={{
+          width: '100vw',
+          height: '100vh',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        <Box sx={{ flexShrink: 0 }}>
+          <Header userName="Admin" notificationCount={3} onLogout={this.handleLogout} />
+        </Box>
+        <Box
           sx={{
-            width: '100vw',      // 视口宽度
-            height: '100vh',     // 视口高度
-            position: 'fixed',   // 固定定位
-            top: 0,              // 顶部对齐
-            left: 0,             // 左侧对齐
-            overflow: 'auto'     // 内容溢出时显示滚动条
+            flexGrow: 1,
+            display: 'flex',
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 20%, #f5f8f0 40%, #fafcf8 50%, #f5f8f0 60%, #f0f4ed 80%, #e8ede3 100%)',
           }}
         >
-        <Grid container spacing={0.5}>  
-            <Grid size={12}>
-                 <Header />
-            </Grid>
-            <Grid size={2}>
-                 <Menu />
-            </Grid>
-            <Grid size={10}>
-                <Main />
-            </Grid>
-        </Grid>
+          <Box sx={{ flexShrink: 0, overflow: 'auto' }}>
+            <Menu onNavigate={this.handleNavigate} currentPath={this.props.currentPath} />
+          </Box>
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflow: 'auto',
+              background: 'linear-gradient(135deg, rgba(136, 176, 75, 0.12) 0%, rgba(109, 143, 58, 0.15) 15%, rgba(163, 197, 103, 0.18) 30%, rgba(136, 176, 75, 0.08) 50%, rgba(163, 197, 103, 0.18) 70%, rgba(109, 143, 58, 0.15) 85%, rgba(136, 176, 75, 0.12) 100%)',
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'radial-gradient(ellipse at 20% 20%, rgba(136, 176, 75, 0.2) 0%, rgba(163, 197, 103, 0.15) 25%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(163, 197, 103, 0.18) 0%, rgba(136, 176, 75, 0.12) 25%, transparent 50%)',
+                pointerEvents: 'none',
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'linear-gradient(45deg, transparent 0%, rgba(136, 176, 75, 0.08) 25%, transparent 50%, rgba(163, 197, 103, 0.1) 75%, transparent 100%)',
+                pointerEvents: 'none',
+              },
+            }}
+          >
+            <Main />
+          </Box>
+        </Box>
       </Box>
-    )
+    );
   }
+}
+
+export default function Home() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return <HomeClass navigate={navigate} currentPath={location.pathname} />;
 }
