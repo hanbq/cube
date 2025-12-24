@@ -19,5 +19,19 @@
             <groupId>com.cube</groupId>
             <artifactId>cube-system-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.cube</groupId>
+            <artifactId>cube-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
     </dependencies>
 </project>

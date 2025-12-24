@@ -34,5 +34,5 @@ jasypt. encryptor:
 
 logging.file.max-history: 3
 logging.file.max-size: 50MB
-logging.file.name: /Users/eden/foapps/logs/cube/cube.log
+logging.file.name: /apps/logs/cube/cube.log
 logging.level.root: info

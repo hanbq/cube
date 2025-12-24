@@ -10,3 +10,5 @@
 /.idea/MarsCodeWorkspaceAppSettings.xml
 /.idea/misc.xml
 /.idea/vcs.xml
+/.idea/modules.xml
+/cube-system/cube-system-core/cube-system-core.iml

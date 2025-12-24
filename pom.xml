@@ -42,6 +42,12 @@
 
             <dependency>
                 <groupId>com.cube</groupId>
+                <artifactId>cube-common</artifactId>
+                <version>${cube.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cube</groupId>
                 <artifactId>cube-api</artifactId>
                 <version>${cube.version}</version>
             </dependency>
