@@ -1,6 +1,6 @@
 package com.cube.system.dao;
 
-import com.cube.system.bean.SYSMenu;
+import com.cube.system.entity.SYSMenu;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

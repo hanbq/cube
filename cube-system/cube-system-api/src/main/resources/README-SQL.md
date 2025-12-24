@@ -2,7 +2,7 @@
 
 ## 概述
 
-本目录包含了基于 `com.cube.system.bean` 包下实体类生成的数据库DDL脚本。
+本目录包含了基于 `com.cube.system.entity` 包下实体类生成的数据库DDL脚本。
 
 ## 文件列表
 

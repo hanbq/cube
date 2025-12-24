@@ -1,6 +1,6 @@
 package com.cube.system.service;
 
-import com.cube.system.bean.SYSMenu;
+import com.cube.system.entity.SYSMenu;
 import com.cube.system.dao.SYSMenuDao;
 import com.cube.system.dao.SYSMenuRoleDao;
 import org.springframework.stereotype.Service;

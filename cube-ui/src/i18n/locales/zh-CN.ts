@@ -24,6 +24,9 @@ export default {
       loginButton: '登录',
       forgotPassword: '忘记密码？',
       register: '注册账号',
+      validationError: '请输入用户名和密码',
+      loginError: '登录失败，请检查用户名和密码',
+      loginSuccess: '登录成功',
     },
 
     // 导航菜单

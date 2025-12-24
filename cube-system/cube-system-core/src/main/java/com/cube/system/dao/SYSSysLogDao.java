@@ -3,7 +3,7 @@ package com.cube.system.dao;
 import com.cube.common.page.JdbcPageHelper;
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
-import com.cube.system.bean.SYSSysLog;
+import com.cube.system.entity.SYSSysLog;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

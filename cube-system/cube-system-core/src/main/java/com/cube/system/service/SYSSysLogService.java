@@ -2,7 +2,7 @@ package com.cube.system.service;
 
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
-import com.cube.system.bean.SYSSysLog;
+import com.cube.system.entity.SYSSysLog;
 import com.cube.system.dao.SYSSysLogDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

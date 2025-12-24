@@ -7,6 +7,8 @@ import {
   Typography,
   InputAdornment,
   IconButton,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import PersonIcon from '@mui/icons-material/Person';
@@ -16,20 +18,26 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import { authService } from '../services/authService';
+import { useAuthStore } from '../store/authStore';
 
 interface LoginState {
   username: string;
   password: string;
   showPassword: boolean;
+  loading: boolean;
+  error: string | null;
 }
 
-class LoginClass extends React.Component<{ navigate: (path: string) => void; t?: any }, LoginState> {
-  constructor(props: { navigate: (path: string) => void; t?: any }) {
+class LoginClass extends React.Component<{ navigate: (path: string) => void; t?: any; setAuth: (token: string, userInfo: any) => void }, LoginState> {
+  constructor(props: { navigate: (path: string) => void; t?: any; setAuth: (token: string, userInfo: any) => void }) {
     super(props);
     this.state = {
       username: '',
       password: '',
       showPassword: false,
+      loading: false,
+      error: null,
     };
   }
 
@@ -45,9 +53,30 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
     this.setState((prevState) => ({ showPassword: !prevState.showPassword }));
   };
 
-  handleLogin = () => {
-    console.log('登录', this.state.username, this.state.password);
-    this.props.navigate('/home');
+  handleLogin = async () => {
+    const { username, password } = this.state;
+    const { t } = this.props;
+
+    if (!username || !password) {
+      this.setState({ error: t?.('login.validationError') || '请输入用户名和密码' });
+      return;
+    }
+
+    this.setState({ loading: true, error: null });
+
+    try {
+      const response = await authService.login({ username, password });
+
+      this.props.setAuth(response.token, response.user);
+
+      this.props.navigate('/home');
+    } catch (error: any) {
+      console.error('Login failed:', error);
+      this.setState({
+        error: error.message || t?.('login.loginError') || '登录失败，请检查用户名和密码',
+        loading: false,
+      });
+    }
   };
 
   handleKeyPress = (event: React.KeyboardEvent) => {
@@ -57,7 +86,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
   };
 
   render() {
-    const { username, password, showPassword } = this.state;
+    const { username, password, showPassword, loading, error } = this.state;
     const { t } = this.props;
 
     return (
@@ -155,9 +184,15 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                 fontSize: '1.1rem',
               }}
             >
-              
+
             </Typography>
           </Box>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <TextField
@@ -245,6 +280,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               variant="contained"
               size="large"
               onClick={this.handleLogin}
+              disabled={loading}
               sx={{
                 mt: 2,
                 py: 1.5,
@@ -276,9 +312,17 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                 '&:active': {
                   transform: 'scale(0.98)',
                 },
+                '&.Mui-disabled': {
+                  background: 'rgba(136, 176, 75, 0.5)',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                },
               }}
             >
-              {t?.('login.loginButton') || '登录'}
+              {loading ? (
+                <CircularProgress size={24} sx={{ color: 'white' }} />
+              ) : (
+                t?.('login.loginButton') || '登录'
+              )}
             </Button>
           </Box>
 
@@ -331,5 +375,6 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
 export default function Login() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  return <LoginClass navigate={navigate} t={t} />;
+  const setAuth = useAuthStore((state) => state.setAuth);
+  return <LoginClass navigate={navigate} t={t} setAuth={setAuth} />;
 }

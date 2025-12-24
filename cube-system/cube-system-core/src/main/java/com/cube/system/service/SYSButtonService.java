@@ -1,7 +1,7 @@
 package com.cube.system.service;
 
 import com.cube.common.exception.DataException;
-import com.cube.system.bean.SYSButton;
+import com.cube.system.entity.SYSButton;
 import com.cube.system.dao.SYSButtonDao;
 import com.cube.system.dao.SYSButtonRoleDao;
 import org.springframework.stereotype.Service;

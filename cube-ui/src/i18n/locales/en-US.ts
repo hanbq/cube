@@ -24,6 +24,9 @@ export default {
       loginButton: 'Login',
       forgotPassword: 'Forgot Password?',
       register: 'Register',
+      validationError: 'Please enter username and password',
+      loginError: 'Login failed, please check your username and password',
+      loginSuccess: 'Login successful',
     },
 
     // Navigation Menu

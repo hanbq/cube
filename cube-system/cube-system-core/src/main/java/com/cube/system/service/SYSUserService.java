@@ -3,7 +3,7 @@ package com.cube.system.service;
 import com.cube.common.exception.DataException;
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
-import com.cube.system.bean.SYSUser;
+import com.cube.system.entity.SYSUser;
 import com.cube.system.dao.SYSUserDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

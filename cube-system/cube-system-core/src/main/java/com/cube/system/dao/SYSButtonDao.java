@@ -1,6 +1,6 @@
 package com.cube.system.dao;
 
-import com.cube.system.bean.SYSButton;
+import com.cube.system.entity.SYSButton;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

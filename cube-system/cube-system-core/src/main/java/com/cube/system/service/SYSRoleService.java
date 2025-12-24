@@ -1,7 +1,7 @@
 package com.cube.system.service;
 
 import com.cube.common.exception.DataException;
-import com.cube.system.bean.SYSRole;
+import com.cube.system.entity.SYSRole;
 import com.cube.system.dao.SYSRoleDao;
 import com.cube.system.dao.SYSUserRoleDao;
 import org.springframework.stereotype.Service;
