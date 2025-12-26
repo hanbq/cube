@@ -1,7 +1,10 @@
 package com.cube.system.service;
 
 import com.cube.common.exception.DataException;
+import com.cube.common.page.PageRequest;
+import com.cube.common.page.PageResult;
 import com.cube.system.entity.SYSRole;
+import com.cube.system.param.SYSRoleParam;
 import com.cube.system.dao.SYSRoleDao;
 import com.cube.system.dao.SYSUserRoleDao;
 import org.springframework.stereotype.Service;
@@ -32,14 +35,13 @@ public class SYSRoleService {
      * 创建角色
      *
      * @param role 角色对象
-     * @return 创建后的角色ID
      */
-    public Long createRole(SYSRole role) {
+    public void createRole(SYSRole role) {
         // 验证角色名是否已存在
         if (role.getRoleName() != null && roleDao.findByRoleName(role.getRoleName()).isPresent()) {
             throw new DataException("Role name already exists: " + role.getRoleName());
         }
-        return roleDao.insert(role);
+        roleDao.insert(role);
     }
 
     /**
@@ -53,13 +55,23 @@ public class SYSRoleService {
     }
 
     /**
-     * 删除角色
+     * 删除角色（软删除）
      *
      * @param roleId 角色ID
      * @return 是否删除成功
      */
     public boolean deleteRole(Long roleId) {
-        return roleDao.deleteById(roleId) > 0;
+        return roleDao.softDeleteById(roleId) > 0;
+    }
+
+    /**
+     * 批量删除角色（软删除）
+     *
+     * @param roleIds 角色ID列表
+     * @return 删除的数量
+     */
+    public int deleteRoles(List<Long> roleIds) {
+        return roleDao.deleteByIds(roleIds);
     }
 
     /**
@@ -82,6 +94,17 @@ public class SYSRoleService {
     @Transactional(readOnly = true)
     public Optional<SYSRole> getRoleByName(String roleName) {
         return roleDao.findByRoleName(roleName);
+    }
+
+    /**
+     * 根据角色名查询角色（忽略大小写）
+     *
+     * @param roleName 角色名
+     * @return 角色对象
+     */
+    @Transactional(readOnly = true)
+    public Optional<SYSRole> getRoleByNameIgnoreCase(String roleName) {
+        return roleDao.findByRoleNameIgnoreCase(roleName);
     }
 
     /**
@@ -135,5 +158,39 @@ public class SYSRoleService {
      */
     public boolean removeRoleFromUser(Long userId, Long roleId) {
         return userRoleDao.deleteByUserIdAndRoleId(userId, roleId) > 0;
+    }
+
+    /**
+     * 根据参数动态查询角色列表
+     * 如果参数属性为空，则不作为查询条件
+     * 角色名称忽略大小写查询
+     *
+     * @param param 查询参数
+     * @return 角色列表
+     */
+    @Transactional(readOnly = true)
+    public List<SYSRole> getRolesByParam(SYSRoleParam param) {
+        return roleDao.findByParam(param);
+    }
+
+    /**
+     * 根据参数动态查询角色列表（分页）
+     * 如果参数属性为空，则不作为查询条件
+     * 角色名称忽略大小写查询
+     *
+     * @param param 查询参数（包含分页参数）
+     * @return 分页结果
+     */
+    @Transactional(readOnly = true)
+    public PageResult<SYSRole> getRolesByParamWithPage(SYSRoleParam param) {
+        // 从param中提取分页参数，如果没有则使用默认值
+        Integer pageNumObj = (param != null) ? param.getPageNum() : null;
+        Integer pageSizeObj = (param != null) ? param.getPageSize() : null;
+
+        int pageNum = (pageNumObj != null) ? pageNumObj : 1;
+        int pageSize = (pageSizeObj != null) ? pageSizeObj : 10;
+
+        PageRequest pageRequest = new PageRequest(pageNum, pageSize);
+        return roleDao.findByParamWithPage(param, pageRequest);
     }
 }

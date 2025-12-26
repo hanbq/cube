@@ -4,6 +4,7 @@ import com.cube.common.page.JdbcPageHelper;
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
 import com.cube.system.entity.SYSUser;
+import com.cube.system.param.SYSUserParam;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +35,12 @@ public class SYSUserDao {
 
     private static final String INSERT_SQL =
             "INSERT INTO " + TABLE_NAME +
-            " (user_name, password, description, email, status, created_time, created_by, updated_time, updated_by, deleted) " +
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            " (user_name, password, description, email, status, is_super_admin, created_time, created_by, updated_time, updated_by, deleted) " +
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE_SQL =
             "UPDATE " + TABLE_NAME +
-            " SET user_name = ?, password = ?, description = ?, email = ?, status = ?, " +
+            " SET user_name = ?, password = ?, description = ?, email = ?, status = ?, is_super_admin = ?, " +
             " updated_time = ?, updated_by = ? " +
             " WHERE user_id = ? AND deleted = false";
 
@@ -72,6 +74,12 @@ public class SYSUserDao {
     private static final String UPDATE_PASSWORD_SQL =
             "UPDATE " + TABLE_NAME + " SET password = ?, updated_time = ? WHERE user_id = ? AND deleted = false";
 
+    private static final String UPDATE_SUPER_ADMIN_SQL =
+            "UPDATE " + TABLE_NAME + " SET is_super_admin = ?, updated_time = ? WHERE user_id = ? AND deleted = false";
+
+    private static final String FIND_SUPER_ADMINS_SQL =
+            "SELECT * FROM " + TABLE_NAME + " WHERE is_super_admin = true AND deleted = false ORDER BY user_id";
+
     private static final String COUNT_SQL =
             "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE deleted = false";
 
@@ -91,6 +99,7 @@ public class SYSUserDao {
         user.setDescription(rs.getString("description"));
         user.setEmail(rs.getString("email"));
         user.setStatus(rs.getString("status"));
+        user.setIsSuperAdmin(rs.getBoolean("is_super_admin"));
 
         // BaseBean fields
         Timestamp createdTime = rs.getTimestamp("created_time");
@@ -115,11 +124,8 @@ public class SYSUserDao {
      * 插入用户
      *
      * @param entity 用户对象
-     * @return 插入后的主键ID
      */
-    public Long insert(SYSUser entity) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
+    public void insert(SYSUser entity) {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, entity.getUserName());
@@ -127,20 +133,18 @@ public class SYSUserDao {
             ps.setString(3, entity.getDescription());
             ps.setString(4, entity.getEmail());
             ps.setString(5, entity.getStatus() != null ? entity.getStatus() : "ACTIVE");
+            ps.setBoolean(6, entity.getIsSuperAdmin() != null ? entity.getIsSuperAdmin() : false); // is_super_admin
 
             // BaseBean fields
             ZonedDateTime now = ZonedDateTime.now();
-            ps.setTimestamp(6, Timestamp.from(now.toInstant())); // created_time
-            ps.setString(7, entity.getCreatedBy());
-            ps.setTimestamp(8, Timestamp.from(now.toInstant())); // updated_time
-            ps.setString(9, entity.getUpdatedBy());
-            ps.setBoolean(10, false); // deleted
+            ps.setTimestamp(7, Timestamp.from(now.toInstant())); // created_time
+            ps.setString(8, entity.getCreatedBy());
+            ps.setTimestamp(9, Timestamp.from(now.toInstant())); // updated_time
+            ps.setString(10, entity.getUpdatedBy());
+            ps.setBoolean(11, false); // deleted
 
             return ps;
-        }, keyHolder);
-
-        Number key = keyHolder.getKey();
-        return key != null ? key.longValue() : null;
+        });
     }
 
     /**
@@ -156,6 +160,7 @@ public class SYSUserDao {
                 entity.getDescription(),
                 entity.getEmail(),
                 entity.getStatus(),
+                entity.getIsSuperAdmin() != null ? entity.getIsSuperAdmin() : false, // is_super_admin
                 Timestamp.from(ZonedDateTime.now().toInstant()), // updated_time
                 entity.getUpdatedBy(),
                 entity.getUserId()
@@ -294,5 +299,135 @@ public class SYSUserDao {
                 Timestamp.from(ZonedDateTime.now().toInstant()),
                 userId
         );
+    }
+
+    /**
+     * 更新用户超级管理员状态
+     *
+     * @param userId 用户ID
+     * @param isSuperAdmin 是否是超级管理员
+     * @return 更新的行数
+     */
+    public int updateSuperAdmin(Long userId, Boolean isSuperAdmin) {
+        return jdbcTemplate.update(UPDATE_SUPER_ADMIN_SQL,
+                isSuperAdmin,
+                Timestamp.from(ZonedDateTime.now().toInstant()),
+                userId
+        );
+    }
+
+    /**
+     * 查询所有超级管理员
+     *
+     * @return 超级管理员列表
+     */
+    public List<SYSUser> findSuperAdmins() {
+        return jdbcTemplate.query(FIND_SUPER_ADMINS_SQL, rowMapper);
+    }
+
+    /**
+     * 批量删除用户（软删除）
+     *
+     * @param userIds 用户ID列表
+     * @return 删除的行数
+     */
+    public int deleteByIds(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return 0;
+        }
+
+        int totalDeleted = 0;
+        for (Long userId : userIds) {
+            totalDeleted += softDeleteById(userId);
+        }
+        return totalDeleted;
+    }
+
+    /**
+     * 根据参数动态查询用户列表
+     * 如果参数为空，则不作为查询条件
+     * 用户名忽略大小写查询
+     *
+     * @param param 查询参数
+     * @return 用户列表
+     */
+    public List<SYSUser> findByParam(SYSUserParam param) {
+        if (param == null) {
+            return findAll();
+        }
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM " + TABLE_NAME + " WHERE deleted = false");
+        List<Object> params = new ArrayList<>();
+
+        // 如果userId不为空，添加userId条件
+        if (param.getUserId() != null) {
+            sql.append(" AND user_id = ?");
+            params.add(param.getUserId());
+        }
+
+        // 如果userName不为空，添加userName条件（忽略大小写）
+        if (param.getUserName() != null && !param.getUserName().trim().isEmpty()) {
+            sql.append(" AND LOWER(user_name) LIKE LOWER(?)");
+            params.add("%" + param.getUserName() + "%");
+        }
+
+        // 如果status不为空，添加status条件
+        if (param.getStatus() != null && !param.getStatus().trim().isEmpty()) {
+            sql.append(" AND status = ?");
+            params.add(param.getStatus());
+        }
+
+        // 如果isSuperAdmin不为空，添加isSuperAdmin条件
+        if (param.getIsSuperAdmin() != null) {
+            sql.append(" AND is_super_admin = ?");
+            params.add(param.getIsSuperAdmin());
+        }
+
+        sql.append(" ORDER BY user_id");
+
+        return jdbcTemplate.query(sql.toString(), rowMapper, params.toArray());
+    }
+
+    /**
+     * 根据参数动态查询用户列表（分页）
+     * 如果参数为空，则不作为查询条件
+     * 用户名忽略大小写查询
+     *
+     * @param param 查询参数
+     * @param pageRequest 分页参数
+     * @return 分页结果
+     */
+    public PageResult<SYSUser> findByParamWithPage(SYSUserParam param, PageRequest pageRequest) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM " + TABLE_NAME + " WHERE deleted = false");
+        List<Object> params = new ArrayList<>();
+
+        // 如果userId不为空，添加userId条件
+        if (param != null && param.getUserId() != null) {
+            sql.append(" AND user_id = ?");
+            params.add(param.getUserId());
+        }
+
+        // 如果userName不为空，添加userName条件（忽略大小写）
+        if (param != null && param.getUserName() != null && !param.getUserName().trim().isEmpty()) {
+            sql.append(" AND LOWER(user_name) LIKE LOWER(?)");
+            params.add("%" + param.getUserName() + "%");
+        }
+
+        // 如果status不为空，添加status条件
+        if (param != null && param.getStatus() != null && !param.getStatus().trim().isEmpty()) {
+            sql.append(" AND status = ?");
+            params.add(param.getStatus());
+        }
+
+        // 如果isSuperAdmin不为空，添加isSuperAdmin条件
+        if (param != null && param.getIsSuperAdmin() != null) {
+            sql.append(" AND is_super_admin = ?");
+            params.add(param.getIsSuperAdmin());
+        }
+
+        sql.append(" ORDER BY user_id");
+
+        // 使用pageHelper进行分页查询
+        return pageHelper.queryForPage(sql.toString(), pageRequest, rowMapper, params.toArray());
     }
 }

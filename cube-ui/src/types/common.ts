@@ -13,6 +13,7 @@ export interface IUser {
   name: string;
   avatar?: string;
   role: string;
+  isSuperAdmin?: boolean;
 }
 
 export interface INotification {

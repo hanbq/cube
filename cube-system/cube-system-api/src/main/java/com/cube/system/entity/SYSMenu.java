@@ -8,6 +8,7 @@ public class SYSMenu extends BaseBean {
 
     Long menuId;
     String menuName;
+    String menuNameEng;
     String path;
     String iconCls;
     Long parentId;
@@ -29,6 +30,14 @@ public class SYSMenu extends BaseBean {
 
     public void setMenuName(String menuName) {
         this.menuName = menuName;
+    }
+
+    public String getMenuNameEng() {
+        return menuNameEng;
+    }
+
+    public void setMenuNameEng(String menuNameEng) {
+        this.menuNameEng = menuNameEng;
     }
 
     public String getPath() {

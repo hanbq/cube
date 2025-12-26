@@ -1,25 +1,50 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { Box, CircularProgress } from '@mui/material'
 import Login from './pages/Login'
 import Home from './pages/home/Home'
-import Dashboard from './pages/Dashboard'
-import Workflow from './pages/Workflow'
-import User from './pages/User'
-import Settings from './pages/Settings'
+import { generateDynamicRoutes } from './components/DynamicRoutes'
+import { useMenuStore } from './store/menuStore'
+import { useEffect } from 'react'
+
+// 加载中占位组件
+const LoadingPlaceholder = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+      minHeight: '400px',
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
 
 function App() {
+  const { flatMenus, initialized } = useMenuStore();
+
+  useEffect(() => {
+    console.log('[App] flatMenus 更新:', flatMenus.length, '个菜单项');
+    console.log('[App] flatMenus 数据:', flatMenus);
+  }, [flatMenus]);
+
+  console.log('[App] 渲染中, flatMenus.length =', flatMenus.length, 'initialized =', initialized);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="workflow" element={<Workflow />} />
-          <Route path="user" element={<User />} />
-          <Route path="settings" element={<Settings />} />
+          {/* 菜单初始化完成后才生成动态路由，否则显示loading */}
+          {initialized ? (
+            generateDynamicRoutes(flatMenus)
+          ) : (
+            <Route path="*" element={<LoadingPlaceholder />} />
+          )}
         </Route>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>
   )

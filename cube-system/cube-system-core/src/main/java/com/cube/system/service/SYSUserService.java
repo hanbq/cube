@@ -4,6 +4,7 @@ import com.cube.common.exception.DataException;
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
 import com.cube.system.entity.SYSUser;
+import com.cube.system.param.SYSUserParam;
 import com.cube.system.dao.SYSUserDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +32,8 @@ public class SYSUserService {
      * 创建用户
      *
      * @param user 用户对象
-     * @return 创建后的用户ID
      */
-    public Long createUser(SYSUser user) {
+    public void createUser(SYSUser user) {
         // 验证用户名是否已存在
         if (user.getUserName() != null && userDao.findByUserName(user.getUserName()).isPresent()) {
             throw new DataException("Username already exists: " + user.getUserName());
@@ -44,7 +44,7 @@ public class SYSUserService {
             throw new DataException("Email already exists: " + user.getEmail());
         }
 
-        return userDao.insert(user);
+        userDao.insert(user);
     }
 
     /**
@@ -162,5 +162,82 @@ public class SYSUserService {
     @Transactional(readOnly = true)
     public long countUsers() {
         return userDao.count();
+    }
+
+    /**
+     * 更新用户超级管理员状态
+     *
+     * @param userId 用户ID
+     * @param isSuperAdmin 是否是超级管理员
+     * @return 是否更新成功
+     */
+    public boolean updateUserSuperAdmin(Long userId, Boolean isSuperAdmin) {
+        return userDao.updateSuperAdmin(userId, isSuperAdmin) > 0;
+    }
+
+    /**
+     * 查询所有超级管理员
+     *
+     * @return 超级管理员列表
+     */
+    @Transactional(readOnly = true)
+    public List<SYSUser> getSuperAdmins() {
+        return userDao.findSuperAdmins();
+    }
+
+    /**
+     * 检查用户是否是超级管理员
+     *
+     * @param userId 用户ID
+     * @return 是否是超级管理员
+     */
+    @Transactional(readOnly = true)
+    public boolean isSuperAdmin(Long userId) {
+        Optional<SYSUser> userOpt = userDao.findById(userId);
+        return userOpt.isPresent() && Boolean.TRUE.equals(userOpt.get().getIsSuperAdmin());
+    }
+
+    /**
+     * 批量删除用户（软删除）
+     *
+     * @param userIds 用户ID列表
+     * @return 删除的数量
+     */
+    public int deleteUsers(List<Long> userIds) {
+        return userDao.deleteByIds(userIds);
+    }
+
+    /**
+     * 根据参数动态查询用户列表
+     * 如果参数属性为空，则不作为查询条件
+     * 用户名忽略大小写查询
+     *
+     * @param param 查询参数
+     * @return 用户列表
+     */
+    @Transactional(readOnly = true)
+    public List<SYSUser> getUsersByParam(SYSUserParam param) {
+        return userDao.findByParam(param);
+    }
+
+    /**
+     * 根据参数动态查询用户列表（分页）
+     * 如果参数属性为空，则不作为查询条件
+     * 用户名忽略大小写查询
+     *
+     * @param param 查询参数（包含分页参数）
+     * @return 分页结果
+     */
+    @Transactional(readOnly = true)
+    public PageResult<SYSUser> getUsersByParamWithPage(SYSUserParam param) {
+        // 从param中提取分页参数，如果没有则使用默认值
+        Integer pageNumObj = (param != null) ? param.getPageNum() : null;
+        Integer pageSizeObj = (param != null) ? param.getPageSize() : null;
+
+        int pageNum = (pageNumObj != null) ? pageNumObj : 1;
+        int pageSize = (pageSizeObj != null) ? pageSizeObj : 10;
+
+        PageRequest pageRequest = new PageRequest(pageNum, pageSize);
+        return userDao.findByParamWithPage(param, pageRequest);
     }
 }

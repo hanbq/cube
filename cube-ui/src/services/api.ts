@@ -87,22 +87,38 @@ class ApiService {
 
   async get<T>(endpoint: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.get<ApiResponse<T>>(endpoint, config);
-    return response.data;
+    const apiResponse = response.data;
+    if (apiResponse.code !== 200) {
+      throw new Error(apiResponse.message || 'Request failed');
+    }
+    return apiResponse;
   }
 
   async post<T>(endpoint: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.post<ApiResponse<T>>(endpoint, data, config);
-    return response.data;
+    const apiResponse = response.data;
+    if (apiResponse.code !== 200) {
+      throw new Error(apiResponse.message || 'Request failed');
+    }
+    return apiResponse;
   }
 
   async put<T>(endpoint: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.put<ApiResponse<T>>(endpoint, data, config);
-    return response.data;
+    const apiResponse = response.data;
+    if (apiResponse.code !== 200) {
+      throw new Error(apiResponse.message || 'Request failed');
+    }
+    return apiResponse;
   }
 
   async delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.delete<ApiResponse<T>>(endpoint, config);
-    return response.data;
+    const apiResponse = response.data;
+    if (apiResponse.code !== 200) {
+      throw new Error(apiResponse.message || 'Request failed');
+    }
+    return apiResponse;
   }
 
   // Get the axios instance for advanced usage

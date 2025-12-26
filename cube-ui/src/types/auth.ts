@@ -13,5 +13,6 @@ export interface UserInfo {
   username: string;
   email?: string;
   role?: string;
+  isSuperAdmin?: boolean;
   [key: string]: any;
 }

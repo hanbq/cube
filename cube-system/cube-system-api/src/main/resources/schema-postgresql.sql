@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_USER (
     description     VARCHAR(500),
     email           VARCHAR(255),
     status          VARCHAR(20) DEFAULT 'ACTIVE',
+    is_super_admin  BOOLEAN DEFAULT FALSE,
     created_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_by      VARCHAR(100),
     updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -64,7 +65,12 @@ COMMENT ON COLUMN CUBE_SYS_USER.deleted IS '删除标记';
 CREATE TABLE IF NOT EXISTS CUBE_SYS_ROLE (
     role_id         BIGSERIAL PRIMARY KEY,
     role_name       VARCHAR(100) NOT NULL UNIQUE,
-    description     VARCHAR(500)
+    description     VARCHAR(500),
+    created_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by      VARCHAR(100),
+    updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_by      VARCHAR(100),
+    deleted         BOOLEAN DEFAULT FALSE
 );
 
 COMMENT ON TABLE CUBE_SYS_ROLE IS '角色表';

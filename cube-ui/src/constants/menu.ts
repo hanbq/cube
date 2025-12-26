@@ -28,5 +28,11 @@ export const MENU_ITEMS: IMenuItem[] = [
     label: '系统设置',
     icon: SettingsIcon,
     path: '/home/settings'
+  },
+  {
+    id: 'menu_management',
+    label: '菜单管理',
+    icon: SettingsIcon,
+    path: '/home/menu_management'
   }
 ];

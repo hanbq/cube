@@ -2,12 +2,15 @@ import React from 'react';
 import Header from './Header';
 import Main from './Main';
 import Menu from './Menu';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useMenuStore } from '../../store/menuStore';
+import { userMenuService } from '../../services/userMenuService';
 
 interface HomeProps {
   navigate?: (path: string) => void;
   currentPath?: string;
+  menusLoading?: boolean;
 }
 
 class HomeClass extends React.Component<HomeProps> {
@@ -91,6 +94,35 @@ class HomeClass extends React.Component<HomeProps> {
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setMenus, setLoading, setError, loading } = useMenuStore();
 
-  return <HomeClass navigate={navigate} currentPath={location.pathname} />;
+  // 在函数组件中直接使用 useEffect 加载菜单
+  React.useEffect(() => {
+    const loadMenus = async () => {
+      try {
+        console.log('[Home] 开始加载菜单数据...');
+        setLoading(true);
+        const menus = await userMenuService.getUserMenus();
+        console.log('[Home] 菜单数据加载成功:', menus.length, '个顶级菜单项');
+        console.log('[Home] 菜单数据:', menus);
+        setMenus(menus);
+        console.log('[Home] 已调用 setMenus 更新 store');
+      } catch (error) {
+        console.error('[Home] 加载菜单失败:', error);
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMenus();
+  }, [setMenus, setLoading, setError]);
+
+  return (
+    <HomeClass
+      navigate={navigate}
+      currentPath={location.pathname}
+      menusLoading={loading}
+    />
+  );
 }

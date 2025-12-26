@@ -1,6 +1,8 @@
 package com.cube.system.dao;
 
 import com.cube.system.entity.SYSMenu;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -23,18 +24,20 @@ import java.util.Optional;
 @Repository
 public class SYSMenuDao {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SYSMenuDao.class);
+
     private final JdbcTemplate jdbcTemplate;
 
     private static final String TABLE_NAME = "CUBE_SYS_MENU";
 
     private static final String INSERT_SQL =
             "INSERT INTO " + TABLE_NAME +
-            " (menu_name, path, icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted) " +
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            " (menu_name, menu_name_eng, path, icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted) " +
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE_SQL =
             "UPDATE " + TABLE_NAME +
-            " SET menu_name = ?, path = ?, icon_cls = ?, parent_id = ?, sort = ?, component = ?, " +
+            " SET menu_name = ?, menu_name_eng = ?, path = ?, icon_cls = ?, parent_id = ?, sort = ?, component = ?, " +
             " updated_time = ?, updated_by = ? " +
             " WHERE menu_id = ? AND deleted = false";
 
@@ -73,6 +76,7 @@ public class SYSMenuDao {
         SYSMenu menu = new SYSMenu();
         menu.setMenuId(rs.getLong("menu_id"));
         menu.setMenuName(rs.getString("menu_name"));
+        menu.setMenuNameEng(rs.getString("menu_name_eng"));
         menu.setPath(rs.getString("path"));
         menu.setIconCls(rs.getString("icon_cls"));
         Long parentId = rs.getLong("parent_id");
@@ -108,34 +112,41 @@ public class SYSMenuDao {
      * @return 插入后的主键ID
      */
     public Long insert(SYSMenu entity) {
+        LOG.info("=== SYSMenuDao.insert called ===");
+        LOG.info("Inserting menu: {}", entity.getMenuName());
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+            // Specify only the menu_id column to be returned (PostgreSQL specific)
+            PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"menu_id"});
             ps.setString(1, entity.getMenuName());
-            ps.setString(2, entity.getPath());
-            ps.setString(3, entity.getIconCls());
+            ps.setString(2, entity.getMenuNameEng());
+            ps.setString(3, entity.getPath());
+            ps.setString(4, entity.getIconCls());
             if (entity.getParentId() != null) {
-                ps.setLong(4, entity.getParentId());
+                ps.setLong(5, entity.getParentId());
             } else {
-                ps.setNull(4, java.sql.Types.BIGINT);
+                ps.setNull(5, java.sql.Types.BIGINT);
             }
-            ps.setInt(5, entity.getSort() != null ? entity.getSort() : 0);
-            ps.setString(6, entity.getComponent());
+            ps.setInt(6, entity.getSort() != null ? entity.getSort() : 0);
+            ps.setString(7, entity.getComponent());
 
             // BaseBean fields
             ZonedDateTime now = ZonedDateTime.now();
-            ps.setTimestamp(7, Timestamp.from(now.toInstant())); // created_time
-            ps.setString(8, entity.getCreatedBy());
-            ps.setTimestamp(9, Timestamp.from(now.toInstant())); // updated_time
-            ps.setString(10, entity.getUpdatedBy());
-            ps.setBoolean(11, false); // deleted
+            ps.setTimestamp(8, Timestamp.from(now.toInstant())); // created_time
+            ps.setString(9, entity.getCreatedBy());
+            ps.setTimestamp(10, Timestamp.from(now.toInstant())); // updated_time
+            ps.setString(11, entity.getUpdatedBy());
+            ps.setBoolean(12, false); // deleted
 
             return ps;
         }, keyHolder);
 
+        // Now we can safely use getKey() since only menu_id is returned
         Number key = keyHolder.getKey();
-        return key != null ? key.longValue() : null;
+        Long menuId = key != null ? key.longValue() : null;
+        LOG.info("Insert completed. Generated menu_id: {}", menuId);
+        return menuId;
     }
 
     /**
@@ -147,6 +158,7 @@ public class SYSMenuDao {
     public int update(SYSMenu entity) {
         return jdbcTemplate.update(UPDATE_SQL,
                 entity.getMenuName(),
+                entity.getMenuNameEng(),
                 entity.getPath(),
                 entity.getIconCls(),
                 entity.getParentId(),

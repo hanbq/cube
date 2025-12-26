@@ -8,55 +8,126 @@ import {
   IconButton,
   Divider,
   Tooltip,
+  Collapse,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { MENU_ITEMS } from '../../constants/menu';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PeopleIcon from '@mui/icons-material/People';
+import SecurityIcon from '@mui/icons-material/Security';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import SchemaIcon from '@mui/icons-material/Schema';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import { useTranslation } from 'react-i18next';
+import { useMenuStore } from '../../store/menuStore';
+import type { SYSMenu } from '../../types/menu';
 
 interface MenuProps {
   onNavigate?: (path: string) => void;
   currentPath?: string;
   onCollapseChange?: (collapsed: boolean) => void;
   t?: any;
+  i18n?: any;
+  menus?: SYSMenu[];
 }
 
 interface MenuState {
-  selectedItem: string;
+  selectedPath: string;
   collapsed: boolean;
+  expandedMenus: Set<number>;
 }
+
+// 图标映射表
+const iconMap: Record<string, any> = {
+  DashboardIcon,
+  SettingsIcon,
+  PeopleIcon,
+  SecurityIcon,
+  MenuIcon,
+  AccountTreeIcon,
+  SchemaIcon,
+  PlayArrowIcon,
+  SettingsApplicationsIcon,
+};
 
 class MenuClass extends React.Component<MenuProps, MenuState> {
   constructor(props: MenuProps) {
     super(props);
     this.state = {
-      selectedItem: 'dashboard',
+      selectedPath: '',
       collapsed: false,
+      expandedMenus: new Set(),
     };
   }
 
   componentDidMount() {
-    if (this.props.currentPath) {
-      const currentItem = MENU_ITEMS.find(item => this.props.currentPath?.includes(item.id));
-      if (currentItem) {
-        this.setState({ selectedItem: currentItem.id });
-      }
-    }
+    this.updateSelectedPath(this.props.currentPath);
   }
 
   componentDidUpdate(prevProps: MenuProps) {
-    if (prevProps.currentPath !== this.props.currentPath && this.props.currentPath) {
-      const currentItem = MENU_ITEMS.find(item => this.props.currentPath?.includes(item.id));
-      if (currentItem && currentItem.id !== this.state.selectedItem) {
-        this.setState({ selectedItem: currentItem.id });
-      }
+    if (prevProps.currentPath !== this.props.currentPath) {
+      this.updateSelectedPath(this.props.currentPath);
     }
   }
 
-  handleMenuItemClick = (id: string, path: string) => {
-    this.setState({ selectedItem: id });
-    if (this.props.onNavigate) {
-      this.props.onNavigate(path);
+  updateSelectedPath = (currentPath?: string) => {
+    if (!currentPath || !this.props.menus) return;
+
+    // 找到匹配的菜单项
+    const findMenuByPath = (menus: SYSMenu[]): SYSMenu | null => {
+      for (const menu of menus) {
+        if (currentPath === menu.path || currentPath.startsWith(menu.path + '/')) {
+          return menu;
+        }
+        if (menu.children) {
+          const found = findMenuByPath(menu.children);
+          if (found) {
+            // 展开父菜单
+            if (menu.menuId) {
+              this.setState(prevState => ({
+                expandedMenus: new Set(prevState.expandedMenus).add(menu.menuId!),
+              }));
+            }
+            return found;
+          }
+        }
+      }
+      return null;
+    };
+
+    const foundMenu = findMenuByPath(this.props.menus);
+    if (foundMenu) {
+      this.setState({ selectedPath: foundMenu.path });
     }
+  };
+
+  handleMenuItemClick = (menu: SYSMenu) => {
+    // 如果有子菜单,切换展开状态
+    if (menu.children && menu.children.length > 0) {
+      this.toggleExpand(menu.menuId!);
+      // 如果父菜单没有component,不导航
+      if (!menu.component) return;
+    }
+
+    this.setState({ selectedPath: menu.path });
+    if (this.props.onNavigate) {
+      this.props.onNavigate(menu.path);
+    }
+  };
+
+  toggleExpand = (menuId: number) => {
+    this.setState(prevState => {
+      const newExpanded = new Set(prevState.expandedMenus);
+      if (newExpanded.has(menuId)) {
+        newExpanded.delete(menuId);
+      } else {
+        newExpanded.add(menuId);
+      }
+      return { expandedMenus: newExpanded };
+    });
   };
 
   handleToggleCollapse = () => {
@@ -70,9 +141,90 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
     );
   };
 
+  getMenuLabel = (menu: SYSMenu) => {
+    const { i18n } = this.props;
+    if (i18n && i18n.language === 'en-US') {
+      return menu.menuNameEng;
+    }
+    return menu.menuName;
+  };
+
+  renderMenuItems = (menus: SYSMenu[], level = 0): React.ReactNode => {
+    const { selectedPath, collapsed, expandedMenus } = this.state;
+
+    return menus.map(menu => {
+      const IconComponent = iconMap[menu.iconCls] || DashboardIcon;
+      const hasChildren = menu.children && menu.children.length > 0;
+      const isExpanded = menu.menuId ? expandedMenus.has(menu.menuId) : false;
+      const isSelected = selectedPath === menu.path;
+      const label = this.getMenuLabel(menu);
+
+      const menuItem = (
+        <React.Fragment key={menu.menuId || menu.path}>
+          <ListItemButton
+            selected={isSelected}
+            onClick={() => this.handleMenuItemClick(menu)}
+            sx={{
+              mb: 0.5,
+              borderRadius: 1,
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              px: collapsed ? 1 : 2,
+              pl: collapsed ? 1 : 2 + level * 2,
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: collapsed ? 'auto' : 40 }}>
+              <IconComponent
+                sx={{
+                  color: isSelected ? 'primary.main' : 'text.secondary',
+                  fontSize: level > 0 ? '1.2rem' : '1.5rem',
+                }}
+              />
+            </ListItemIcon>
+            {!collapsed && (
+              <>
+                <ListItemText
+                  primary={label}
+                  slotProps={{
+                    primary: {
+                      fontSize: level > 0 ? '0.8125rem' : '0.875rem',
+                      fontWeight: isSelected ? 600 : 400,
+                    },
+                  }}
+                />
+                {hasChildren && (
+                  isExpanded ? <ExpandLess /> : <ExpandMore />
+                )}
+              </>
+            )}
+          </ListItemButton>
+
+          {hasChildren && !collapsed && (
+            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {this.renderMenuItems(menu.children!, level + 1)}
+              </List>
+            </Collapse>
+          )}
+        </React.Fragment>
+      );
+
+      return collapsed && level === 0 ? (
+        <Tooltip key={menu.menuId || menu.path} title={label} placement="right">
+          {menuItem}
+        </Tooltip>
+      ) : (
+        menuItem
+      );
+    });
+  };
+
   render() {
-    const { selectedItem, collapsed } = this.state;
-    const { t } = this.props;
+    const { collapsed } = this.state;
+    const { menus } = this.props;
+
+    if (!menus || menus.length === 0) {
+      return null;
+    }
 
     return (
       <Paper
@@ -110,52 +262,8 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
           },
         }}
       >
-        <List sx={{ pt: 2, px: collapsed ? 0.5 : 1, flexGrow: 1 }}>
-          {MENU_ITEMS.map((item) => {
-            const IconComponent = item.icon as React.ElementType;
-            const isSelected = selectedItem === item.id;
-            const label = t?.(`menu.${item.id}`) || item.label;
-            const menuItem = (
-              <ListItemButton
-                key={item.id}
-                selected={isSelected}
-                onClick={() => this.handleMenuItemClick(item.id, item.path)}
-                sx={{
-                  mb: 0.5,
-                  borderRadius: 1,
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  px: collapsed ? 1 : 2,
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: collapsed ? 'auto' : 40 }}>
-                  <IconComponent
-                    sx={{
-                      color: isSelected ? 'primary.main' : 'text.secondary',
-                    }}
-                  />
-                </ListItemIcon>
-                {!collapsed && (
-                  <ListItemText
-                    primary={label}
-                    slotProps={{
-                      primary: {
-                        fontSize: '0.875rem',
-                        fontWeight: isSelected ? 600 : 400,
-                      },
-                    }}
-                  />
-                )}
-              </ListItemButton>
-            );
-
-            return collapsed ? (
-              <Tooltip key={item.id} title={label} placement="right">
-                {menuItem}
-              </Tooltip>
-            ) : (
-              menuItem
-            );
-          })}
+        <List sx={{ pt: 2, px: collapsed ? 0.5 : 1, flexGrow: 1, overflow: 'auto' }}>
+          {this.renderMenuItems(menus)}
         </List>
         <Divider />
         <IconButton
@@ -177,7 +285,9 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
   }
 }
 
-export default function Menu(props: Omit<MenuProps, 't'>) {
-  const { t } = useTranslation();
-  return <MenuClass {...props} t={t} />;
+export default function Menu(props: Omit<MenuProps, 't' | 'i18n' | 'menus'>) {
+  const { t, i18n } = useTranslation();
+  const { menus } = useMenuStore();
+
+  return <MenuClass {...props} t={t} i18n={i18n} menus={menus} />;
 }

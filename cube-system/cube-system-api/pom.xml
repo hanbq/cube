@@ -28,6 +28,10 @@
             <groupId>com.cube</groupId>
             <artifactId>cube-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.cube</groupId>
+            <artifactId>cube-common</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

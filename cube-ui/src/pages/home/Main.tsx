@@ -3,20 +3,30 @@ import { Box, Breadcrumbs, Typography, Link } from '@mui/material';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { MENU_ITEMS } from '../../constants/menu';
 import { useTranslation } from 'react-i18next';
+import { useMenuStore } from '../../store/menuStore';
+import type { SYSMenu } from '../../types/menu';
 
 interface MainProps {
   location?: ReturnType<typeof useLocation>;
   navigate?: ReturnType<typeof useNavigate>;
   t?: any;
+  i18n?: any;
+  getMenuByPath?: (path: string) => SYSMenu | undefined;
 }
 
 class MainClass extends React.Component<MainProps> {
+  getMenuLabel = (menu: SYSMenu) => {
+    const { i18n } = this.props;
+    if (i18n && i18n.language === 'en-US') {
+      return menu.menuNameEng;
+    }
+    return menu.menuName;
+  };
+
   getBreadcrumbs = () => {
     const pathname = this.props.location?.pathname || '';
-    const pathSegments = pathname.split('/').filter(Boolean);
-    const { t } = this.props;
+    const { t, getMenuByPath } = this.props;
 
     const breadcrumbs: Array<{
       label: string;
@@ -30,14 +40,12 @@ class MainClass extends React.Component<MainProps> {
       }
     ];
 
-    if (pathSegments.length > 1) {
-      const currentPath = pathSegments[pathSegments.length - 1];
-      const menuItem = MENU_ITEMS.find(item => item.id === currentPath);
-
-      if (menuItem) {
+    if (getMenuByPath) {
+      const menu = getMenuByPath(pathname);
+      if (menu) {
         breadcrumbs.push({
-          label: t?.(`menu.${menuItem.id}`) || menuItem.label,
-          path: menuItem.path
+          label: this.getMenuLabel(menu),
+          path: menu.path
         });
       }
     }
@@ -131,7 +139,16 @@ class MainClass extends React.Component<MainProps> {
 export default function Main() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { getMenuByPath } = useMenuStore();
 
-  return <MainClass location={location} navigate={navigate} t={t} />;
+  return (
+    <MainClass
+      location={location}
+      navigate={navigate}
+      t={t}
+      i18n={i18n}
+      getMenuByPath={getMenuByPath}
+    />
+  );
 }

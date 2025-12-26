@@ -12,6 +12,7 @@ public class SYSUser extends BaseBean {
     String description;
     String email;
     String status;
+    Boolean isSuperAdmin;
     List<SYSRole> roles;
 
     public Long getUserId() {
@@ -60,6 +61,14 @@ public class SYSUser extends BaseBean {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Boolean getIsSuperAdmin() {
+        return isSuperAdmin;
+    }
+
+    public void setIsSuperAdmin(Boolean isSuperAdmin) {
+        this.isSuperAdmin = isSuperAdmin;
     }
 
     public List<SYSRole> getRoles() {
