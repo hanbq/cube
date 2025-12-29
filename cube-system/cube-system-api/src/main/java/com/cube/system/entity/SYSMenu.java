@@ -15,6 +15,7 @@ public class SYSMenu extends BaseBean {
     Integer sort;
     String component;
     List<SYSMenu> children;
+    Boolean isSelected; // 标记菜单是否被选中（不对应数据库字段，仅用于前端展示）
 
     public Long getMenuId() {
         return menuId;
@@ -86,5 +87,13 @@ public class SYSMenu extends BaseBean {
 
     public void setChildren(List<SYSMenu> children) {
         this.children = children;
+    }
+
+    public Boolean getIsSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(Boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }

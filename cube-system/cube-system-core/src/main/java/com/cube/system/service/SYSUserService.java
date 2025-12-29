@@ -240,4 +240,15 @@ public class SYSUserService {
         PageRequest pageRequest = new PageRequest(pageNum, pageSize);
         return userDao.findByParamWithPage(param, pageRequest);
     }
+
+    /**
+     * 根据角色ID查询用户列表
+     *
+     * @param roleId 角色ID
+     * @return 用户列表
+     */
+    @Transactional(readOnly = true)
+    public List<SYSUser> getUsersByRoleId(Long roleId) {
+        return userDao.findByRoleId(roleId);
+    }
 }

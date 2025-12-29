@@ -1,11 +1,14 @@
-package com.cube.system.controller;
+package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
+import com.cube.security.UserPrincipal;
 import com.cube.system.entity.SYSMenu;
 import com.cube.system.service.SYSMenuService;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +24,7 @@ import java.util.List;
 @RequestMapping("/api/menus")
 public class SYSMenuController {
 
-    private final static Logger LOG = LoggerFactory.getLogger(SYSMenuController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SYSMenuController.class);
 
     @Resource
     private SYSMenuService menuService;
@@ -128,14 +131,23 @@ public class SYSMenuController {
 
     /**
      * 查询菜单树（包含子菜单）
+     * 根据当前登录用户的权限返回菜单树
      *
-     * @return 菜单树
+     * @return 用户有权限的菜单树
      */
     @GetMapping("/tree")
     public CubeResponse<List<SYSMenu>> getMenuTree() {
         try {
-            List<SYSMenu> menuTree = menuService.buildMenuTree();
-            return CubeResponse.success(menuTree, "Menu tree retrieved successfully");
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            // 获取当前用户ID
+            assert authentication != null;
+            UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+            assert principal != null;
+            Long userId = principal.userId();
+
+            // 根据用户权限构建菜单树
+            List<SYSMenu> menuTree = menuService.buildMenuTreeByUserId(userId);
+            return CubeResponse.success(menuTree);
         } catch (Exception e) {
             return CubeResponse.failed(e.getMessage());
         }
@@ -173,7 +185,7 @@ public class SYSMenuController {
     }
 
     /**
-     * 根据角色ID查询菜单列表
+     * 根据角色ID查询菜单列表（仅返回该角色拥有的菜单）
      *
      * @param roleId 角色ID
      * @return 菜单列表
@@ -183,6 +195,22 @@ public class SYSMenuController {
         try {
             List<SYSMenu> menus = menuService.getMenusByRoleId(roleId);
             return CubeResponse.success(menus, "Menus for role retrieved successfully");
+        } catch (Exception e) {
+            return CubeResponse.failed(e.getMessage());
+        }
+    }
+
+    /**
+     * 根据角色ID查询所有菜单并标记是否被选中
+     *
+     * @param roleId 角色ID
+     * @return 所有菜单列表，每个菜单包含isSelected标记
+     */
+    @GetMapping("/role/{roleId}/with-selection")
+    public CubeResponse<List<SYSMenu>> getAllMenusWithSelection(@PathVariable Long roleId) {
+        try {
+            List<SYSMenu> menus = menuService.getAllMenusWithSelectedFlag(roleId);
+            return CubeResponse.success(menus, "All menus with selection status retrieved successfully");
         } catch (Exception e) {
             return CubeResponse.failed(e.getMessage());
         }

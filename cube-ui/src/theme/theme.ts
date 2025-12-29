@@ -47,7 +47,36 @@ const theme = createTheme({
       letterSpacing: '0.5px',
     },
   },
+  spacing: 4,
   components: {
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          paddingLeft: '3px',
+          paddingRight: '3px',
+        },
+      },
+    },
+    MuiBox: {
+      styleOverrides: {
+        root: {
+          '& > .MuiBox-root': {
+            padding: '3px',
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+          backgroundColor: '#fafcf8',
+          boxShadow: '0 3px 12px rgba(45, 80, 22, 0.1)',
+          border: '1px solid rgba(45, 80, 22, 0.15)',
+          padding: '3px',
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         root: {
@@ -104,16 +133,6 @@ const theme = createTheme({
             paddingLeft: '13px',
             boxShadow: 'none',
           },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-          backgroundColor: '#fafcf8',
-          boxShadow: '0 3px 12px rgba(45, 80, 22, 0.1)',
-          border: '1px solid rgba(45, 80, 22, 0.15)',
         },
       },
     },

@@ -83,6 +83,12 @@ public class SYSUserDao {
     private static final String COUNT_SQL =
             "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE deleted = false";
 
+    private static final String FIND_BY_ROLE_ID_SQL =
+            "SELECT u.* FROM " + TABLE_NAME + " u " +
+            "INNER JOIN CUBE_SYS_USER_ROLE ur ON u.user_id = ur.user_id " +
+            "WHERE ur.role_id = ? AND u.deleted = false AND ur.deleted = false " +
+            "ORDER BY u.user_id";
+
     public SYSUserDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.pageHelper = new JdbcPageHelper(jdbcTemplate);
@@ -429,5 +435,16 @@ public class SYSUserDao {
 
         // 使用pageHelper进行分页查询
         return pageHelper.queryForPage(sql.toString(), pageRequest, rowMapper, params.toArray());
+    }
+
+    /**
+     * 根据角色ID查询用户列表
+     * 通过CUBE_SYS_USER_ROLE表关联查询
+     *
+     * @param roleId 角色ID
+     * @return 用户列表
+     */
+    public List<SYSUser> findByRoleId(Long roleId) {
+        return jdbcTemplate.query(FIND_BY_ROLE_ID_SQL, rowMapper, roleId);
     }
 }

@@ -1,4 +1,4 @@
-package com.cube.system.controller;
+package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;

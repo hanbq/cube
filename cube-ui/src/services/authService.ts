@@ -1,5 +1,5 @@
 import { apiService } from './api';
-import type { LoginRequest, LoginResponse } from '../types/auth';
+import type { LoginRequest, LoginResponse, RefreshTokenResponse } from '../types/auth';
 
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
@@ -13,9 +13,43 @@ export const authService = {
     throw new Error(response.message || 'Login failed');
   },
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userInfo');
+  async logout(): Promise<void> {
+    try {
+      // 调用后端 logout 接口
+      await apiService.post<void>('/auth/logout');
+    } catch (error) {
+      // 即使后端调用失败，也要清除本地存储
+      console.error('Logout API call failed:', error);
+    } finally {
+      // 清除本地存储的认证信息
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+    }
+  },
+
+  async refreshToken(): Promise<string> {
+    const currentToken = this.getToken();
+    if (!currentToken) {
+      throw new Error('No token to refresh');
+    }
+
+    try {
+      const response = await apiService.post<RefreshTokenResponse>('/auth/refresh-token', {
+        token: currentToken,
+      });
+
+      if (response.code === 200 && response.data?.token) {
+        const newToken = response.data.token;
+        localStorage.setItem('token', newToken);
+        console.log('Token refreshed successfully');
+        return newToken;
+      }
+
+      throw new Error(response.message || 'Token refresh failed');
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      throw error;
+    }
   },
 
   getToken(): string | null {

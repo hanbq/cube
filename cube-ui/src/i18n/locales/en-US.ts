@@ -18,6 +18,20 @@ export default {
       componentLoadFailed: 'Component "{path}" failed to load',
     },
 
+    // Error Messages
+    errors: {
+      unauthorized: 'Unauthorized',
+      unauthorizedClearing: 'Unauthorized - clearing authentication',
+      tokenInvalidOrExpired: 'Token invalid or expired',
+      forbidden: 'Forbidden - insufficient permissions',
+      notFound: 'Resource not found',
+      serverError: 'Internal server error',
+      apiError: 'API error with status {status}: {message}',
+      noResponse: 'No response received from server: {message}',
+      requestSetupError: 'Request setup error: {message}',
+      requestFailed: 'Request failed',
+    },
+
     // Login Page
     login: {
       title: 'Cube',

@@ -58,4 +58,10 @@ export const menuService = {
     const response = await apiService.get<SYSMenu[]>(`/menus/role/${roleId}`);
     return response.data;
   },
+
+  // 根据角色ID查询所有菜单并标记是否被选中
+  getAllMenusWithSelection: async (roleId: number): Promise<SYSMenu[]> => {
+    const response = await apiService.get<SYSMenu[]>(`/menus/role/${roleId}/with-selection`);
+    return response.data;
+  },
 };

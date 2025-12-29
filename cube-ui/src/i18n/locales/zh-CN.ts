@@ -18,6 +18,20 @@ export default {
       componentLoadFailed: '组件 "{path}" 加载失败',
     },
 
+    // 错误信息
+    errors: {
+      unauthorized: '未授权',
+      unauthorizedClearing: '未授权 - 清除认证信息',
+      tokenInvalidOrExpired: '认证令牌无效或已过期',
+      forbidden: '禁止访问 - 权限不足',
+      notFound: '资源未找到',
+      serverError: '服务器内部错误',
+      apiError: 'API 错误 (状态码 {status}): {message}',
+      noResponse: '服务器无响应: {message}',
+      requestSetupError: '请求配置错误: {message}',
+      requestFailed: '请求失败',
+    },
+
     // 登录页面
     login: {
       title: 'Cube',

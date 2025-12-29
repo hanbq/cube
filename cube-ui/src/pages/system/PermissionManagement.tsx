@@ -18,16 +18,30 @@ import {
   Checkbox,
   Snackbar,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Save as SaveIcon,
   Folder as FolderIcon,
   Person as PersonIcon,
   Menu as MenuIcon,
+  Add as AddIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { roleService } from '../../services/roleService';
 import { userService } from '../../services/userService';
 import { menuService } from '../../services/menuService';
+import { userRoleService } from '../../services/userRoleService';
+import { menuRoleService } from '../../services/menuRoleService';
 import type { SYSRole } from '../../types/role';
 import type { SYSUser } from '../../types/user';
 import type { SYSMenu } from '../../types/menu';
@@ -41,13 +55,7 @@ interface TabPanelProps {
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`permission-tabpanel-${index}`}
-      aria-labelledby={`permission-tab-${index}`}
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} id={`permission-tabpanel-${index}`} aria-labelledby={`permission-tab-${index}`} {...other}>
       {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
@@ -59,8 +67,8 @@ export default function PermissionManagement() {
   const [roles, setRoles] = useState<SYSRole[]>([]);
   const [selectedRole, setSelectedRole] = useState<SYSRole | null>(null);
   const [allUsers, setAllUsers] = useState<SYSUser[]>([]);
-  const [checkedUserIds, setCheckedUserIds] = useState<number[]>([]);
-  const [originalUserIds, setOriginalUserIds] = useState<number[]>([]);
+  const [roleUsers, setRoleUsers] = useState<SYSUser[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [allMenus, setAllMenus] = useState<SYSMenu[]>([]);
   const [checkedMenuIds, setCheckedMenuIds] = useState<number[]>([]);
   const [originalMenuIds, setOriginalMenuIds] = useState<number[]>([]);
@@ -72,6 +80,8 @@ export default function PermissionManagement() {
     message: '',
     severity: 'success' as 'success' | 'error',
   });
+  const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState<SYSUser[]>([]);
 
   const loadRoles = async () => {
     setLoading(true);
@@ -110,8 +120,8 @@ export default function PermissionManagement() {
 
   const loadRoleUsers = async (roleId: number) => {
     try {
-      setCheckedUserIds([]);
-      setOriginalUserIds([]);
+      const users = await userService.getUsersByRoleId(roleId);
+      setRoleUsers(users);
     } catch (err) {
       console.error('Failed to load role users:', err);
     }
@@ -119,10 +129,13 @@ export default function PermissionManagement() {
 
   const loadRoleMenus = async (roleId: number) => {
     try {
-      const menus = await menuService.getMenusByRoleId(roleId);
-      const menuIds = getAllMenuIds(menus);
-      setCheckedMenuIds(menuIds);
-      setOriginalMenuIds(menuIds);
+      const menusWithSelection = await menuService.getAllMenusWithSelection(roleId);
+      const selectedMenuIds = menusWithSelection
+        .filter(menu => menu.isSelected)
+        .map(menu => menu.menuId!)
+        .filter(id => id !== undefined);
+      setCheckedMenuIds(selectedMenuIds);
+      setOriginalMenuIds(selectedMenuIds);
     } catch (err) {
       console.error('Failed to load role menus:', err);
     }
@@ -160,34 +173,38 @@ export default function PermissionManagement() {
     setTabValue(newValue);
   };
 
-  const handleToggleUser = (userId: number) => {
-    setCheckedUserIds(prev =>
+  const handleSelectUser = (userId: number) => {
+    setSelectedUsers(prev =>
       prev.includes(userId)
         ? prev.filter(id => id !== userId)
         : [...prev, userId]
     );
   };
 
-  const handleToggleMenu = (menuId: number) => {
-    setCheckedMenuIds(prev =>
-      prev.includes(menuId)
-        ? prev.filter(id => id !== menuId)
-        : [...prev, menuId]
+  const handleSelectAllUsers = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setSelectedUsers(roleUsers.map(user => user.userId!));
+    } else {
+      setSelectedUsers([]);
+    }
+  };
+
+  const handleAddUser = () => {
+    const available = allUsers.filter(
+      user => !roleUsers.find(ru => ru.userId === user.userId)
     );
+    setAvailableUsers(available);
+    setOpenAddUserDialog(true);
   };
 
-  const handleCancelUsers = () => {
-    setCheckedUserIds([...originalUserIds]);
-  };
-
-  const handleCancelMenus = () => {
-    setCheckedMenuIds([...originalMenuIds]);
-  };
-
-  const handleSaveUsers = async () => {
-    if (!selectedRole || !selectedRole.roleId) return;
+  const handleConfirmAddUsers = async () => {
+    if (!selectedRole || !selectedRole.roleId || selectedUsers.length === 0) return;
 
     try {
+      const userRoles = selectedUsers.map(userId => ({ userId, roleId: selectedRole.roleId! }));
+      await userRoleService.batchInsertUserRoles(userRoles);
+      setOpenAddUserDialog(false);
+      setSelectedUsers([]);
       setSnackbar({
         open: true,
         message: t('permissionManagement.saveSuccess'),
@@ -204,10 +221,75 @@ export default function PermissionManagement() {
     }
   };
 
+  const handleDeleteUsers = async () => {
+    if (!selectedRole || !selectedRole.roleId || selectedUsers.length === 0) return;
+
+    try {
+      const userRoles = selectedUsers.map(userId => ({ userId, roleId: selectedRole.roleId! }));
+      await userRoleService.batchDeleteUserRoles(userRoles);
+      setSnackbar({
+        open: true,
+        message: t('permissionManagement.deleteSuccess'),
+        severity: 'success',
+      });
+      setSelectedUsers([]);
+      await loadRoleUsers(selectedRole.roleId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
+    }
+  };
+
+  const findMenuById = (menus: SYSMenu[], menuId: number): SYSMenu | null => {
+    for (const menu of menus) {
+      if (menu.menuId === menuId) return menu;
+      if (menu.children && menu.children.length > 0) {
+        const found = findMenuById(menu.children, menuId);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const handleToggleMenu = (menuId: number) => {
+    const menu = findMenuById(allMenus, menuId);
+    if (!menu) return;
+
+    const isCurrentlyChecked = checkedMenuIds.includes(menuId);
+
+    // 获取当前节点及其所有子节点的ID
+    const idsToToggle = [menuId, ...getChildrenMenuIds(menu)];
+
+    setCheckedMenuIds(prev => {
+      if (isCurrentlyChecked) {
+        // 如果当前是选中状态，则取消选中自己和所有子节点
+        return prev.filter(id => !idsToToggle.includes(id));
+      } else {
+        // 如果当前是未选中状态，则选中自己和所有子节点
+        const newIds = [...prev];
+        idsToToggle.forEach(id => {
+          if (!newIds.includes(id)) {
+            newIds.push(id);
+          }
+        });
+        return newIds;
+      }
+    });
+  };
+
+  const handleCancelMenus = () => {
+    setCheckedMenuIds([...originalMenuIds]);
+  };
+
   const handleSaveMenus = async () => {
     if (!selectedRole || !selectedRole.roleId) return;
 
     try {
+      await menuRoleService.batchSaveMenuRolesByRoleId(selectedRole.roleId, checkedMenuIds);
       setSnackbar({
         open: true,
         message: t('permissionManagement.saveSuccess'),
@@ -261,49 +343,130 @@ export default function PermissionManagement() {
   const renderUserTree = () => {
     return (
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <List sx={{ flexGrow: 1, overflow: 'auto', maxHeight: 'calc(100vh - 350px)' }}>
-          {allUsers.map((user) => (
-            <ListItem key={user.userId} disablePadding>
-              <ListItemButton onClick={() => handleToggleUser(user.userId!)}>
-                <ListItemIcon>
-                  <Checkbox
-                    edge="start"
-                    checked={checkedUserIds.includes(user.userId!)}
-                    tabIndex={-1}
-                    disableRipple
-                  />
-                </ListItemIcon>
-                <PersonIcon sx={{ mr: 1, color: 'action.active' }} />
-                <ListItemText
-                  primary={user.userName}
-                  secondary={user.email || user.description}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-
-        <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
           <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleSaveUsers}
+              startIcon={<AddIcon />}
+              onClick={handleAddUser}
               disabled={!selectedRole}
             >
-              {t('common.save')}
+              {t('permissionManagement.addUsers')}
             </Button>
             <Button
               variant="outlined"
-              onClick={handleCancelUsers}
-              disabled={!selectedRole}
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDeleteUsers}
+              disabled={!selectedRole || selectedUsers.length === 0}
             >
-              {t('common.cancel')}
+              {t('permissionManagement.deleteSelected')}
             </Button>
           </Stack>
         </Box>
+
+        <TableContainer sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={selectedUsers.length > 0 && selectedUsers.length < roleUsers.length}
+                    checked={roleUsers.length > 0 && selectedUsers.length === roleUsers.length}
+                    onChange={handleSelectAllUsers}
+                  />
+                </TableCell>
+                <TableCell>{t('userManagement.userName')}</TableCell>
+                <TableCell>{t('userManagement.email')}</TableCell>
+                <TableCell>{t('userManagement.description')}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {roleUsers.map((user) => (
+                <TableRow
+                  key={user.userId}
+                  hover
+                  selected={selectedUsers.includes(user.userId!)}
+                  onClick={() => handleSelectUser(user.userId!)}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox checked={selectedUsers.includes(user.userId!)} />
+                  </TableCell>
+                  <TableCell>{user.userName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.description}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Dialog open={openAddUserDialog} onClose={() => setOpenAddUserDialog(false)} maxWidth="md" fullWidth>
+          <DialogTitle>{t('permissionManagement.addUsers')}</DialogTitle>
+          <DialogContent>
+            <List sx={{ maxHeight: 400, overflow: 'auto' }}>
+              {availableUsers.map((user) => (
+                <ListItem key={user.userId} disablePadding>
+                  <ListItemButton onClick={() => handleSelectUser(user.userId!)}>
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={selectedUsers.includes(user.userId!)}
+                        tabIndex={-1}
+                        disableRipple
+                      />
+                    </ListItemIcon>
+                    <PersonIcon sx={{ mr: 1, color: 'action.active' }} />
+                    <ListItemText
+                      primary={user.userName}
+                      secondary={user.email || user.description}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenAddUserDialog(false)}>{t('common.cancel')}</Button>
+            <Button onClick={handleConfirmAddUsers} variant="contained">{t('common.save')}</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     );
+  };
+
+  const getChildrenMenuIds = (menu: SYSMenu): number[] => {
+    let ids: number[] = [];
+    if (menu.children && menu.children.length > 0) {
+      menu.children.forEach(child => {
+        if (child.menuId) ids.push(child.menuId);
+        ids = ids.concat(getChildrenMenuIds(child));
+      });
+    }
+    return ids;
+  };
+
+  const isMenuIndeterminate = (menu: SYSMenu): boolean => {
+    if (!menu.children || menu.children.length === 0) return false;
+
+    const childrenIds = getChildrenMenuIds(menu);
+    const checkedCount = childrenIds.filter(id => checkedMenuIds.includes(id)).length;
+
+    return checkedCount > 0 && checkedCount < childrenIds.length;
+  };
+
+  const isMenuChecked = (menu: SYSMenu): boolean => {
+    const isCurrentChecked = checkedMenuIds.includes(menu.menuId!);
+
+    if (!menu.children || menu.children.length === 0) {
+      return isCurrentChecked;
+    }
+
+    const childrenIds = getChildrenMenuIds(menu);
+    const allChildrenChecked = childrenIds.length > 0 && childrenIds.every(id => checkedMenuIds.includes(id));
+
+    return isCurrentChecked && allChildrenChecked;
   };
 
   const renderMenuTreeItems = (menus: SYSMenu[], level: number = 0): React.ReactNode[] => {
@@ -319,7 +482,8 @@ export default function PermissionManagement() {
             <ListItemIcon>
               <Checkbox
                 edge="start"
-                checked={checkedMenuIds.includes(menu.menuId!)}
+                checked={isMenuChecked(menu)}
+                indeterminate={isMenuIndeterminate(menu)}
                 tabIndex={-1}
                 disableRipple
               />
@@ -327,7 +491,7 @@ export default function PermissionManagement() {
             <MenuIcon sx={{ mr: 1, color: 'action.active' }} />
             <ListItemText
               primary={menu.menuName}
-              secondary={menu.menuPath}
+              secondary={menu.path}
             />
           </ListItemButton>
         </ListItem>
@@ -372,7 +536,7 @@ export default function PermissionManagement() {
   };
 
   return (
-    <Box sx={{ m: -3, height: 'calc(100vh - 120px)' }}>
+    <Box sx={{ m: -3, height: 'calc(100vh - 105px)' }}>
       <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
           {t('permissionManagement.title')}
@@ -384,14 +548,14 @@ export default function PermissionManagement() {
           </Alert>
         )}
 
-        <Grid container spacing={2} sx={{ flexGrow: 1, overflow: 'hidden' }}>
-          <Grid item xs={3}>
+        <Grid container spacing={2} sx={{ flexGrow: 1, overflow: 'hidden'}}>
+          <Grid size={3} >
             <Paper variant="outlined" sx={{ height: '100%', overflow: 'auto' }}>
               {renderRoleList()}
             </Paper>
           </Grid>
 
-          <Grid item xs={9}>
+          <Grid size={9} >
             <Paper variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>

@@ -68,6 +68,9 @@ public class SYSMenuRoleDao {
     private static final String PHYSICAL_DELETE_BY_ID_SQL =
             "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
 
+    private static final String PHYSICAL_DELETE_BY_ROLE_ID_SQL =
+            "DELETE FROM " + TABLE_NAME + " WHERE role_id = ?";
+
     public SYSMenuRoleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -285,5 +288,15 @@ public class SYSMenuRoleDao {
             }
         }
         return successCount;
+    }
+
+    /**
+     * 根据角色ID物理删除所有菜单关联
+     *
+     * @param roleId 角色ID
+     * @return 删除的行数
+     */
+    public int physicalDeleteByRoleId(Long roleId) {
+        return jdbcTemplate.update(PHYSICAL_DELETE_BY_ROLE_ID_SQL, roleId);
     }
 }

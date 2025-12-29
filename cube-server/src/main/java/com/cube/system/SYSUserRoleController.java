@@ -1,4 +1,4 @@
-package com.cube.system.controller;
+package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
 import com.cube.system.entity.SYSUserRole;
@@ -37,11 +37,10 @@ public class SYSUserRoleController {
         try {
             List<SYSUserRole> userRoles = userRoleService.getAllUserRoles();
             LOG.info("Retrieved {} user-role associations", userRoles.size());
-            return CubeResponse.success(userRoles, "User-role associations retrieved successfully");
+            return CubeResponse.success(userRoles);
         } catch (Exception e) {
             LOG.error("Error getting all user-role associations", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get user-role associations: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 

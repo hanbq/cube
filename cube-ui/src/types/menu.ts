@@ -8,6 +8,7 @@ export interface SYSMenu {
   sort: number;
   component?: string;
   children?: SYSMenu[];
+  isSelected?: boolean;
 }
 
 export interface MenuFormData {

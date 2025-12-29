@@ -47,4 +47,10 @@ export const userService = {
     const response = await apiService.put<boolean>(`/users/${userId}/password?newPassword=${newPassword}`);
     return response.data;
   },
+
+  // 根据角色ID查询用户列表
+  getUsersByRoleId: async (roleId: number): Promise<SYSUser[]> => {
+    const response = await apiService.get<SYSUser[]>(`/users/role/${roleId}`);
+    return response.data;
+  },
 };

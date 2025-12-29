@@ -1,4 +1,4 @@
-package com.cube.system.controller;
+package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
@@ -154,11 +154,10 @@ public class SYSUserController {
         try {
             List<SYSUser> users = userService.getAllUsers();
             LOG.info("Retrieved {} users", users.size());
-            return CubeResponse.success(users, "Users retrieved successfully");
+            return CubeResponse.success(users);
         } catch (Exception e) {
             LOG.error("Error getting all users", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get users: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -196,11 +195,10 @@ public class SYSUserController {
         try {
             List<SYSUser> users = userService.getUsersByStatus(status);
             LOG.info("Retrieved {} users with status {}", users.size(), status);
-            return CubeResponse.success(users, "Users retrieved successfully");
+            return CubeResponse.success(users);
         } catch (Exception e) {
             LOG.error("Error getting users by status", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get users: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -220,15 +218,14 @@ public class SYSUserController {
             boolean success = userService.updateUserStatus(id, status);
             if (success) {
                 LOG.info("User status updated successfully");
-                return CubeResponse.success(true, "User status updated successfully");
+                return CubeResponse.success(true);
             } else {
                 LOG.warn("Failed to update user status");
                 return CubeResponse.failed("Failed to update user status");
             }
         } catch (Exception e) {
             LOG.error("Error updating user status", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to update user status: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -248,15 +245,14 @@ public class SYSUserController {
             boolean success = userService.updateUserPassword(id, newPassword);
             if (success) {
                 LOG.info("User password updated successfully");
-                return CubeResponse.success(true, "User password updated successfully");
+                return CubeResponse.success(true);
             } else {
                 LOG.warn("Failed to update user password");
                 return CubeResponse.failed("Failed to update user password");
             }
         } catch (Exception e) {
             LOG.error("Error updating user password", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to update user password: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -347,6 +343,26 @@ public class SYSUserController {
             return CubeResponse.success(result, "Users retrieved successfully");
         } catch (Exception e) {
             LOG.error("Error getting user page", e);
+            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            return CubeResponse.failed("Failed to get users: " + errorMsg);
+        }
+    }
+
+    /**
+     * 根据角色ID查询用户列表
+     *
+     * @param roleId 角色ID
+     * @return 用户列表
+     */
+    @GetMapping("/role/{roleId}")
+    public CubeResponse<List<SYSUser>> getUsersByRoleId(@PathVariable Long roleId) {
+        LOG.info("Getting users by role ID: {}", roleId);
+        try {
+            List<SYSUser> users = userService.getUsersByRoleId(roleId);
+            LOG.info("Retrieved {} users for role ID {}", users.size(), roleId);
+            return CubeResponse.success(users, "Users retrieved successfully");
+        } catch (Exception e) {
+            LOG.error("Error getting users by role ID", e);
             String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             return CubeResponse.failed("Failed to get users: " + errorMsg);
         }

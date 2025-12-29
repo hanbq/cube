@@ -65,6 +65,29 @@ public class SYSMenuDao {
     private static final String COUNT_SQL =
             "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE deleted = false";
 
+    private static final String FIND_BY_USER_ID_SQL =
+            "SELECT DISTINCT m.* FROM " + TABLE_NAME + " m " +
+            "INNER JOIN CUBE_SYS_MENU_ROLE mr ON m.menu_id = mr.menu_id " +
+            "INNER JOIN CUBE_SYS_USER_ROLE ur ON mr.role_id = ur.role_id " +
+            "WHERE ur.user_id = ? AND m.deleted = false AND mr.deleted = false AND ur.deleted = false " +
+            "ORDER BY m.sort, m.menu_id";
+
+    private static final String FIND_ROOT_MENUS_BY_USER_ID_SQL =
+            "SELECT DISTINCT m.* FROM " + TABLE_NAME + " m " +
+            "INNER JOIN CUBE_SYS_MENU_ROLE mr ON m.menu_id = mr.menu_id " +
+            "INNER JOIN CUBE_SYS_USER_ROLE ur ON mr.role_id = ur.role_id " +
+            "WHERE ur.user_id = ? AND m.parent_id IS NULL AND m.deleted = false " +
+            "AND mr.deleted = false AND ur.deleted = false " +
+            "ORDER BY m.sort, m.menu_id";
+
+    private static final String FIND_BY_PARENT_ID_AND_USER_ID_SQL =
+            "SELECT DISTINCT m.* FROM " + TABLE_NAME + " m " +
+            "INNER JOIN CUBE_SYS_MENU_ROLE mr ON m.menu_id = mr.menu_id " +
+            "INNER JOIN CUBE_SYS_USER_ROLE ur ON mr.role_id = ur.role_id " +
+            "WHERE ur.user_id = ? AND m.parent_id = ? AND m.deleted = false " +
+            "AND mr.deleted = false AND ur.deleted = false " +
+            "ORDER BY m.sort, m.menu_id";
+
     public SYSMenuDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -240,5 +263,36 @@ public class SYSMenuDao {
     public long count() {
         Long count = jdbcTemplate.queryForObject(COUNT_SQL, Long.class);
         return count != null ? count : 0L;
+    }
+
+    /**
+     * 根据用户ID查询该用户有权限的所有菜单
+     *
+     * @param userId 用户ID
+     * @return 菜单列表
+     */
+    public List<SYSMenu> findByUserId(Long userId) {
+        return jdbcTemplate.query(FIND_BY_USER_ID_SQL, rowMapper, userId);
+    }
+
+    /**
+     * 根据用户ID查询该用户有权限的根菜单列表
+     *
+     * @param userId 用户ID
+     * @return 根菜单列表
+     */
+    public List<SYSMenu> findRootMenusByUserId(Long userId) {
+        return jdbcTemplate.query(FIND_ROOT_MENUS_BY_USER_ID_SQL, rowMapper, userId);
+    }
+
+    /**
+     * 根据用户ID和父菜单ID查询该用户有权限的子菜单列表
+     *
+     * @param userId 用户ID
+     * @param parentId 父菜单ID
+     * @return 子菜单列表
+     */
+    public List<SYSMenu> findByParentIdAndUserId(Long userId, Long parentId) {
+        return jdbcTemplate.query(FIND_BY_PARENT_ID_AND_USER_ID_SQL, rowMapper, userId, parentId);
     }
 }

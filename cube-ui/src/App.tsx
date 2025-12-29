@@ -32,6 +32,12 @@ function App() {
 
   console.log('[App] 渲染中, flatMenus.length =', flatMenus.length, 'initialized =', initialized);
 
+  // 检查是否有 token 来决定默认路由
+  const getDefaultRoute = () => {
+    const token = localStorage.getItem('token');
+    return token ? '/home' : '/login';
+  };
+
   return (
     <BrowserRouter>
       <Routes>
@@ -44,7 +50,7 @@ function App() {
             <Route path="*" element={<LoadingPlaceholder />} />
           )}
         </Route>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
       </Routes>
     </BrowserRouter>
   )
