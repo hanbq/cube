@@ -9,6 +9,8 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import PersonIcon from '@mui/icons-material/Person';
@@ -27,17 +29,24 @@ interface LoginState {
   showPassword: boolean;
   loading: boolean;
   error: string | null;
+  rememberMe: boolean;
 }
 
 class LoginClass extends React.Component<{ navigate: (path: string) => void; t?: any; setAuth: (token: string, userInfo: any) => void }, LoginState> {
   constructor(props: { navigate: (path: string) => void; t?: any; setAuth: (token: string, userInfo: any) => void }) {
     super(props);
+    
+    const savedUsername = localStorage.getItem('savedUsername') || '';
+    const savedPassword = localStorage.getItem('savedPassword') || '';
+    const savedRememberMe = localStorage.getItem('savedRememberMe') === 'true';
+    
     this.state = {
-      username: '',
-      password: '',
+      username: savedUsername,
+      password: savedPassword,
       showPassword: false,
       loading: false,
       error: null,
+      rememberMe: savedRememberMe,
     };
   }
 
@@ -53,8 +62,12 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
     this.setState((prevState) => ({ showPassword: !prevState.showPassword }));
   };
 
+  handleRememberMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ rememberMe: event.target.checked });
+  };
+
   handleLogin = async () => {
-    const { username, password } = this.state;
+    const { username, password, rememberMe } = this.state;
     const { t } = this.props;
 
     if (!username || !password) {
@@ -66,6 +79,16 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
 
     try {
       const response = await authService.login({ username, password });
+
+      if (rememberMe) {
+        localStorage.setItem('savedUsername', username);
+        localStorage.setItem('savedPassword', password);
+        localStorage.setItem('savedRememberMe', 'true');
+      } else {
+        localStorage.removeItem('savedUsername');
+        localStorage.removeItem('savedPassword');
+        localStorage.removeItem('savedRememberMe');
+      }
 
       this.props.setAuth(response.token, response.userInfo);
 
@@ -86,7 +109,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
   };
 
   render() {
-    const { username, password, showPassword, loading, error } = this.state;
+    const { username, password, showPassword, loading, error, rememberMe } = this.state;
     const { t } = this.props;
 
     return (
@@ -271,6 +294,28 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
                   color: 'primary.main',
+                },
+              }}
+            />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  onChange={this.handleRememberMeChange}
+                  sx={{
+                    color: 'primary.main',
+                    '&.Mui-checked': {
+                      color: 'primary.main',
+                    },
+                  }}
+                />
+              }
+              label={t?.('login.rememberMe') || '记住我'}
+              sx={{
+                '& .MuiFormControlLabel-label': {
+                  fontSize: '0.9rem',
+                  color: 'text.secondary',
                 },
               }}
             />

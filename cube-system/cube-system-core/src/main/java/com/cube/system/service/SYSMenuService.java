@@ -60,6 +60,7 @@ public class SYSMenuService {
      * @return 是否删除成功
      */
     public boolean deleteMenu(Long menuId) {
+        menuRoleDao.physicalDeleteByMenuId(menuId);
         return menuDao.softDeleteById(menuId) > 0;
     }
 

@@ -35,7 +35,7 @@ class MainClass extends React.Component<MainProps> {
     }> = [
       {
         label: t?.('breadcrumb.home') || '首页',
-        path: '/home',
+        path: '/',
         icon: <HomeIcon sx={{ fontSize: 16, mr: 0.5 }} />
       }
     ];

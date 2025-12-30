@@ -41,6 +41,7 @@ export default {
       loginButton: 'Login',
       forgotPassword: 'Forgot Password?',
       register: 'Register',
+      rememberMe: 'Remember Me',
       validationError: 'Please enter username and password',
       loginError: 'Login failed, please check your username and password',
       loginSuccess: 'Login successful',

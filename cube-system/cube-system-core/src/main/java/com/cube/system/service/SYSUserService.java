@@ -3,6 +3,7 @@ package com.cube.system.service;
 import com.cube.common.exception.DataException;
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
+import com.cube.system.dao.SYSUserRoleDao;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.param.SYSUserParam;
 import com.cube.system.dao.SYSUserDao;
@@ -23,9 +24,11 @@ import java.util.Optional;
 public class SYSUserService {
 
     private final SYSUserDao userDao;
+    private final SYSUserRoleDao userRoleDao;
 
-    public SYSUserService(SYSUserDao userDao) {
+    public SYSUserService(SYSUserDao userDao, SYSUserRoleDao userRoleDao) {
         this.userDao = userDao;
+        this.userRoleDao = userRoleDao;
     }
 
     /**
@@ -64,6 +67,7 @@ public class SYSUserService {
      * @return 是否删除成功
      */
     public boolean deleteUser(Long userId) {
+        userRoleDao.physicalDeleteByUserId(userId);
         return userDao.softDeleteById(userId) > 0;
     }
 
@@ -106,6 +110,7 @@ public class SYSUserService {
      * @return 删除的数量
      */
     public int deleteUsers(List<Long> userIds) {
+        userRoleDao.physicalDeleteByUserIds(userIds);
         return userDao.deleteByIds(userIds);
     }
 

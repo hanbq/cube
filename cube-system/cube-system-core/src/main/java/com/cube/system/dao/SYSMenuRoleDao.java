@@ -36,6 +36,9 @@ public class SYSMenuRoleDao {
     private static final String PHYSICAL_DELETE_BY_ROLE_ID_SQL =
             "DELETE FROM " + TABLE_NAME + " WHERE role_id = ?";
 
+    private static final String PHYSICAL_DELETE_BY_MENU_ID_SQL =
+            "DELETE FROM " + TABLE_NAME + " WHERE menu_id = ?";
+
     public SYSMenuRoleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -120,5 +123,14 @@ public class SYSMenuRoleDao {
      */
     public void physicalDeleteByRoleId(Long roleId) {
         jdbcTemplate.update(PHYSICAL_DELETE_BY_ROLE_ID_SQL, roleId);
+    }
+
+    /**
+     * 根据菜单ID物理删除所有角色关联
+     *
+     * @param menuId 菜单ID
+     */
+    public void physicalDeleteByMenuId(Long menuId) {
+        jdbcTemplate.update(PHYSICAL_DELETE_BY_MENU_ID_SQL, menuId);
     }
 }

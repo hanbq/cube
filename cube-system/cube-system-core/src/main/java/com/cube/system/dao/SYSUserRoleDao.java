@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 /**
  * 用户角色关联DAO
@@ -57,6 +58,12 @@ public class SYSUserRoleDao {
 
     private static final String PHYSICAL_DELETE_BY_USER_AND_ROLE_SQL =
             "DELETE FROM " + TABLE_NAME + " WHERE user_id = ? AND role_id = ?";
+
+    private static final String PHYSICAL_DELETE_BY_USER_ID_SQL =
+            "DELETE FROM " + TABLE_NAME + " WHERE user_id = ?";
+
+    private static final String PHYSICAL_DELETE_BY_USER_IDS_SQL =
+            "DELETE FROM " + TABLE_NAME + " WHERE user_id IN (?)";
 
     public SYSUserRoleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -224,6 +231,34 @@ public class SYSUserRoleDao {
      */
     public int physicalDeleteByUserIdAndRoleId(Long userId, Long roleId) {
         return jdbcTemplate.update(PHYSICAL_DELETE_BY_USER_AND_ROLE_SQL, userId, roleId);
+    }
+
+    /**
+     * 根据用户ID物理删除所有角色关联
+     *
+     * @param userId 用户ID
+     * @return 删除的行数
+     */
+    public int physicalDeleteByUserId(Long userId) {
+        return jdbcTemplate.update(PHYSICAL_DELETE_BY_USER_ID_SQL, userId);
+    }
+
+    /**
+     * 根据用户ID列表批量物理删除所有角色关联
+     *
+     * @param userIds 用户ID列表
+     * @return 删除的行数
+     */
+    public int physicalDeleteByUserIds(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return 0;
+        }
+
+        // 构建IN子句的参数占位符
+        String placeholders = String.join(",", Collections.nCopies(userIds.size(), "?"));
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE user_id IN (" + placeholders + ")";
+
+        return jdbcTemplate.update(sql, userIds.toArray());
     }
 
 }

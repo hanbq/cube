@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/docker_postgres
+    url: jdbc:postgresql://127.0.0.1:5432/cube
     username: postgres
     password: 123456
 

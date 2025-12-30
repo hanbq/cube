@@ -84,6 +84,7 @@ COMMENT ON COLUMN CUBE_SYS_ROLE.description IS '描述';
 CREATE TABLE IF NOT EXISTS CUBE_SYS_MENU (
     menu_id         BIGSERIAL PRIMARY KEY,
     menu_name       VARCHAR(100) NOT NULL,
+    menu_name_eng       VARCHAR(100) NOT NULL,
     path            VARCHAR(255),
     icon_cls        VARCHAR(100),
     parent_id       BIGINT,
