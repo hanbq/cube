@@ -96,7 +96,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 创建自定义的UserPrincipal对象（包含userId）
         return UserPrincipal.create(
                 sysUser.getUserId(),
-                sysUser.getUserName(),
+                sysUser.getUsername(),
                 sysUser.getPassword() != null ? sysUser.getPassword() : "",
                 authorities
         );

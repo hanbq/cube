@@ -70,7 +70,7 @@ public class SYSAuthService {
         }
 
         // 生成JWT Token
-        String token = jwtUtil.generateToken(user.getUserId(), user.getUserName());
+        String token = jwtUtil.generateToken(user.getUserId(), user.getUsername());
 
         // 计算过期时间
         long expiresAt = System.currentTimeMillis() + TOKEN_EXPIRATION_TIME;
@@ -78,7 +78,7 @@ public class SYSAuthService {
         // 构建用户信息
         SYSLoginResponse.UserInfo userInfo = SYSLoginResponse.UserInfo.builder()
                 .userId(user.getUserId())
-                .userName(user.getUserName())
+                .userName(user.getUsername())
                 .email(user.getEmail())
                 .description(user.getDescription())
                 .status(user.getStatus())
@@ -161,7 +161,7 @@ public class SYSAuthService {
         // 构建用户信息
         SYSLoginResponse.UserInfo userInfo = SYSLoginResponse.UserInfo.builder()
                 .userId(user.getUserId())
-                .userName(user.getUserName())
+                .userName(user.getUsername())
                 .email(user.getEmail())
                 .description(user.getDescription())
                 .status(user.getStatus())

@@ -2,21 +2,15 @@ import { apiService } from './api';
 import type { SYSMenu, MenuFormData } from '../types/menu';
 
 export const menuService = {
-  // 获取所有菜单(树形结构)
-  getAllMenus: async (): Promise<SYSMenu[]> => {
+  // 获取菜单树
+  getMenuTree: async (): Promise<SYSMenu[]> => {
     const response = await apiService.get<SYSMenu[]>('/menus/tree');
     return response.data;
   },
 
-  // 获取菜单列表(扁平化)
-  getMenuList: async (): Promise<SYSMenu[]> => {
-    const response = await apiService.get<SYSMenu[]>('/menus/list');
-    return response.data;
-  },
-
-  // 根据ID获取菜单详情
-  getMenuById: async (menuId: number): Promise<SYSMenu> => {
-    const response = await apiService.get<SYSMenu>(`/menus/${menuId}`);
+  // 根据角色ID查询所有菜单并标记是否被选中
+  getAllMenusWithSelection: async (roleId: number): Promise<SYSMenu[]> => {
+    const response = await apiService.get<SYSMenu[]>(`/menus/role/${roleId}/with-selection`);
     return response.data;
   },
 
@@ -45,23 +39,5 @@ export const menuService = {
   // 更新菜单排序
   updateMenuSort: async (menuId: number, sort: number): Promise<void> => {
     await apiService.put<void>(`/menus/${menuId}/sort`, { sort });
-  },
-
-  // 获取菜单树
-  getMenuTree: async (): Promise<SYSMenu[]> => {
-    const response = await apiService.get<SYSMenu[]>('/menus/tree');
-    return response.data;
-  },
-
-  // 根据角色ID获取菜单列表
-  getMenusByRoleId: async (roleId: number): Promise<SYSMenu[]> => {
-    const response = await apiService.get<SYSMenu[]>(`/menus/role/${roleId}`);
-    return response.data;
-  },
-
-  // 根据角色ID查询所有菜单并标记是否被选中
-  getAllMenusWithSelection: async (roleId: number): Promise<SYSMenu[]> => {
-    const response = await apiService.get<SYSMenu[]>(`/menus/role/${roleId}/with-selection`);
-    return response.data;
   },
 };

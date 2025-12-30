@@ -376,7 +376,7 @@ export default function PermissionManagement() {
                     onChange={handleSelectAllUsers}
                   />
                 </TableCell>
-                <TableCell>{t('userManagement.userName')}</TableCell>
+                <TableCell>{t('userManagement.username')}</TableCell>
                 <TableCell>{t('userManagement.email')}</TableCell>
                 <TableCell>{t('userManagement.description')}</TableCell>
               </TableRow>
@@ -393,7 +393,7 @@ export default function PermissionManagement() {
                   <TableCell padding="checkbox">
                     <Checkbox checked={selectedUsers.includes(user.userId!)} />
                   </TableCell>
-                  <TableCell>{user.userName}</TableCell>
+                  <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.description}</TableCell>
                 </TableRow>
@@ -419,7 +419,7 @@ export default function PermissionManagement() {
                     </ListItemIcon>
                     <PersonIcon sx={{ mr: 1, color: 'action.active' }} />
                     <ListItemText
-                      primary={user.userName}
+                      primary={user.username}
                       secondary={user.email || user.description}
                     />
                   </ListItemButton>

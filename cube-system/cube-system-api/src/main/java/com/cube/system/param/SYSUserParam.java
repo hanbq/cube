@@ -11,7 +11,7 @@ import com.cube.common.page.PageRequest;
 public class SYSUserParam extends PageRequest {
 
     private Long userId;
-    private String userName;
+    private String username;
     private String status;
     private Boolean isSuperAdmin;
 
@@ -24,11 +24,11 @@ public class SYSUserParam extends PageRequest {
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     public String getStatus() {
@@ -51,7 +51,7 @@ public class SYSUserParam extends PageRequest {
     public String toString() {
         return "SYSUserParam{" +
                 "userId=" + userId +
-                ", userName='" + userName + '\'' +
+                ", username='" + username + '\'' +
                 ", status='" + status + '\'' +
                 ", isSuperAdmin=" + isSuperAdmin +
                 ", pageNum=" + getPageNum() +

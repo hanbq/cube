@@ -179,7 +179,7 @@ export default {
     userManagement: {
       // Fields
       userId: 'User ID',
-      userName: 'Username',
+      username: 'Username',
       password: 'Password',
       email: 'Email',
       description: 'Description',

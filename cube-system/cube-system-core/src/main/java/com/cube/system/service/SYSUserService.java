@@ -35,8 +35,8 @@ public class SYSUserService {
      */
     public void createUser(SYSUser user) {
         // 验证用户名是否已存在
-        if (user.getUserName() != null && userDao.findByUserName(user.getUserName()).isPresent()) {
-            throw new DataException("Username already exists: " + user.getUserName());
+        if (user.getUsername() != null && userDao.findByUserName(user.getUsername()).isPresent()) {
+            throw new DataException("Username already exists: " + user.getUsername());
         }
 
         // 验证邮箱是否已存在

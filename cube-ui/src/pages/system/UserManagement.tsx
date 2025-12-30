@@ -58,7 +58,7 @@ export default function UserManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<SYSUser | null>(null);
   const [formData, setFormData] = useState<UserFormData>({
-    userName: '',
+    username: '',
     password: '',
     description: '',
     email: '',
@@ -86,7 +86,7 @@ export default function UserManagement() {
       pageNum: pageNum + 1,
       pageSize: pageSize,
       userId: queryState.searchUserId ? Number(queryState.searchUserId) : undefined,
-      userName: queryState.searchUserName || undefined,
+      username: queryState.searchUserName || undefined,
       status: queryState.searchStatus || undefined,
     };
     await searchUsers(param);
@@ -145,7 +145,7 @@ export default function UserManagement() {
   const handleOpenCreate = () => {
     setEditingUser(null);
     setFormData({
-      userName: '',
+      username: '',
       password: '',
       description: '',
       email: '',
@@ -159,7 +159,7 @@ export default function UserManagement() {
   const handleOpenEdit = (user: SYSUser) => {
     setEditingUser(user);
     setFormData({
-      userName: user.userName,
+      username: user.username,
       password: '',
       description: user.description || '',
       email: user.email || '',
@@ -174,7 +174,7 @@ export default function UserManagement() {
     setDialogOpen(false);
     setEditingUser(null);
     setFormData({
-      userName: '',
+      username: '',
       password: '',
       description: '',
       email: '',
@@ -282,7 +282,7 @@ export default function UserManagement() {
               sx={{ width: 150 }}
             />
             <TextField
-              label={t('userManagement.userName')}
+              label={t('userManagement.username')}
               size="small"
               value={queryState.searchUserName}
               onChange={(e) => setQueryState(prev => ({ ...prev, searchUserName: e.target.value }))}
@@ -356,7 +356,7 @@ export default function UserManagement() {
                     />
                   </TableCell>
                   <TableCell>{t('userManagement.userId')}</TableCell>
-                  <TableCell>{t('userManagement.userName')}</TableCell>
+                  <TableCell>{t('userManagement.username')}</TableCell>
                   <TableCell>{t('userManagement.email')}</TableCell>
                   <TableCell>{t('userManagement.status')}</TableCell>
                   <TableCell>{t('userManagement.isSuperAdmin')}</TableCell>
@@ -381,7 +381,7 @@ export default function UserManagement() {
                         />
                       </TableCell>
                       <TableCell>{user.userId}</TableCell>
-                      <TableCell>{user.userName}</TableCell>
+                      <TableCell>{user.username}</TableCell>
                       <TableCell>{user.email || '-'}</TableCell>
                       <TableCell>
                         {user.status === USER_STATUS.ACTIVE
@@ -445,12 +445,12 @@ export default function UserManagement() {
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField
-              label={t('userManagement.userName')}
+              label={t('userManagement.username')}
               required
               fullWidth
-              value={formData.userName}
+              value={formData.username}
               onChange={(e) =>
-                setFormData({ ...formData, userName: e.target.value })
+                setFormData({ ...formData, username: e.target.value })
               }
             />
             <TextField
@@ -522,7 +522,7 @@ export default function UserManagement() {
             variant="contained"
             startIcon={<SaveIcon />}
             onClick={handleSaveUser}
-            disabled={!formData.userName.trim() || (!editingUser && !formData.password?.trim())}
+            disabled={!formData.username.trim() || (!editingUser && !formData.password?.trim())}
           >
             {t('userManagement.save')}
           </Button>

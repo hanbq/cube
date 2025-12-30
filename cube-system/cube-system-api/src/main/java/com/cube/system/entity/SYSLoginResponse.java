@@ -73,7 +73,7 @@ public class SYSLoginResponse {
         /**
          * 用户名
          */
-        private String userName;
+        private String username;
 
         /**
          * 邮箱
@@ -99,11 +99,19 @@ public class SYSLoginResponse {
         }
 
         public String getUserName() {
-            return userName;
+            return username;
         }
 
-        public void setUserName(String userName) {
-            this.userName = userName;
+        public void setUserName(String username) {
+            this.username = username;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
         }
 
         public String getEmail() {
@@ -169,7 +177,7 @@ public class SYSLoginResponse {
             public UserInfo build() {
                 UserInfo userInfo = new UserInfo();
                 userInfo.setUserId(userId);
-                userInfo.setUserName(userName);
+                userInfo.setUsername(userName);
                 userInfo.setEmail(email);
                 userInfo.setDescription(description);
                 userInfo.setStatus(status);

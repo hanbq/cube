@@ -12,6 +12,7 @@ interface HomeProps {
   navigate?: (path: string) => void;
   currentPath?: string;
   menusLoading?: boolean;
+  userName?: string;
 }
 
 class HomeClass extends React.Component<HomeProps> {
@@ -41,6 +42,8 @@ class HomeClass extends React.Component<HomeProps> {
   };
 
   render() {
+    const { userName = 'User' } = this.props;
+
     return (
       <Box
         sx={{
@@ -55,7 +58,7 @@ class HomeClass extends React.Component<HomeProps> {
         }}
       >
         <Box sx={{ flexShrink: 0 }}>
-          <Header userName="Admin" notificationCount={3} onLogout={this.handleLogout} />
+          <Header userName={userName} notificationCount={3} onLogout={this.handleLogout} />
         </Box>
         <Box
           sx={{
@@ -108,13 +111,31 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setMenus, setLoading, setError, loading } = useMenuStore();
+  const [userName, setUserName] = React.useState<string>('');
 
-  // 检查认证状态
+  // 检查认证状态并获取用户信息
   React.useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.log('[Home] 未找到 token，重定向到登录页');
       navigate('/login', { replace: true });
+      return;
+    }
+
+    // 获取用户信息
+    try {
+      const userInfo = authService.getUserInfo();
+      console.log('[Home] 获取到的用户信息:', userInfo);
+      if (userInfo?.username) {
+        console.log('[Home] 设置用户名:', userInfo.username);
+        setUserName(userInfo.username);
+      } else {
+        console.warn('[Home] 用户信息不完整，使用默认用户名', userInfo);
+        setUserName('User');
+      }
+    } catch (error) {
+      console.error('[Home] 获取用户信息失败:', error);
+      setUserName('User');
     }
   }, [navigate]);
 
@@ -152,6 +173,7 @@ export default function Home() {
       navigate={navigate}
       currentPath={location.pathname}
       menusLoading={loading}
+      userName={userName}
     />
   );
 }

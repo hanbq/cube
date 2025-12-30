@@ -4,9 +4,13 @@ import type { LoginRequest, LoginResponse, RefreshTokenResponse } from '../types
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await apiService.post<LoginResponse>('/auth/login', credentials);
+    console.log('[authService] 登录接口返回:', response);
     if (response.code === 200 && response.data) {
+      console.log('[authService] 登录成功，用户数据:', response.data.userInfo);
+      console.log('[authService] 保存token:', response.data.token);
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+      localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo));
+      console.log('[authService] 已保存userInfo到localStorage');
       return response.data;
     }
 
@@ -58,7 +62,19 @@ export const authService = {
 
   getUserInfo(): any {
     const userInfo = localStorage.getItem('userInfo');
-    return userInfo ? JSON.parse(userInfo) : null;
+    console.log('[authService] localStorage中的userInfo原始值:', userInfo);
+    if (!userInfo || userInfo === 'undefined' || userInfo === 'null') {
+      console.log('[authService] userInfo为空或无效');
+      return null;
+    }
+    try {
+      const parsed = JSON.parse(userInfo);
+      console.log('[authService] 解析后的userInfo:', parsed);
+      return parsed;
+    } catch (error) {
+      console.error('[authService] Failed to parse userInfo:', error);
+      return null;
+    }
   },
 
   isAuthenticated(): boolean {

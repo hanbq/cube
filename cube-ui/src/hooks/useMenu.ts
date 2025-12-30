@@ -12,7 +12,7 @@ export const useMenu = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await menuService.getAllMenus();
+      const data = await menuService.getMenuTree();
       setMenus(data);
     } catch (err) {
       setError(err as Error);
@@ -30,7 +30,7 @@ export const useMenu = () => {
     setError(null);
     try {
       const newMenu = await menuService.createMenu(menu);
-      const data = await menuService.getAllMenus();
+      const data = await menuService.getMenuTree();
       setMenus(data);
       return newMenu;
     } catch (err) {
@@ -48,7 +48,7 @@ export const useMenu = () => {
     setError(null);
     try {
       const updatedMenu = await menuService.updateMenu(menuId, menu);
-      const data = await menuService.getAllMenus();
+      const data = await menuService.getMenuTree();
       setMenus(data);
       return updatedMenu;
     } catch (err) {
@@ -66,7 +66,7 @@ export const useMenu = () => {
     setError(null);
     try {
       await menuService.deleteMenu(menuId);
-      const data = await menuService.getAllMenus();
+      const data = await menuService.getMenuTree();
       setMenus(data);
     } catch (err) {
       setError(err as Error);
@@ -83,7 +83,7 @@ export const useMenu = () => {
     setError(null);
     try {
       await menuService.batchDeleteMenus(menuIds);
-      const data = await menuService.getAllMenus();
+      const data = await menuService.getMenuTree();
       setMenus(data);
     } catch (err) {
       setError(err as Error);
@@ -100,7 +100,7 @@ export const useMenu = () => {
     setError(null);
     try {
       await menuService.updateMenuSort(menuId, sort);
-      const data = await menuService.getAllMenus();
+      const data = await menuService.getMenuTree();
       setMenus(data);
     } catch (err) {
       setError(err as Error);

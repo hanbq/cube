@@ -36,13 +36,13 @@ public class SYSUserController {
      */
     @PostMapping
     public CubeResponse<Boolean> createUser(@RequestBody SYSUser user) {
-        LOG.info("Creating user: {}", user.getUserName());
+        LOG.info("Creating user: {}", user.getUsername());
         try {
             userService.createUser(user);
-            LOG.info("User created successfully: {}", user.getUserName());
+            LOG.info("User created successfully: {}", user.getUsername());
             return CubeResponse.success(true, "User created successfully");
         } catch (Exception e) {
-            LOG.error("Error creating user: {}", user.getUserName(), e);
+            LOG.error("Error creating user: {}", user.getUsername(), e);
             String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             return CubeResponse.failed("Failed to create user: " + errorMsg);
         }
@@ -132,7 +132,7 @@ public class SYSUserController {
         try {
             return userService.getUserById(id)
                     .map(user -> {
-                        LOG.info("User found: {}", user.getUserName());
+                        LOG.info("User found: {}", user.getUsername());
                         return CubeResponse.success(user, "User found");
                     })
                     .orElse(CubeResponse.failed("User not found"));

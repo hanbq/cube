@@ -5,12 +5,6 @@ interface UserRole {
   roleId: number;
 }
 
-interface SYSUserRole {
-  id: number;
-  userId: number;
-  roleId: number;
-}
-
 export const userRoleService = {
   // 批量添加用户角色关联
   batchInsertUserRoles: async (userRoles: UserRole[]): Promise<void> => {
@@ -24,11 +18,5 @@ export const userRoleService = {
       apiService.delete(`/user-roles/remove?userId=${userId}&roleId=${roleId}`)
     );
     await Promise.all(deletePromises);
-  },
-
-  // 根据角色ID查询用户角色关联
-  getUserRolesByRoleId: async (roleId: number): Promise<SYSUserRole[]> => {
-    const response = await apiService.get<SYSUserRole[]>(`/user-roles/role/${roleId}`);
-    return response.data;
   },
 };

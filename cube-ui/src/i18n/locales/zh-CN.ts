@@ -179,7 +179,7 @@ export default {
     userManagement: {
       // 字段
       userId: '用户ID',
-      userName: '用户名',
+      username: '用户名',
       password: '密码',
       email: '邮箱',
       description: '描述',

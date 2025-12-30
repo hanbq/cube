@@ -8,6 +8,12 @@ export const userService = {
     return response.data;
   },
 
+  // 根据角色ID查询用户列表
+  getUsersByRoleId: async (roleId: number): Promise<SYSUser[]> => {
+    const response = await apiService.get<SYSUser[]>(`/users/role/${roleId}`);
+    return response.data;
+  },
+
   // 分页查询用户
   searchUsers: async (param: SYSUserParam): Promise<PageResult<SYSUser>> => {
     const response = await apiService.post<PageResult<SYSUser>>('/users/search', param);
@@ -34,23 +40,5 @@ export const userService = {
   // 批量删除用户
   batchDeleteUsers: async (userIds: number[]): Promise<void> => {
     await apiService.delete('/users/batch', { data: userIds });
-  },
-
-  // 更新用户状态
-  updateUserStatus: async (userId: number, status: string): Promise<boolean> => {
-    const response = await apiService.put<boolean>(`/users/${userId}/status?status=${status}`);
-    return response.data;
-  },
-
-  // 更新用户密码
-  updateUserPassword: async (userId: number, newPassword: string): Promise<boolean> => {
-    const response = await apiService.put<boolean>(`/users/${userId}/password?newPassword=${newPassword}`);
-    return response.data;
-  },
-
-  // 根据角色ID查询用户列表
-  getUsersByRoleId: async (roleId: number): Promise<SYSUser[]> => {
-    const response = await apiService.get<SYSUser[]>(`/users/role/${roleId}`);
-    return response.data;
   },
 };

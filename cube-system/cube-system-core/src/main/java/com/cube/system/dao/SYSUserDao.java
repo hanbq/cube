@@ -35,12 +35,12 @@ public class SYSUserDao {
 
     private static final String INSERT_SQL =
             "INSERT INTO " + TABLE_NAME +
-            " (user_name, password, description, email, status, is_super_admin, created_time, created_by, updated_time, updated_by, deleted) " +
+            " (username, password, description, email, status, is_super_admin, created_time, created_by, updated_time, updated_by, deleted) " +
             " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE_SQL =
             "UPDATE " + TABLE_NAME +
-            " SET user_name = ?, password = ?, description = ?, email = ?, status = ?, is_super_admin = ?, " +
+            " SET username = ?, password = ?, description = ?, email = ?, status = ?, is_super_admin = ?, " +
             " updated_time = ?, updated_by = ? " +
             " WHERE user_id = ? AND deleted = false";
 
@@ -60,7 +60,7 @@ public class SYSUserDao {
             "SELECT * FROM " + TABLE_NAME + " ORDER BY user_id";
 
     private static final String FIND_BY_USERNAME_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE user_name = ? AND deleted = false";
+            "SELECT * FROM " + TABLE_NAME + " WHERE username = ? AND deleted = false";
 
     private static final String FIND_BY_EMAIL_SQL =
             "SELECT * FROM " + TABLE_NAME + " WHERE email = ? AND deleted = false";
@@ -100,7 +100,7 @@ public class SYSUserDao {
     private final RowMapper<SYSUser> rowMapper = (rs, rowNum) -> {
         SYSUser user = new SYSUser();
         user.setUserId(rs.getLong("user_id"));
-        user.setUserName(rs.getString("user_name"));
+        user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password"));
         user.setDescription(rs.getString("description"));
         user.setEmail(rs.getString("email"));
@@ -134,7 +134,7 @@ public class SYSUserDao {
     public void insert(SYSUser entity) {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, entity.getUserName());
+            ps.setString(1, entity.getUsername());
             ps.setString(2, entity.getPassword());
             ps.setString(3, entity.getDescription());
             ps.setString(4, entity.getEmail());
@@ -161,7 +161,7 @@ public class SYSUserDao {
      */
     public int update(SYSUser entity) {
         return jdbcTemplate.update(UPDATE_SQL,
-                entity.getUserName(),
+                entity.getUsername(),
                 entity.getPassword(),
                 entity.getDescription(),
                 entity.getEmail(),
@@ -373,7 +373,7 @@ public class SYSUserDao {
 
         // 如果userName不为空，添加userName条件（忽略大小写）
         if (param.getUserName() != null && !param.getUserName().trim().isEmpty()) {
-            sql.append(" AND LOWER(user_name) LIKE LOWER(?)");
+            sql.append(" AND LOWER(username) LIKE LOWER(?)");
             params.add("%" + param.getUserName() + "%");
         }
 
@@ -415,7 +415,7 @@ public class SYSUserDao {
 
         // 如果userName不为空，添加userName条件（忽略大小写）
         if (param != null && param.getUserName() != null && !param.getUserName().trim().isEmpty()) {
-            sql.append(" AND LOWER(user_name) LIKE LOWER(?)");
+            sql.append(" AND LOWER(username) LIKE LOWER(?)");
             params.add("%" + param.getUserName() + "%");
         }
 

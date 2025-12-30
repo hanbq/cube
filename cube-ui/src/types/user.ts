@@ -1,6 +1,6 @@
 export interface SYSUser {
   userId?: number;
-  userName: string;
+  username: string;
   password?: string;
   description?: string;
   email?: string;
@@ -15,7 +15,7 @@ export interface SYSUser {
 }
 
 export interface UserFormData {
-  userName: string;
+  username: string;
   password?: string;
   description?: string;
   email?: string;
@@ -27,7 +27,7 @@ export interface SYSUserParam {
   pageNum: number;
   pageSize: number;
   userId?: number;
-  userName?: string;
+  username?: string;
   status?: string;
   isSuperAdmin?: boolean;
 }

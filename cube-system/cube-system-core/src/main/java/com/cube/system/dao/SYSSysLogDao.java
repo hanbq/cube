@@ -71,7 +71,7 @@ public class SYSSysLogDao {
     private final RowMapper<SYSSysLog> rowMapper = (rs, rowNum) -> {
         SYSSysLog log = new SYSSysLog();
         log.setLogId(rs.getLong("log_id"));
-        log.setUserName(rs.getString("user_name"));
+        log.setUsername(rs.getString("user_name"));
         log.setOperation(rs.getString("operation"));
         log.setMethod(rs.getString("method"));
         log.setParams(rs.getString("params"));
@@ -97,7 +97,7 @@ public class SYSSysLogDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, entity.getUserName());
+            ps.setString(1, entity.getUsername());
             ps.setString(2, entity.getOperation());
             ps.setString(3, entity.getMethod());
             ps.setString(4, entity.getParams());

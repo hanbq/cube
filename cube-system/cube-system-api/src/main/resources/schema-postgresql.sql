@@ -33,7 +33,7 @@ COMMENT ON COLUMN CUBE_SYS_BUTTON.deleted IS '删除标记';
 -- ========================================
 CREATE TABLE IF NOT EXISTS CUBE_SYS_USER (
     user_id         BIGSERIAL PRIMARY KEY,
-    user_name       VARCHAR(100) NOT NULL UNIQUE,
+    username       VARCHAR(100) NOT NULL UNIQUE,
     password        VARCHAR(255) NOT NULL,
     description     VARCHAR(500),
     email           VARCHAR(255),
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_USER (
 
 COMMENT ON TABLE CUBE_SYS_USER IS '用户表';
 COMMENT ON COLUMN CUBE_SYS_USER.user_id IS '用户ID（主键）';
-COMMENT ON COLUMN CUBE_SYS_USER.user_name IS '用户名';
+COMMENT ON COLUMN CUBE_SYS_USER.username IS '用户名';
 COMMENT ON COLUMN CUBE_SYS_USER.password IS '密码';
 COMMENT ON COLUMN CUBE_SYS_USER.description IS '描述';
 COMMENT ON COLUMN CUBE_SYS_USER.email IS '邮箱';
@@ -197,7 +197,7 @@ COMMENT ON COLUMN CUBE_SYS_BUTTON_ROLE.deleted IS '删除标记';
 -- ========================================
 CREATE TABLE IF NOT EXISTS CUBE_SYS_SYS_LOG (
     log_id          BIGSERIAL PRIMARY KEY,
-    user_name       VARCHAR(100),
+    username       VARCHAR(100),
     operation       VARCHAR(200),
     method          VARCHAR(500),
     params          TEXT,
@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_SYS_LOG (
 
 COMMENT ON TABLE CUBE_SYS_SYS_LOG IS '系统日志表';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.log_id IS '日志ID（主键）';
-COMMENT ON COLUMN CUBE_SYS_SYS_LOG.user_name IS '用户名';
+COMMENT ON COLUMN CUBE_SYS_SYS_LOG.username IS '用户名';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.operation IS '操作描述';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.method IS '方法名';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.params IS '参数';
@@ -258,9 +258,9 @@ INSERT INTO CUBE_SYS_ROLE (role_name, description) VALUES
 ON CONFLICT (role_name) DO NOTHING;
 
 -- 插入默认管理员用户（密码需要加密后再使用）
--- INSERT INTO CUBE_SYS_USER (user_name, password, description, email, status) VALUES
+-- INSERT INTO CUBE_SYS_USER (username, password, description, email, status) VALUES
 --     ('admin', '$2a$10$...加密后的密码...', '系统管理员', 'admin@cube.com', 'ACTIVE')
--- ON CONFLICT (user_name) DO NOTHING;
+-- ON CONFLICT (username) DO NOTHING;
 
 -- ========================================
 -- 完成

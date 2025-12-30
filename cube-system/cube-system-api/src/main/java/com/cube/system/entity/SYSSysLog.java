@@ -4,7 +4,7 @@ import java.time.ZonedDateTime;
 
 public class SYSSysLog {
     Long logId;
-    String userName;
+    String username;
     String operation;
     String method;
     String params;
@@ -19,12 +19,22 @@ public class SYSSysLog {
         this.logId = logId;
     }
 
+    // Backward compatible - kept for compatibility
     public String getUserName() {
-        return userName;
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String username) {
+        this.username = username;
+    }
+
+    // New methods
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getOperation() {

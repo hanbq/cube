@@ -5,7 +5,9 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  user: UserInfo;
+  tokenType?: string;
+  expiresAt?: number;
+  userInfo: UserInfo;
 }
 
 export interface RefreshTokenResponse {
