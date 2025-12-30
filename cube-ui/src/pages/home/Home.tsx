@@ -2,7 +2,7 @@ import React from 'react';
 import Header from './Header';
 import Main from './Main';
 import Menu from './Menu';
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMenuStore } from '../../store/menuStore';
 import { userMenuService } from '../../services/userMenuService';

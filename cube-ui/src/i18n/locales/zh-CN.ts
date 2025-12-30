@@ -225,5 +225,37 @@ export default {
       deleteSuccess: '用户删除成功',
       batchDeleteSuccess: '批量删除成功',
     },
+
+    // 系统日志管理
+    sysLogManagement: {
+      // 字段
+      logId: '日志ID',
+      username: '用户名',
+      operation: '操作',
+      method: '方法',
+      ip: 'IP地址',
+      createdTime: '创建时间',
+      createdTimeStart: '开始时间',
+      createdTimeEnd: '结束时间',
+      operations: '操作',
+
+      // 按钮
+      search: '查询',
+      batchDelete: '批量删除',
+      delete: '删除',
+
+      // 表格
+      noData: '暂无数据',
+      rowsPerPage: '每页行数:',
+
+      // 提示
+      confirmDelete: '确定要删除这条日志吗?',
+      confirmBatchDelete: '确定要删除选中的 {count} 条日志吗?',
+      selectFirst: '请先选择要删除的日志',
+
+      // 成功消息
+      deleteSuccess: '日志删除成功',
+      batchDeleteSuccess: '批量删除成功',
+    },
   },
 };

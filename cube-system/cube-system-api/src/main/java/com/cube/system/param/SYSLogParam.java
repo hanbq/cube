@@ -1,23 +1,17 @@
-package com.cube.system.entity;
+package com.cube.system.param;
+
+import com.cube.common.page.PageRequest;
 
 import java.time.ZonedDateTime;
 
-public class SYSSysLog {
-    Long logId;
+public class SYSLogParam extends PageRequest {
+
     String username;
     String operation;
     String method;
-    String params;
     String ip;
-    ZonedDateTime createdTime;
-
-    public Long getLogId() {
-        return logId;
-    }
-
-    public void setLogId(Long logId) {
-        this.logId = logId;
-    }
+    ZonedDateTime createdTimeStart;
+    ZonedDateTime createdTimeEnd;
 
     public String getUsername() {
         return username;
@@ -43,14 +37,6 @@ public class SYSSysLog {
         this.method = method;
     }
 
-    public String getParams() {
-        return params;
-    }
-
-    public void setParams(String params) {
-        this.params = params;
-    }
-
     public String getIp() {
         return ip;
     }
@@ -59,12 +45,19 @@ public class SYSSysLog {
         this.ip = ip;
     }
 
-    public ZonedDateTime getCreatedTime() {
-        return createdTime;
+    public ZonedDateTime getCreatedTimeStart() {
+        return createdTimeStart;
     }
 
-    public void setCreatedTime(ZonedDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedTimeStart(ZonedDateTime createdTimeStart) {
+        this.createdTimeStart = createdTimeStart;
     }
 
+    public ZonedDateTime getCreatedTimeEnd() {
+        return createdTimeEnd;
+    }
+
+    public void setCreatedTimeEnd(ZonedDateTime createdTimeEnd) {
+        this.createdTimeEnd = createdTimeEnd;
+    }
 }

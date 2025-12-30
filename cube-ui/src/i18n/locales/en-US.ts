@@ -225,5 +225,37 @@ export default {
       deleteSuccess: 'User deleted successfully',
       batchDeleteSuccess: 'Batch deletion successful',
     },
+
+    // System Log Management
+    sysLogManagement: {
+      // Fields
+      logId: 'Log ID',
+      username: 'Username',
+      operation: 'Operation',
+      method: 'Method',
+      ip: 'IP Address',
+      createdTime: 'Created Time',
+      createdTimeStart: 'Start Time',
+      createdTimeEnd: 'End Time',
+      operations: 'Operations',
+
+      // Buttons
+      search: 'Search',
+      batchDelete: 'Batch Delete',
+      delete: 'Delete',
+
+      // Table
+      noData: 'No data',
+      rowsPerPage: 'Rows per page:',
+
+      // Prompts
+      confirmDelete: 'Are you sure you want to delete this log?',
+      confirmBatchDelete: 'Are you sure you want to delete {count} selected logs?',
+      selectFirst: 'Please select logs to delete first',
+
+      // Success Messages
+      deleteSuccess: 'Log deleted successfully',
+      batchDeleteSuccess: 'Batch deletion successful',
+    },
   },
 };
