@@ -1,5 +1,5 @@
 import { apiService } from './api';
-import type { LoginRequest, LoginResponse, RefreshTokenResponse } from '../types/auth';
+import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, RefreshTokenResponse } from '../types/auth';
 
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
@@ -11,6 +11,15 @@ export const authService = {
     }
 
     throw new Error(response.message || 'Login failed');
+  },
+
+  async register(userData: RegisterRequest): Promise<RegisterResponse> {
+    const response = await apiService.post<RegisterResponse>('/auth/register', userData);
+    if (response.code === 200 && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Registration failed');
   },
 
   async logout(): Promise<void> {

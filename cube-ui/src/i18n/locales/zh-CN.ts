@@ -51,6 +51,28 @@ export default {
       loginSuccess: '登录成功',
     },
 
+    // 注册页面
+    register: {
+      title: '注册账号',
+      subtitle: '创建您的Cube账户',
+      username: '用户名',
+      password: '密码',
+      confirmPassword: '确认密码',
+      email: '邮箱',
+      description: '描述',
+      registerButton: '注册',
+      backToLogin: '返回登录',
+      validationError: '请填写所有必填字段',
+      passwordMismatchError: '两次输入的密码不一致',
+      emailError: '请输入有效的邮箱地址',
+      usernameError: '用户名至少需要3个字符',
+      passwordError: '密码至少需要6个字符',
+      registerSuccess: '注册成功！',
+      registerError: '注册失败，请重试',
+      usernameExistsError: '用户名已存在',
+      emailExistsError: '邮箱已被注册',
+    },
+
     // 导航菜单
     menu: {
       dashboard: '仪表盘',

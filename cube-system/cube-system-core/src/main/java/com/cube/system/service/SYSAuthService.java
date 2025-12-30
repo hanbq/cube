@@ -6,6 +6,8 @@ import com.cube.system.entity.SYSUser;
 import com.cube.system.dao.SYSUserDao;
 import com.cube.system.entity.SYSLoginRequest;
 import com.cube.system.entity.SYSLoginResponse;
+import com.cube.system.entity.SYSRegisterRequest;
+import com.cube.system.entity.SYSRegisterResponse;
 import com.cube.system.exception.SYSAuthException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +16,7 @@ import java.util.Optional;
 
 /**
  * 认证Service
- * 处理用户登录、Token验证等功能
+ * 处理用户登录、注册、Token验证等功能
  *
  * @author cube
  * @since 2025-12-24
@@ -29,6 +31,53 @@ public class SYSAuthService {
     public SYSAuthService(SYSUserDao userDao, SYSJwtUtil jwtUtil) {
         this.userDao = userDao;
         this.jwtUtil = jwtUtil;
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param registerRequest 注册请求
+     * @return 注册响应
+     */
+    public SYSRegisterResponse register(SYSRegisterRequest registerRequest) {
+        // 验证请求参数
+        if (registerRequest.getUsername() == null || registerRequest.getUsername().trim().isEmpty()) {
+            return new SYSRegisterResponse(false, "Username is required");
+        }
+        if (registerRequest.getPassword() == null || registerRequest.getPassword().trim().isEmpty()) {
+            return new SYSRegisterResponse(false, "Password is required");
+        }
+        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
+            return new SYSRegisterResponse(false, "Passwords do not match");
+        }
+        if (registerRequest.getEmail() == null || registerRequest.getEmail().trim().isEmpty()) {
+            return new SYSRegisterResponse(false, "Email is required");
+        }
+
+        // 检查用户名是否已存在
+        if (userDao.findByUserName(registerRequest.getUsername()).isPresent()) {
+            return new SYSRegisterResponse(false, "Username already exists");
+        }
+
+        // 检查邮箱是否已存在
+        if (userDao.findByEmail(registerRequest.getEmail()).isPresent()) {
+            return new SYSRegisterResponse(false, "Email already exists");
+        }
+
+        // 创建新用户
+        SYSUser newUser = new SYSUser();
+        newUser.setUsername(registerRequest.getUsername());
+        newUser.setPassword(registerRequest.getPassword()); // 注意：实际应用中应该对密码进行加密
+        newUser.setEmail(registerRequest.getEmail());
+        newUser.setDescription(registerRequest.getDescription());
+        newUser.setStatus("ACTIVE"); // 默认状态为激活
+        newUser.setIsSuperAdmin(false); // 默认不是超级管理员
+
+        // 保存用户
+        userDao.insert(newUser);
+
+        // 返回成功响应
+        return new SYSRegisterResponse(true, "Registration successful", newUser.getUserId(), newUser.getUsername());
     }
 
     /**

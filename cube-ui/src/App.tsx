@@ -2,6 +2,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { Box, CircularProgress } from '@mui/material'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import Home from './pages/home/Home'
 import { generateDynamicRoutes } from './components/DynamicRoutes'
 import { useMenuStore } from './store/menuStore'
@@ -42,6 +43,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />}>
           {/* 菜单初始化完成后才生成动态路由，否则显示loading */}
           {initialized ? (

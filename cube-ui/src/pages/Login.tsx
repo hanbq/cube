@@ -108,6 +108,10 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
     }
   };
 
+  handleRegister = () => {
+    this.props.navigate('/register');
+  };
+
   render() {
     const { username, password, showPassword, loading, error, rememberMe } = this.state;
     const { t } = this.props;
@@ -407,6 +411,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                   color: 'primary.main',
                 },
               }}
+              onClick={this.handleRegister}
             >
               {t?.('login.register') || '注册账号'}
             </Typography>

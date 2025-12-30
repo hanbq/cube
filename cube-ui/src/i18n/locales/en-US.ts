@@ -51,6 +51,28 @@ export default {
       loginSuccess: 'Login successful',
     },
 
+    // Register Page
+    register: {
+      title: 'Create Account',
+      subtitle: 'Create your Cube account',
+      username: 'Username',
+      password: 'Password',
+      confirmPassword: 'Confirm Password',
+      email: 'Email',
+      description: 'Description',
+      registerButton: 'Register',
+      backToLogin: 'Back to Login',
+      validationError: 'Please fill in all required fields',
+      passwordMismatchError: 'Passwords do not match',
+      emailError: 'Please enter a valid email address',
+      usernameError: 'Username must be at least 3 characters',
+      passwordError: 'Password must be at least 6 characters',
+      registerSuccess: 'Registration successful!',
+      registerError: 'Registration failed, please try again',
+      usernameExistsError: 'Username already exists',
+      emailExistsError: 'Email already registered',
+    },
+
     // Navigation Menu
     menu: {
       dashboard: 'Dashboard',

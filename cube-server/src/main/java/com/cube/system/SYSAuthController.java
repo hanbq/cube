@@ -4,84 +4,66 @@ import com.cube.common.entity.CubeResponse;
 import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSLoginRequest;
 import com.cube.system.entity.SYSLoginResponse;
+import com.cube.system.entity.SYSRegisterRequest;
+import com.cube.system.entity.SYSRegisterResponse;
 import com.cube.system.service.SYSAuthService;
-import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 认证Controller
- * 处理用户登录、Token刷新等请求
+ * 系统认证相关接口
  *
- * @author cube
+ * @author eden
  * @since 2025-12-24
  */
 @RestController
 @RequestMapping("/api/auth")
 public class SYSAuthController {
 
-    @Resource
-    private SYSAuthService authenticationService;
+    private final SYSAuthService authService;
+
+    public SYSAuthController(SYSAuthService authService) {
+        this.authService = authService;
+    }
+
+    /**
+     * 用户注册
+     */
+    @PostMapping("/register")
+    @SysLog(value = "用户注册", operation = "USER_REGISTER")
+    public CubeResponse<SYSRegisterResponse> register(@RequestBody SYSRegisterRequest registerRequest) {
+        SYSRegisterResponse response = authService.register(registerRequest);
+        if (response.isSuccess()) {
+            return CubeResponse.success(response, "Registration successful");
+        } else {
+            return CubeResponse.failed(response.getMessage());
+        }
+    }
 
     /**
      * 用户登录
-     *
-     * @param loginRequest 登录请求
-     * @return 登录响应
      */
     @PostMapping("/login")
-    @SysLog(value = "用户登录", operation = "USER_LOGIN", saveRequestData = false)
+    @SysLog(value = "用户登录", operation = "USER_LOGIN")
     public CubeResponse<SYSLoginResponse> login(@RequestBody SYSLoginRequest loginRequest) {
-        try {
-            var loginResponse = authenticationService.login(loginRequest);
-            return CubeResponse.success(loginResponse, "Login successful");
-        } catch (RuntimeException e) {
-            return CubeResponse.failed(e.getMessage());
-        }
+        SYSLoginResponse response = authService.login(loginRequest);
+        return CubeResponse.success(response, "Login successful");
     }
 
     /**
      * 刷新Token
-     *
-     * @param authorizationHeader Authorization header (Bearer token)
-     * @return 新的登录响应
      */
     @PostMapping("/refresh")
-    @SysLog(value = "刷新Token", operation = "REFRESH_TOKEN")
-    public CubeResponse<SYSLoginResponse> refreshToken(@RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            // 提取token（移除"Bearer "前缀）
-            var token = extractToken(authorizationHeader);
-            if (token == null) {
-                return CubeResponse.failed("Invalid Authorization header format");
-            }
-            var loginResponse = authenticationService.refreshToken(token);
-            return CubeResponse.success(loginResponse, "Token refreshed successfully");
-        } catch (RuntimeException e) {
-            return CubeResponse.failed(e.getMessage());
-        }
+    public CubeResponse<SYSLoginResponse> refresh(@RequestParam String token) {
+        SYSLoginResponse response = authService.refreshToken(token);
+        return CubeResponse.success(response, "Token refreshed successfully");
     }
 
     /**
-     * 登出（可选，主要用于前端清除token）
-     *
-     * @return 登出响应
+     * 用户登出
      */
     @PostMapping("/logout")
-    @SysLog(value = "用户登出", operation = "USER_LOGOUT")
     public CubeResponse<Void> logout() {
+        // TODO: 实现登出逻辑，如将token加入黑名单等
         return CubeResponse.success(null, "Logout successful");
-    }
-
-    /**
-     * 从Authorization header中提取token
-     *
-     * @param authorizationHeader Authorization header
-     * @return token
-     */
-    private String extractToken(String authorizationHeader) {
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7);
-        }
-        return null;
     }
 }
