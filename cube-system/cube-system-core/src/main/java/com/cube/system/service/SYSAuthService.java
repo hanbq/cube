@@ -1,5 +1,6 @@
 package com.cube.system.service;
 
+import com.cube.common.exception.AuthException;
 import com.cube.system.utils.SYSJwtUtil;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.dao.SYSUserDao;
@@ -24,11 +25,6 @@ public class SYSAuthService {
 
     private final SYSUserDao userDao;
     private final SYSJwtUtil jwtUtil;
-
-    /**
-     * Token有效期（24小时，单位：毫秒）
-     */
-    private static final long TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
 
     public SYSAuthService(SYSUserDao userDao, SYSJwtUtil jwtUtil) {
         this.userDao = userDao;
@@ -73,7 +69,7 @@ public class SYSAuthService {
         String token = jwtUtil.generateToken(user.getUserId(), user.getUsername());
 
         // 计算过期时间
-        long expiresAt = System.currentTimeMillis() + TOKEN_EXPIRATION_TIME;
+        long expiresAt = System.currentTimeMillis() + SYSJwtUtil.DEFAULT_EXPIRATION_TIME;
 
         // 构建用户信息
         SYSLoginResponse.UserInfo userInfo = SYSLoginResponse.UserInfo.builder()
@@ -94,49 +90,18 @@ public class SYSAuthService {
     }
 
     /**
-     * 验证Token
-     *
-     * @param token JWT token
-     * @return 是否有效
-     */
-    public boolean validateToken(String token) {
-        return jwtUtil.validateToken(token);
-    }
-
-    /**
-     * 从Token中提取用户名
-     *
-     * @param token JWT token
-     * @return 用户名
-     */
-    public String extractUserName(String token) {
-        return jwtUtil.extractUserName(token);
-    }
-
-    /**
-     * 从Token中提取用户ID
-     *
-     * @param token JWT token
-     * @return 用户ID
-     */
-    public Long extractUserId(String token) {
-        return jwtUtil.extractUserId(token);
-    }
-
-    /**
      * 刷新Token
      *
      * @param token 旧的JWT token
      * @return 新的登录响应
      */
-    public SYSLoginResponse refreshToken(String token) {
+    public SYSLoginResponse refreshToken(String token) throws AuthException {
         // Validate token
-        if (!jwtUtil.validateToken(token)) {
-            throw new RuntimeException("Token is expired or invalid");
+        if (Boolean.FALSE.equals(jwtUtil.validateToken(token))) {
+            throw new AuthException("Token is expired or invalid");
         }
 
         // Extract user information
-        String userName = jwtUtil.extractUserName(token);
         Long userId = jwtUtil.extractUserId(token);
 
         // Get latest user information from database
@@ -149,14 +114,14 @@ public class SYSAuthService {
 
         // Check user status
         if (!"ACTIVE".equals(user.getStatus())) {
-            throw new RuntimeException("User account is disabled");
+            throw new AuthException("User account is disabled");
         }
 
         // 生成新的Token
         String newToken = jwtUtil.refreshToken(token);
 
         // 计算过期时间
-        long expiresAt = System.currentTimeMillis() + TOKEN_EXPIRATION_TIME;
+        long expiresAt = System.currentTimeMillis() + SYSJwtUtil.DEFAULT_EXPIRATION_TIME;
 
         // 构建用户信息
         SYSLoginResponse.UserInfo userInfo = SYSLoginResponse.UserInfo.builder()
@@ -176,28 +141,4 @@ public class SYSAuthService {
                 .build();
     }
 
-    /**
-     * 根据Token获取用户信息
-     *
-     * @param token JWT token
-     * @return 用户信息
-     */
-    @Transactional(readOnly = true)
-    public SYSUser getUserByToken(String token) {
-        // Validate token
-        if (!jwtUtil.validateToken(token)) {
-            throw new RuntimeException("Token is expired or invalid");
-        }
-
-        // Extract user ID
-        Long userId = jwtUtil.extractUserId(token);
-
-        // Query user
-        Optional<SYSUser> userOptional = userDao.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-        return userOptional.get();
-    }
 }

@@ -6,12 +6,10 @@ import com.cube.common.page.PageResult;
 import com.cube.system.entity.SYSRole;
 import com.cube.system.param.SYSRoleParam;
 import com.cube.system.dao.SYSRoleDao;
-import com.cube.system.dao.SYSUserRoleDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 角色Service
@@ -24,11 +22,9 @@ import java.util.Optional;
 public class SYSRoleService {
 
     private final SYSRoleDao roleDao;
-    private final SYSUserRoleDao userRoleDao;
 
-    public SYSRoleService(SYSRoleDao roleDao, SYSUserRoleDao userRoleDao) {
+    public SYSRoleService(SYSRoleDao roleDao) {
         this.roleDao = roleDao;
-        this.userRoleDao = userRoleDao;
     }
 
     /**
@@ -75,39 +71,6 @@ public class SYSRoleService {
     }
 
     /**
-     * 根据ID查询角色
-     *
-     * @param roleId 角色ID
-     * @return 角色对象
-     */
-    @Transactional(readOnly = true)
-    public Optional<SYSRole> getRoleById(Long roleId) {
-        return roleDao.findById(roleId);
-    }
-
-    /**
-     * 根据角色名查询角色
-     *
-     * @param roleName 角色名
-     * @return 角色对象
-     */
-    @Transactional(readOnly = true)
-    public Optional<SYSRole> getRoleByName(String roleName) {
-        return roleDao.findByRoleName(roleName);
-    }
-
-    /**
-     * 根据角色名查询角色（忽略大小写）
-     *
-     * @param roleName 角色名
-     * @return 角色对象
-     */
-    @Transactional(readOnly = true)
-    public Optional<SYSRole> getRoleByNameIgnoreCase(String roleName) {
-        return roleDao.findByRoleNameIgnoreCase(roleName);
-    }
-
-    /**
      * 查询所有角色
      *
      * @return 角色列表
@@ -118,7 +81,7 @@ public class SYSRoleService {
     }
 
     /**
-     * 根据用户ID查询角色列表
+     * 根据用户ID查询角色列表（通过JOIN查询，性能优化）
      *
      * @param userId 用户ID
      * @return 角色列表
@@ -126,51 +89,6 @@ public class SYSRoleService {
     @Transactional(readOnly = true)
     public List<SYSRole> getRolesByUserId(Long userId) {
         return roleDao.findByUserId(userId);
-    }
-
-    /**
-     * 统计角色数量
-     *
-     * @return 角色总数
-     */
-    @Transactional(readOnly = true)
-    public long countRoles() {
-        return roleDao.count();
-    }
-
-    /**
-     * 为用户分配角色
-     *
-     * @param userId 用户ID
-     * @param roleId 角色ID
-     * @return 是否分配成功
-     */
-    public boolean assignRoleToUser(Long userId, Long roleId) {
-        return userRoleDao.insert(userId, roleId) != null;
-    }
-
-    /**
-     * 移除用户的角色
-     *
-     * @param userId 用户ID
-     * @param roleId 角色ID
-     * @return 是否移除成功
-     */
-    public boolean removeRoleFromUser(Long userId, Long roleId) {
-        return userRoleDao.deleteByUserIdAndRoleId(userId, roleId) > 0;
-    }
-
-    /**
-     * 根据参数动态查询角色列表
-     * 如果参数属性为空，则不作为查询条件
-     * 角色名称忽略大小写查询
-     *
-     * @param param 查询参数
-     * @return 角色列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSRole> getRolesByParam(SYSRoleParam param) {
-        return roleDao.findByParam(param);
     }
 
     /**

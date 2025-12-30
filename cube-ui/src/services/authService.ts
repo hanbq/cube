@@ -4,13 +4,9 @@ import type { LoginRequest, LoginResponse, RefreshTokenResponse } from '../types
 export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await apiService.post<LoginResponse>('/auth/login', credentials);
-    console.log('[authService] 登录接口返回:', response);
     if (response.code === 200 && response.data) {
-      console.log('[authService] 登录成功，用户数据:', response.data.userInfo);
-      console.log('[authService] 保存token:', response.data.token);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo));
-      console.log('[authService] 已保存userInfo到localStorage');
       return response.data;
     }
 
@@ -38,7 +34,7 @@ export const authService = {
     }
 
     try {
-      const response = await apiService.post<RefreshTokenResponse>('/auth/refresh-token', {
+      const response = await apiService.post<RefreshTokenResponse>('/auth/refresh', {
         token: currentToken,
       });
 

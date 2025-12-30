@@ -29,7 +29,7 @@ public class SYSJwtUtil {
     /**
      * Token有效期（默认24小时）
      */
-    private static final long DEFAULT_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+    public static final long DEFAULT_EXPIRATION_TIME = 24L * 60 * 60 * 1000;
 
     /**
      * 密钥

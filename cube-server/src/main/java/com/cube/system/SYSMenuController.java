@@ -98,38 +98,6 @@ public class SYSMenuController {
     }
 
     /**
-     * 根据ID查询菜单
-     *
-     * @param id 菜单ID
-     * @return 菜单对象
-     */
-    @GetMapping("/{id}")
-    public CubeResponse<SYSMenu> getMenuById(@PathVariable Long id) {
-        try {
-            return menuService.getMenuById(id)
-                    .map(menu -> CubeResponse.success(menu, "Menu found"))
-                    .orElse(CubeResponse.failed("Menu not found"));
-        } catch (Exception e) {
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 查询所有菜单（不包含树形结构）
-     *
-     * @return 菜单列表
-     */
-    @GetMapping
-    public CubeResponse<List<SYSMenu>> getAllMenus() {
-        try {
-            List<SYSMenu> menus = menuService.getAllMenus();
-            return CubeResponse.success(menus, "Menus retrieved successfully");
-        } catch (Exception e) {
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
      * 查询菜单树（包含子菜单）
      * 根据当前登录用户的权限返回菜单树
      *
@@ -154,53 +122,6 @@ public class SYSMenuController {
     }
 
     /**
-     * 根据父菜单ID查询子菜单列表
-     *
-     * @param parentId 父菜单ID
-     * @return 子菜单列表
-     */
-    @GetMapping("/parent/{parentId}")
-    public CubeResponse<List<SYSMenu>> getMenusByParentId(@PathVariable Long parentId) {
-        try {
-            List<SYSMenu> menus = menuService.getMenusByParentId(parentId);
-            return CubeResponse.success(menus, "Child menus retrieved successfully");
-        } catch (Exception e) {
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 查询根菜单列表（parent_id为NULL）
-     *
-     * @return 根菜单列表
-     */
-    @GetMapping("/root")
-    public CubeResponse<List<SYSMenu>> getRootMenus() {
-        try {
-            List<SYSMenu> menus = menuService.getRootMenus();
-            return CubeResponse.success(menus, "Root menus retrieved successfully");
-        } catch (Exception e) {
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 根据角色ID查询菜单列表（仅返回该角色拥有的菜单）
-     *
-     * @param roleId 角色ID
-     * @return 菜单列表
-     */
-    @GetMapping("/role/{roleId}")
-    public CubeResponse<List<SYSMenu>> getMenusByRoleId(@PathVariable Long roleId) {
-        try {
-            List<SYSMenu> menus = menuService.getMenusByRoleId(roleId);
-            return CubeResponse.success(menus, "Menus for role retrieved successfully");
-        } catch (Exception e) {
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
      * 根据角色ID查询所有菜单并标记是否被选中
      *
      * @param roleId 角色ID
@@ -216,18 +137,4 @@ public class SYSMenuController {
         }
     }
 
-    /**
-     * 统计菜单数量
-     *
-     * @return 菜单总数
-     */
-    @GetMapping("/count")
-    public CubeResponse<Long> countMenus() {
-        try {
-            long count = menuService.countMenus();
-            return CubeResponse.success(count, "Menu count retrieved successfully");
-        } catch (Exception e) {
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
 }

@@ -7,8 +7,6 @@ import com.cube.system.entity.SYSRole;
 import com.cube.system.param.SYSRoleParam;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
@@ -31,6 +29,7 @@ public class SYSRoleDao {
     private final JdbcTemplate jdbcTemplate;
     private final JdbcPageHelper pageHelper;
 
+    private static final String QUERY = "SELECT * FROM ";
     private static final String TABLE_NAME = "CUBE_SYS_ROLE";
 
     private static final String INSERT_SQL =
@@ -43,32 +42,24 @@ public class SYSRoleDao {
             " SET role_name = ?, description = ?, updated_time = ?, updated_by = ? " +
             " WHERE role_id = ? AND deleted = false";
 
-    private static final String DELETE_SQL =
-            "DELETE FROM " + TABLE_NAME + " WHERE role_id = ?";
-
     private static final String SOFT_DELETE_SQL =
             "UPDATE " + TABLE_NAME + " SET deleted = true, updated_time = ? WHERE role_id = ? AND deleted = false";
 
     private static final String FIND_BY_ID_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE role_id = ? AND deleted = false";
+            QUERY + TABLE_NAME + " WHERE role_id = ? AND deleted = false";
+
 
     private static final String FIND_BY_ROLE_NAME_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE role_name = ? AND deleted = false";
-
-    private static final String FIND_BY_ROLE_NAME_IGNORE_CASE_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE LOWER(role_name) = LOWER(?) AND deleted = false";
+            QUERY + TABLE_NAME + " WHERE role_name = ? AND deleted = false";
 
     private static final String FIND_ALL_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE deleted = false ORDER BY role_id";
+            QUERY + TABLE_NAME + " WHERE deleted = false ORDER BY role_id";
 
     private static final String FIND_BY_USER_ID_SQL =
             "SELECT r.* FROM " + TABLE_NAME + " r " +
             "INNER JOIN CUBE_SYS_USER_ROLE ur ON r.role_id = ur.role_id " +
             "WHERE ur.user_id = ? AND r.deleted = false AND ur.deleted = false " +
             "ORDER BY r.role_id";
-
-    private static final String COUNT_SQL =
-            "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE deleted = false";
 
     public SYSRoleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -143,16 +134,6 @@ public class SYSRoleDao {
     }
 
     /**
-     * 根据ID删除角色（物理删除）
-     *
-     * @param roleId 角色ID
-     * @return 删除的行数
-     */
-    public int deleteById(Long roleId) {
-        return jdbcTemplate.update(DELETE_SQL, roleId);
-    }
-
-    /**
      * 根据ID软删除角色
      *
      * @param roleId 角色ID
@@ -206,17 +187,6 @@ public class SYSRoleDao {
     }
 
     /**
-     * 根据角色名查询角色（忽略大小写）
-     *
-     * @param roleName 角色名
-     * @return 角色对象
-     */
-    public Optional<SYSRole> findByRoleNameIgnoreCase(String roleName) {
-        List<SYSRole> results = jdbcTemplate.query(FIND_BY_ROLE_NAME_IGNORE_CASE_SQL, rowMapper, roleName);
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
-    }
-
-    /**
      * 查询所有角色
      *
      * @return 角色列表
@@ -226,56 +196,13 @@ public class SYSRoleDao {
     }
 
     /**
-     * 根据用户ID查询角色列表
+     * 根据用户ID查询角色列表（通过JOIN查询，避免N+1问题）
      *
      * @param userId 用户ID
      * @return 角色列表
      */
     public List<SYSRole> findByUserId(Long userId) {
         return jdbcTemplate.query(FIND_BY_USER_ID_SQL, rowMapper, userId);
-    }
-
-    /**
-     * 统计角色数量
-     *
-     * @return 角色总数
-     */
-    public long count() {
-        Long count = jdbcTemplate.queryForObject(COUNT_SQL, Long.class);
-        return count != null ? count : 0L;
-    }
-
-    /**
-     * 根据参数动态查询角色列表
-     * 如果参数为空，则不作为查询条件
-     * 角色名称忽略大小写查询
-     *
-     * @param param 查询参数
-     * @return 角色列表
-     */
-    public List<SYSRole> findByParam(SYSRoleParam param) {
-        if (param == null) {
-            return findAll();
-        }
-
-        StringBuilder sql = new StringBuilder("SELECT * FROM " + TABLE_NAME + " WHERE deleted = false");
-        List<Object> params = new ArrayList<>();
-
-        // 如果roleId不为空，添加roleId条件
-        if (param.getRoleId() != null) {
-            sql.append(" AND role_id = ?");
-            params.add(param.getRoleId());
-        }
-
-        // 如果roleName不为空，添加roleName条件（忽略大小写）
-        if (param.getRoleName() != null && !param.getRoleName().trim().isEmpty()) {
-            sql.append(" AND LOWER(role_name) LIKE LOWER(?)");
-            params.add("%" + param.getRoleName() + "%");
-        }
-
-        sql.append(" ORDER BY role_id");
-
-        return jdbcTemplate.query(sql.toString(), rowMapper, params.toArray());
     }
 
     /**
@@ -288,7 +215,7 @@ public class SYSRoleDao {
      * @return 分页结果
      */
     public PageResult<SYSRole> findByParamWithPage(SYSRoleParam param, PageRequest pageRequest) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM " + TABLE_NAME + " WHERE deleted = false");
+        StringBuilder sql = new StringBuilder(QUERY + TABLE_NAME + " WHERE deleted = false");
         List<Object> params = new ArrayList<>();
 
         // 如果roleId不为空，添加roleId条件

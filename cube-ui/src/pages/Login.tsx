@@ -67,9 +67,9 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
     try {
       const response = await authService.login({ username, password });
 
-      this.props.setAuth(response.token, response.user);
+      this.props.setAuth(response.token, response.userInfo);
 
-      this.props.navigate('/home');
+      this.props.navigate('/');
     } catch (error: any) {
       console.error('Login failed:', error);
       this.setState({

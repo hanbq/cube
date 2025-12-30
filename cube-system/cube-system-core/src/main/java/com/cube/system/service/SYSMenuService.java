@@ -64,59 +64,6 @@ public class SYSMenuService {
     }
 
     /**
-     * 根据ID查询菜单
-     *
-     * @param menuId 菜单ID
-     * @return 菜单对象
-     */
-    @Transactional(readOnly = true)
-    public Optional<SYSMenu> getMenuById(Long menuId) {
-        return menuDao.findById(menuId);
-    }
-
-    /**
-     * 查询所有菜单
-     *
-     * @return 菜单列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSMenu> getAllMenus() {
-        return menuDao.findAll();
-    }
-
-    /**
-     * 根据父菜单ID查询子菜单列表
-     *
-     * @param parentId 父菜单ID
-     * @return 子菜单列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSMenu> getMenusByParentId(Long parentId) {
-        return menuDao.findByParentId(parentId);
-    }
-
-    /**
-     * 查询根菜单列表
-     *
-     * @return 根菜单列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSMenu> getRootMenus() {
-        return menuDao.findRootMenus();
-    }
-
-    /**
-     * 根据角色ID查询菜单列表
-     *
-     * @param roleId 角色ID
-     * @return 菜单列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSMenu> getMenusByRoleId(Long roleId) {
-        return menuDao.findByRoleId(roleId);
-    }
-
-    /**
      * 构建所有菜单树（私有方法，供内部调用）
      * 一次性查询所有菜单，在内存中构建树形结构，避免N+1查询问题
      *
@@ -163,38 +110,6 @@ public class SYSMenuService {
         }
 
         return rootMenus;
-    }
-
-    /**
-     * 统计菜单数量
-     *
-     * @return 菜单总数
-     */
-    @Transactional(readOnly = true)
-    public long countMenus() {
-        return menuDao.count();
-    }
-
-    /**
-     * 为角色分配菜单
-     *
-     * @param menuId 菜单ID
-     * @param roleId 角色ID
-     * @return 是否分配成功
-     */
-    public boolean assignMenuToRole(Long menuId, Long roleId) {
-        return menuRoleDao.insert(menuId, roleId) != null;
-    }
-
-    /**
-     * 移除角色的菜单
-     *
-     * @param menuId 菜单ID
-     * @param roleId 角色ID
-     * @return 是否移除成功
-     */
-    public boolean removeMenuFromRole(Long menuId, Long roleId) {
-        return menuRoleDao.deleteByMenuIdAndRoleId(menuId, roleId) > 0;
     }
 
     /**

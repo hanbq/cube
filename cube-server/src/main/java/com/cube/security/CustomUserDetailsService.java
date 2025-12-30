@@ -1,11 +1,10 @@
 package com.cube.security;
 
 import com.cube.system.entity.SYSUser;
-import com.cube.system.entity.SYSUserRole;
 import com.cube.system.entity.SYSRole;
 import com.cube.system.service.SYSUserService;
-import com.cube.system.service.SYSUserRoleService;
 import com.cube.system.service.SYSRoleService;
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,19 +31,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger LOG = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     private final SYSUserService userService;
-    private final SYSUserRoleService userRoleService;
     private final SYSRoleService roleService;
 
     public CustomUserDetailsService(SYSUserService userService,
-                                    SYSUserRoleService userRoleService,
                                     SYSRoleService roleService) {
         this.userService = userService;
-        this.userRoleService = userRoleService;
         this.roleService = roleService;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Nonnull
+    public UserDetails loadUserByUsername(@Nonnull String username) throws UsernameNotFoundException {
         LOG.debug("Loading user by username: {}", username);
 
         // 从数据库查询用户
@@ -72,19 +69,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             LOG.debug("User {} is super admin", username);
         }
 
-        // 从数据库查询用户的角色
-        List<SYSUserRole> userRoles = userRoleService.getUserRolesByUserId(sysUser.getUserId());
+        // 从数据库通过JOIN一次性查询用户的所有角色（性能优化，避免N+1查询）
+        List<SYSRole> roles = roleService.getRolesByUserId(sysUser.getUserId());
 
-        for (SYSUserRole userRole : userRoles) {
-            // 查询角色详情
-            Optional<SYSRole> roleOptional = roleService.getRoleById(userRole.getRoleId());
-            if (roleOptional.isPresent()) {
-                SYSRole role = roleOptional.get();
-                // 添加角色权限（角色名前加ROLE_前缀是Spring Security的约定）
-                String authority = "ROLE_" + role.getRoleName().toUpperCase();
-                authorities.add(new SimpleGrantedAuthority(authority));
-                LOG.debug("User {} has role: {}", username, authority);
-            }
+        for (SYSRole role : roles) {
+            // 添加角色权限（角色名前加ROLE_前缀是Spring Security的约定）
+            String authority = "ROLE_" + role.getRoleName().toUpperCase();
+            authorities.add(new SimpleGrantedAuthority(authority));
+            LOG.debug("User {} has role: {}", username, authority);
         }
 
         // 如果用户没有任何角色，给一个默认的USER角色

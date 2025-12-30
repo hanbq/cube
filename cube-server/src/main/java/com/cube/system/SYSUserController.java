@@ -43,8 +43,7 @@ public class SYSUserController {
             return CubeResponse.success(true, "User created successfully");
         } catch (Exception e) {
             LOG.error("Error creating user: {}", user.getUsername(), e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to create user: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -70,8 +69,7 @@ public class SYSUserController {
             }
         } catch (Exception e) {
             LOG.error("Error updating user", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to update user: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -95,8 +93,7 @@ public class SYSUserController {
             }
         } catch (Exception e) {
             LOG.error("Error deleting user", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to delete user: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -112,34 +109,10 @@ public class SYSUserController {
         try {
             int deletedCount = userService.deleteUsers(userIds);
             LOG.info("{} users deleted successfully", deletedCount);
-            return CubeResponse.success(deletedCount, deletedCount + " users deleted successfully");
+            return CubeResponse.success(deletedCount);
         } catch (Exception e) {
             LOG.error("Error batch deleting users", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to delete users: " + errorMsg);
-        }
-    }
-
-    /**
-     * 根据ID查询用户
-     *
-     * @param id 用户ID
-     * @return 用户对象
-     */
-    @GetMapping("/{id}")
-    public CubeResponse<SYSUser> getUserById(@PathVariable Long id) {
-        LOG.info("Getting user by ID: {}", id);
-        try {
-            return userService.getUserById(id)
-                    .map(user -> {
-                        LOG.info("User found: {}", user.getUsername());
-                        return CubeResponse.success(user, "User found");
-                    })
-                    .orElse(CubeResponse.failed("User not found"));
-        } catch (Exception e) {
-            LOG.error("Error getting user by ID", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get user: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -178,173 +151,7 @@ public class SYSUserController {
             return CubeResponse.success(result, "Users found successfully");
         } catch (Exception e) {
             LOG.error("Error searching users", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to search users: " + errorMsg);
-        }
-    }
-
-    /**
-     * 根据状态查询用户列表
-     *
-     * @param status 状态
-     * @return 用户列表
-     */
-    @GetMapping("/status/{status}")
-    public CubeResponse<List<SYSUser>> getUsersByStatus(@PathVariable String status) {
-        LOG.info("Getting users by status: {}", status);
-        try {
-            List<SYSUser> users = userService.getUsersByStatus(status);
-            LOG.info("Retrieved {} users with status {}", users.size(), status);
-            return CubeResponse.success(users);
-        } catch (Exception e) {
-            LOG.error("Error getting users by status", e);
             return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 更新用户状态
-     *
-     * @param id     用户ID
-     * @param status 新状态
-     * @return 更新结果
-     */
-    @PutMapping("/{id}/status")
-    public CubeResponse<Boolean> updateUserStatus(
-            @PathVariable Long id,
-            @RequestParam String status) {
-        LOG.info("Updating status for user {}: {}", id, status);
-        try {
-            boolean success = userService.updateUserStatus(id, status);
-            if (success) {
-                LOG.info("User status updated successfully");
-                return CubeResponse.success(true);
-            } else {
-                LOG.warn("Failed to update user status");
-                return CubeResponse.failed("Failed to update user status");
-            }
-        } catch (Exception e) {
-            LOG.error("Error updating user status", e);
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 更新用户密码
-     *
-     * @param id          用户ID
-     * @param newPassword 新密码
-     * @return 更新结果
-     */
-    @PutMapping("/{id}/password")
-    public CubeResponse<Boolean> updateUserPassword(
-            @PathVariable Long id,
-            @RequestParam String newPassword) {
-        LOG.info("Updating password for user {}", id);
-        try {
-            boolean success = userService.updateUserPassword(id, newPassword);
-            if (success) {
-                LOG.info("User password updated successfully");
-                return CubeResponse.success(true);
-            } else {
-                LOG.warn("Failed to update user password");
-                return CubeResponse.failed("Failed to update user password");
-            }
-        } catch (Exception e) {
-            LOG.error("Error updating user password", e);
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 更新用户超级管理员状态
-     *
-     * @param id           用户ID
-     * @param isSuperAdmin 是否是超级管理员
-     * @return 更新结果
-     */
-    @PutMapping("/{id}/super-admin")
-    public CubeResponse<Boolean> updateUserSuperAdmin(
-            @PathVariable Long id,
-            @RequestParam Boolean isSuperAdmin) {
-        LOG.info("Updating super admin status for user {}: {}", id, isSuperAdmin);
-        try {
-            boolean success = userService.updateUserSuperAdmin(id, isSuperAdmin);
-            if (success) {
-                LOG.info("User super admin status updated successfully");
-                return CubeResponse.success(true, "User super admin status updated successfully");
-            } else {
-                LOG.warn("Failed to update user super admin status");
-                return CubeResponse.failed("Failed to update user super admin status");
-            }
-        } catch (Exception e) {
-            LOG.error("Error updating user super admin status", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to update user super admin status: " + errorMsg);
-        }
-    }
-
-    /**
-     * 查询所有超级管理员
-     *
-     * @return 超级管理员列表
-     */
-    @GetMapping("/super-admins")
-    public CubeResponse<List<SYSUser>> getSuperAdmins() {
-        LOG.info("Getting all super admins");
-        try {
-            List<SYSUser> users = userService.getSuperAdmins();
-            LOG.info("Retrieved {} super admins", users.size());
-            return CubeResponse.success(users, "Super admins retrieved successfully");
-        } catch (Exception e) {
-            LOG.error("Error getting super admins", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get super admins: " + errorMsg);
-        }
-    }
-
-    /**
-     * 统计用户数量
-     *
-     * @return 用户总数
-     */
-    @GetMapping("/count")
-    public CubeResponse<Long> countUsers() {
-        LOG.info("Counting users");
-        try {
-            long count = userService.countUsers();
-            LOG.info("Total users: {}", count);
-            return CubeResponse.success(count, "User count retrieved successfully");
-        } catch (Exception e) {
-            LOG.error("Error counting users", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to count users: " + errorMsg);
-        }
-    }
-
-    /**
-     * 分页查询用户
-     *
-     * @param pageNum  页码
-     * @param pageSize 每页大小
-     * @return 分页结果
-     */
-    @GetMapping("/page")
-    public CubeResponse<PageResult<SYSUser>> getUserPage(
-            @RequestParam(defaultValue = "1") int pageNum,
-            @RequestParam(defaultValue = "10") int pageSize) {
-        LOG.info("Getting user page: pageNum={}, pageSize={}", pageNum, pageSize);
-        try {
-            SYSUserParam param = new SYSUserParam();
-            param.setPageNum(pageNum);
-            param.setPageSize(pageSize);
-            PageResult<SYSUser> result = userService.getUsersByParamWithPage(param);
-            LOG.info("Retrieved page {} with {} users", pageNum, result.getRecords().size());
-            return CubeResponse.success(result, "Users retrieved successfully");
-        } catch (Exception e) {
-            LOG.error("Error getting user page", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get users: " + errorMsg);
         }
     }
 
@@ -363,8 +170,7 @@ public class SYSUserController {
             return CubeResponse.success(users, "Users retrieved successfully");
         } catch (Exception e) {
             LOG.error("Error getting users by role ID", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get users: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 }

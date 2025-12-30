@@ -24,38 +24,6 @@ public class SYSUserRoleService {
     }
 
     /**
-     * 查询所有用户角色关联
-     *
-     * @return 用户角色关联列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSUserRole> getAllUserRoles() {
-        return userRoleDao.findAll();
-    }
-
-    /**
-     * 根据用户ID查询角色关联
-     *
-     * @param userId 用户ID
-     * @return 用户角色关联列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSUserRole> getUserRolesByUserId(Long userId) {
-        return userRoleDao.findByUserId(userId);
-    }
-
-    /**
-     * 根据角色ID查询用户关联
-     *
-     * @param roleId 角色ID
-     * @return 用户角色关联列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSUserRole> getUserRolesByRoleId(Long roleId) {
-        return userRoleDao.findByRoleId(roleId);
-    }
-
-    /**
      * 批量插入用户角色关联
      *
      * @param userRoles 用户角色关联列表
@@ -63,27 +31,6 @@ public class SYSUserRoleService {
      */
     public int batchInsertUserRoles(List<SYSUserRole> userRoles) {
         return userRoleDao.batchInsert(userRoles);
-    }
-
-    /**
-     * 批量物理删除用户角色关联
-     *
-     * @param ids ID列表
-     * @return 删除的数量
-     */
-    public int batchDeleteUserRoles(List<Long> ids) {
-        return userRoleDao.physicalDeleteByIds(ids);
-    }
-
-    /**
-     * 为用户分配角色
-     *
-     * @param userId 用户ID
-     * @param roleId 角色ID
-     * @return 插入后的主键ID
-     */
-    public Long assignRoleToUser(Long userId, Long roleId) {
-        return userRoleDao.insert(userId, roleId);
     }
 
     /**

@@ -90,17 +90,6 @@ public class SYSUserService {
     }
 
     /**
-     * 根据邮箱查询用户
-     *
-     * @param email 邮箱
-     * @return 用户对象
-     */
-    @Transactional(readOnly = true)
-    public Optional<SYSUser> getUserByEmail(String email) {
-        return userDao.findByEmail(email);
-    }
-
-    /**
      * 查询所有用户
      *
      * @return 用户列表
@@ -111,93 +100,6 @@ public class SYSUserService {
     }
 
     /**
-     * 根据状态查询用户列表
-     *
-     * @param status 状态
-     * @return 用户列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSUser> getUsersByStatus(String status) {
-        return userDao.findByStatus(status);
-    }
-
-    /**
-     * 分页查询用户
-     *
-     * @param pageRequest 分页请求
-     * @return 分页结果
-     */
-    @Transactional(readOnly = true)
-    public PageResult<SYSUser> getUserPage(PageRequest pageRequest) {
-        return userDao.findPage(pageRequest);
-    }
-
-    /**
-     * 更新用户状态
-     *
-     * @param userId 用户ID
-     * @param status 新状态
-     * @return 是否更新成功
-     */
-    public boolean updateUserStatus(Long userId, String status) {
-        return userDao.updateStatus(userId, status) > 0;
-    }
-
-    /**
-     * 更新用户密码
-     *
-     * @param userId 用户ID
-     * @param newPassword 新密码
-     * @return 是否更新成功
-     */
-    public boolean updateUserPassword(Long userId, String newPassword) {
-        return userDao.updatePassword(userId, newPassword) > 0;
-    }
-
-    /**
-     * 统计用户数量
-     *
-     * @return 用户总数
-     */
-    @Transactional(readOnly = true)
-    public long countUsers() {
-        return userDao.count();
-    }
-
-    /**
-     * 更新用户超级管理员状态
-     *
-     * @param userId 用户ID
-     * @param isSuperAdmin 是否是超级管理员
-     * @return 是否更新成功
-     */
-    public boolean updateUserSuperAdmin(Long userId, Boolean isSuperAdmin) {
-        return userDao.updateSuperAdmin(userId, isSuperAdmin) > 0;
-    }
-
-    /**
-     * 查询所有超级管理员
-     *
-     * @return 超级管理员列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSUser> getSuperAdmins() {
-        return userDao.findSuperAdmins();
-    }
-
-    /**
-     * 检查用户是否是超级管理员
-     *
-     * @param userId 用户ID
-     * @return 是否是超级管理员
-     */
-    @Transactional(readOnly = true)
-    public boolean isSuperAdmin(Long userId) {
-        Optional<SYSUser> userOpt = userDao.findById(userId);
-        return userOpt.isPresent() && Boolean.TRUE.equals(userOpt.get().getIsSuperAdmin());
-    }
-
-    /**
      * 批量删除用户（软删除）
      *
      * @param userIds 用户ID列表
@@ -205,19 +107,6 @@ public class SYSUserService {
      */
     public int deleteUsers(List<Long> userIds) {
         return userDao.deleteByIds(userIds);
-    }
-
-    /**
-     * 根据参数动态查询用户列表
-     * 如果参数属性为空，则不作为查询条件
-     * 用户名忽略大小写查询
-     *
-     * @param param 查询参数
-     * @return 用户列表
-     */
-    @Transactional(readOnly = true)
-    public List<SYSUser> getUsersByParam(SYSUserParam param) {
-        return userDao.findByParam(param);
     }
 
     /**

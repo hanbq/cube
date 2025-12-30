@@ -7,9 +7,6 @@ import com.cube.system.service.SYSAuthService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 认证Controller
  * 处理用户登录、Token刷新等请求
@@ -58,38 +55,6 @@ public class SYSAuthController {
             return CubeResponse.success(loginResponse, "Token refreshed successfully");
         } catch (RuntimeException e) {
             return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 验证Token
-     *
-     * @param authorizationHeader Authorization header (Bearer token)
-     * @return 验证结果
-     */
-    @GetMapping("/validate")
-    public CubeResponse<Map<String, Object>> validateToken(@RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            // 提取token
-            String token = extractToken(authorizationHeader);
-            if (token == null) {
-                return CubeResponse.failed("Invalid Authorization header format");
-            }
-
-            boolean isValid = authenticationService.validateToken(token);
-            Map<String, Object> data = new HashMap<>();
-            data.put("valid", isValid);
-
-            if (isValid) {
-                // 提取用户信息
-                String userName = authenticationService.extractUserName(token);
-                Long userId = authenticationService.extractUserId(token);
-                data.put("userId", userId);
-                data.put("userName", userName);
-            }
-            return CubeResponse.success(data, "Token validation completed");
-        } catch (Exception e) {
-            return CubeResponse.failed("Token validation failed");
         }
     }
 

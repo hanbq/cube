@@ -31,13 +31,4 @@ export const menuService = {
     await apiService.delete<void>(`/menus/${menuId}`);
   },
 
-  // 批量删除菜单
-  batchDeleteMenus: async (menuIds: number[]): Promise<void> => {
-    await apiService.post<void>('/menus/batch-delete', { menuIds });
-  },
-
-  // 更新菜单排序
-  updateMenuSort: async (menuId: number, sort: number): Promise<void> => {
-    await apiService.put<void>(`/menus/${menuId}/sort`, { sort });
-  },
 };

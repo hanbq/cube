@@ -27,64 +27,6 @@ public class SYSUserRoleController {
     private SYSUserRoleService userRoleService;
 
     /**
-     * 查询所有用户角色关联
-     *
-     * @return 用户角色关联列表
-     */
-    @GetMapping
-    public CubeResponse<List<SYSUserRole>> getAllUserRoles() {
-        LOG.info("Getting all user-role associations");
-        try {
-            List<SYSUserRole> userRoles = userRoleService.getAllUserRoles();
-            LOG.info("Retrieved {} user-role associations", userRoles.size());
-            return CubeResponse.success(userRoles);
-        } catch (Exception e) {
-            LOG.error("Error getting all user-role associations", e);
-            return CubeResponse.failed(e.getMessage());
-        }
-    }
-
-    /**
-     * 根据用户ID查询角色关联
-     *
-     * @param userId 用户ID
-     * @return 用户角色关联列表
-     */
-    @GetMapping("/user/{userId}")
-    public CubeResponse<List<SYSUserRole>> getUserRolesByUserId(@PathVariable Long userId) {
-        LOG.info("Getting user-role associations for user ID: {}", userId);
-        try {
-            List<SYSUserRole> userRoles = userRoleService.getUserRolesByUserId(userId);
-            LOG.info("Retrieved {} user-role associations for user", userRoles.size());
-            return CubeResponse.success(userRoles, "User-role associations retrieved successfully");
-        } catch (Exception e) {
-            LOG.error("Error getting user-role associations by user ID", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get user-role associations: " + errorMsg);
-        }
-    }
-
-    /**
-     * 根据角色ID查询用户关联
-     *
-     * @param roleId 角色ID
-     * @return 用户角色关联列表
-     */
-    @GetMapping("/role/{roleId}")
-    public CubeResponse<List<SYSUserRole>> getUserRolesByRoleId(@PathVariable Long roleId) {
-        LOG.info("Getting user-role associations for role ID: {}", roleId);
-        try {
-            List<SYSUserRole> userRoles = userRoleService.getUserRolesByRoleId(roleId);
-            LOG.info("Retrieved {} user-role associations for role", userRoles.size());
-            return CubeResponse.success(userRoles, "User-role associations retrieved successfully");
-        } catch (Exception e) {
-            LOG.error("Error getting user-role associations by role ID", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to get user-role associations: " + errorMsg);
-        }
-    }
-
-    /**
      * 批量插入用户角色关联
      *
      * @param userRoles 用户角色关联列表
@@ -99,51 +41,7 @@ public class SYSUserRoleController {
             return CubeResponse.success(insertedCount, insertedCount + " user-role associations inserted successfully");
         } catch (Exception e) {
             LOG.error("Error batch inserting user-role associations", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to insert user-role associations: " + errorMsg);
-        }
-    }
-
-    /**
-     * 批量删除用户角色关联（物理删除）
-     *
-     * @param ids ID列表
-     * @return 删除的数量
-     */
-    @DeleteMapping("/batch")
-    public CubeResponse<Integer> batchDeleteUserRoles(@RequestBody List<Long> ids) {
-        LOG.info("Batch deleting {} user-role associations", ids.size());
-        try {
-            int deletedCount = userRoleService.batchDeleteUserRoles(ids);
-            LOG.info("{} user-role associations deleted successfully", deletedCount);
-            return CubeResponse.success(deletedCount, deletedCount + " user-role associations deleted successfully");
-        } catch (Exception e) {
-            LOG.error("Error batch deleting user-role associations", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to delete user-role associations: " + errorMsg);
-        }
-    }
-
-    /**
-     * 为用户分配角色
-     *
-     * @param userId 用户ID
-     * @param roleId 角色ID
-     * @return 分配结果
-     */
-    @PostMapping("/assign")
-    public CubeResponse<Long> assignRoleToUser(
-            @RequestParam Long userId,
-            @RequestParam Long roleId) {
-        LOG.info("Assigning role {} to user {}", roleId, userId);
-        try {
-            Long id = userRoleService.assignRoleToUser(userId, roleId);
-            LOG.info("Role assigned successfully, ID: {}", id);
-            return CubeResponse.success(id, "Role assigned successfully");
-        } catch (Exception e) {
-            LOG.error("Error assigning role to user", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to assign role: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -170,8 +68,7 @@ public class SYSUserRoleController {
             }
         } catch (Exception e) {
             LOG.error("Error removing role from user", e);
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            return CubeResponse.failed("Failed to remove role: " + errorMsg);
+            return CubeResponse.failed(e.getMessage());
         }
     }
 }

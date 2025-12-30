@@ -52,20 +52,11 @@ public class SYSUserRoleDao {
             "SELECT COUNT(*) FROM " + TABLE_NAME +
             " WHERE user_id = ? AND role_id = ? AND deleted = false";
 
-    private static final String FIND_ALL_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE deleted = false ORDER BY id";
-
     private static final String FIND_BY_USER_ID_SQL =
             "SELECT * FROM " + TABLE_NAME + " WHERE user_id = ? AND deleted = false ORDER BY id";
 
-    private static final String FIND_BY_ROLE_ID_SQL =
-            "SELECT * FROM " + TABLE_NAME + " WHERE role_id = ? AND deleted = false ORDER BY id";
-
     private static final String PHYSICAL_DELETE_BY_USER_AND_ROLE_SQL =
             "DELETE FROM " + TABLE_NAME + " WHERE user_id = ? AND role_id = ?";
-
-    private static final String PHYSICAL_DELETE_BY_ID_SQL =
-            "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
 
     public SYSUserRoleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -180,15 +171,6 @@ public class SYSUserRoleDao {
     }
 
     /**
-     * 查询所有用户角色关联
-     *
-     * @return 用户角色关联列表
-     */
-    public List<SYSUserRole> findAll() {
-        return jdbcTemplate.query(FIND_ALL_SQL, rowMapper);
-    }
-
-    /**
      * 根据用户ID查询角色关联
      *
      * @param userId 用户ID
@@ -196,16 +178,6 @@ public class SYSUserRoleDao {
      */
     public List<SYSUserRole> findByUserId(Long userId) {
         return jdbcTemplate.query(FIND_BY_USER_ID_SQL, rowMapper, userId);
-    }
-
-    /**
-     * 根据角色ID查询用户关联
-     *
-     * @param roleId 角色ID
-     * @return 用户角色关联列表
-     */
-    public List<SYSUserRole> findByRoleId(Long roleId) {
-        return jdbcTemplate.query(FIND_BY_ROLE_ID_SQL, rowMapper, roleId);
     }
 
     /**
@@ -254,35 +226,4 @@ public class SYSUserRoleDao {
         return jdbcTemplate.update(PHYSICAL_DELETE_BY_USER_AND_ROLE_SQL, userId, roleId);
     }
 
-    /**
-     * 批量物理删除用户角色关联
-     *
-     * @param ids ID列表
-     * @return 删除的数量
-     */
-    public int physicalDeleteByIds(List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return 0;
-        }
-
-        int[] results = jdbcTemplate.batchUpdate(PHYSICAL_DELETE_BY_ID_SQL, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setLong(1, ids.get(i));
-            }
-
-            @Override
-            public int getBatchSize() {
-                return ids.size();
-            }
-        });
-
-        int successCount = 0;
-        for (int result : results) {
-            if (result > 0) {
-                successCount++;
-            }
-        }
-        return successCount;
-    }
 }

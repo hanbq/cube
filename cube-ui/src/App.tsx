@@ -35,14 +35,14 @@ function App() {
   // 检查是否有 token 来决定默认路由
   const getDefaultRoute = () => {
     const token = localStorage.getItem('token');
-    return token ? '/home' : '/login';
+    return token ? '/' : '/login';
   };
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />}>
+        <Route path="/" element={<Home />}>
           {/* 菜单初始化完成后才生成动态路由，否则显示loading */}
           {initialized ? (
             generateDynamicRoutes(flatMenus)

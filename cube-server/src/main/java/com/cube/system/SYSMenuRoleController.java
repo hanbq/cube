@@ -43,7 +43,7 @@ public class SYSMenuRoleController {
         try {
             int savedCount = menuRoleService.batchSaveMenuRolesByRoleId(roleId, menuRoles);
             LOG.info("{} menu-role associations saved successfully for role ID: {}", savedCount, roleId);
-            return CubeResponse.success(savedCount, savedCount + " menu-role associations saved successfully");
+            return CubeResponse.success(savedCount);
         } catch (Exception e) {
             LOG.error("Error batch saving menu-role associations for role ID: {}", roleId, e);
             return CubeResponse.failed(e.getMessage());
