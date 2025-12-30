@@ -3,6 +3,7 @@ package com.cube.gateway.aspect;
 import com.cube.gateway.annotation.SysLog;
 import com.cube.gateway.entity.UserPrincipal;
 import com.cube.gateway.service.AsyncSysLogService;
+import com.cube.system.entity.SYSLoginRequest;
 import com.cube.system.entity.SYSSysLog;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -88,7 +89,7 @@ public class SysLogAspect {
             var method = getMethod(joinPoint);
             var sysLogAnnotation = method.getAnnotation(SysLog.class);
 
-            String username = getCurrentUsername(request);
+            String username = getCurrentUsername(request, joinPoint);
             sysLog.setUsername(username);
 
             String ip = getIpAddress(request);
@@ -145,13 +146,27 @@ public class SysLogAspect {
 
     /**
      * 获取当前用户名
-     * 这里应该从Spring Security的SecurityContext中获取当前用户名
+     * 对于登录接口，从请求参数中获取用户名
+     * 对于其他接口，从Spring Security的SecurityContext中获取当前用户名
      *
      * @param request HTTP请求
+     * @param joinPoint 连接点
      * @return 用户名
      */
-    private String getCurrentUsername(HttpServletRequest request) {
+    private String getCurrentUsername(HttpServletRequest request, JoinPoint joinPoint) {
         try {
+            // 检查是否是登录接口
+            String requestURI = request.getRequestURI();
+            
+            // 如果是登录接口，从请求参数中获取用户名
+            if (requestURI != null && requestURI.contains("/api/auth/login")) {
+                Object[] args = joinPoint.getArgs();
+                if (args != null && args.length > 0 && args[0] instanceof SYSLoginRequest loginRequest) {
+                    return loginRequest.getUsername();
+                }
+            }
+            
+            // 对于其他接口，从SecurityContext中获取用户名
             var authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
                 var principal = (UserPrincipal) authentication.getPrincipal();
