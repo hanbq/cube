@@ -1,4 +1,4 @@
-package com.cube.security;
+package com.cube.gateway.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

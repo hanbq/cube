@@ -1,5 +1,6 @@
 package com.cube.system;
 
+import com.cube.gateway.annotation.SysLog;
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
 import com.cube.system.entity.SYSUser;
@@ -35,6 +36,7 @@ public class SYSUserController {
      * @return 创建结果
      */
     @PostMapping
+    @SysLog(value = "创建用户", operation = "CREATE_USER", saveRequestData = true)
     public CubeResponse<Boolean> createUser(@RequestBody SYSUser user) {
         LOG.info("Creating user: {}", user.getUsername());
         try {
@@ -55,6 +57,7 @@ public class SYSUserController {
      * @return 更新结果
      */
     @PutMapping("/{id}")
+    @SysLog(value = "更新用户", operation = "UPDATE_USER", saveRequestData = true)
     public CubeResponse<Boolean> updateUser(@PathVariable Long id, @RequestBody SYSUser user) {
         LOG.info("Updating user with ID: {}", id);
         try {
@@ -80,6 +83,7 @@ public class SYSUserController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SysLog(value = "删除用户", operation = "DELETE_USER")
     public CubeResponse<Boolean> deleteUser(@PathVariable Long id) {
         LOG.info("Deleting user with ID: {}", id);
         try {

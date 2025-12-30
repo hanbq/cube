@@ -18,7 +18,7 @@ export interface UserFormData {
   username: string;
   password?: string;
   description?: string;
-  email?: string;
+  email: string; // 改为必填字段
   status?: string;
   isSuperAdmin?: boolean;
 }

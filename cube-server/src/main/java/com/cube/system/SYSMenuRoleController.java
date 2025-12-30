@@ -1,6 +1,7 @@
 package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
+import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSMenuRole;
 import com.cube.system.service.SYSMenuRoleService;
 import jakarta.annotation.Resource;
@@ -35,6 +36,7 @@ public class SYSMenuRoleController {
      * @return 插入的数量
      */
     @PostMapping("/role/{roleId}/batch-save")
+    @SysLog(value = "批量保存角色的菜单关联", operation = "BATCH_SAVE_MENU_ROLES", saveRequestData = true)
     public CubeResponse<Integer> batchSaveMenuRolesByRoleId(
             @PathVariable Long roleId,
             @RequestBody List<SYSMenuRole> menuRoles) {

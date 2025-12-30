@@ -5,6 +5,7 @@ export interface SYSSysLog {
   method?: string;
   params?: string;
   ip?: string;
+  status?: string;
   createdTime?: string;
 }
 
@@ -14,6 +15,7 @@ export interface SYSLogParam {
   username?: string;
   operation?: string;
   method?: string;
+  status?: string;
   ip?: string;
   createdTimeStart?: string;
   createdTimeEnd?: string;

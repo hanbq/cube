@@ -1,6 +1,7 @@
 package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
+import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSLoginRequest;
 import com.cube.system.entity.SYSLoginResponse;
 import com.cube.system.service.SYSAuthService;
@@ -28,6 +29,7 @@ public class SYSAuthController {
      * @return 登录响应
      */
     @PostMapping("/login")
+    @SysLog(value = "用户登录", operation = "USER_LOGIN", saveRequestData = false)
     public CubeResponse<SYSLoginResponse> login(@RequestBody SYSLoginRequest loginRequest) {
         try {
             var loginResponse = authenticationService.login(loginRequest);
@@ -44,6 +46,7 @@ public class SYSAuthController {
      * @return 新的登录响应
      */
     @PostMapping("/refresh")
+    @SysLog(value = "刷新Token", operation = "REFRESH_TOKEN")
     public CubeResponse<SYSLoginResponse> refreshToken(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // 提取token（移除"Bearer "前缀）
@@ -64,6 +67,7 @@ public class SYSAuthController {
      * @return 登出响应
      */
     @PostMapping("/logout")
+    @SysLog(value = "用户登出", operation = "USER_LOGOUT")
     public CubeResponse<Void> logout() {
         return CubeResponse.success(null, "Logout successful");
     }

@@ -1,13 +1,13 @@
 package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
-import com.cube.security.UserPrincipal;
+import com.cube.gateway.annotation.SysLog;
+import com.cube.gateway.entity.UserPrincipal;
 import com.cube.system.entity.SYSMenu;
 import com.cube.system.service.SYSMenuService;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +36,8 @@ public class SYSMenuController {
      * @return 创建后的菜单ID
      */
     @PostMapping
+    @SysLog(value = "创建菜单", operation = "CREATE_MENU", saveRequestData = true)
     public CubeResponse<Long> createMenu(@RequestBody SYSMenu menu) {
-        LOG.info("=== createMenu called ===");
         LOG.info("Received menu: {}", menu.getMenuName());
         try {
             // 设置 children 为 null，确保不处理子菜单
@@ -60,6 +60,7 @@ public class SYSMenuController {
      * @return 更新结果
      */
     @PutMapping("/{id}")
+    @SysLog(value = "更新菜单", operation = "UPDATE_MENU", saveRequestData = true)
     public CubeResponse<Boolean> updateMenu(@PathVariable Long id, @RequestBody SYSMenu menu) {
         try {
             // 设置菜单ID
@@ -84,6 +85,7 @@ public class SYSMenuController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SysLog(value = "删除菜单", operation = "DELETE_MENU")
     public CubeResponse<Boolean> deleteMenu(@PathVariable Long id) {
         try {
             boolean success = menuService.deleteMenu(id);

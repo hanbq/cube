@@ -10,6 +10,7 @@ public class SYSLogParam extends PageRequest {
     String operation;
     String method;
     String ip;
+    String status;
     ZonedDateTime createdTimeStart;
     ZonedDateTime createdTimeEnd;
 
@@ -43,6 +44,14 @@ public class SYSLogParam extends PageRequest {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public ZonedDateTime getCreatedTimeStart() {

@@ -16,6 +16,10 @@ export default {
       of: '共',
       items: '条',
       componentLoadFailed: '组件 "{path}" 加载失败',
+      all: '全部',
+      success: '成功',
+      failure: '失败',
+      error: '错误',
     },
 
     // 错误信息
@@ -224,6 +228,9 @@ export default {
       updateSuccess: '用户更新成功',
       deleteSuccess: '用户删除成功',
       batchDeleteSuccess: '批量删除成功',
+      
+      // 验证消息
+      invalidEmail: '请输入有效的邮箱地址',
     },
 
     // 系统日志管理
@@ -233,6 +240,8 @@ export default {
       username: '用户名',
       operation: '操作',
       method: '方法',
+      params: '参数',
+      status: '状态',
       ip: 'IP地址',
       createdTime: '创建时间',
       createdTimeStart: '开始时间',

@@ -16,6 +16,10 @@ export default {
       of: 'of',
       items: 'items',
       componentLoadFailed: 'Component "{path}" failed to load',
+      all: 'All',
+      success: 'Success',
+      failure: 'Failure',
+      error: 'Error',
     },
 
     // Error Messages
@@ -224,6 +228,9 @@ export default {
       updateSuccess: 'User updated successfully',
       deleteSuccess: 'User deleted successfully',
       batchDeleteSuccess: 'Batch deletion successful',
+      
+      // Validation Messages
+      invalidEmail: 'Please enter a valid email address',
     },
 
     // System Log Management
@@ -233,6 +240,8 @@ export default {
       username: 'Username',
       operation: 'Operation',
       method: 'Method',
+      params: 'Parameters',
+      status: 'Status',
       ip: 'IP Address',
       createdTime: 'Created Time',
       createdTimeStart: 'Start Time',

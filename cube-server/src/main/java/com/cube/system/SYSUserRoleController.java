@@ -1,6 +1,7 @@
 package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
+import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSUserRole;
 import com.cube.system.service.SYSUserRoleService;
 import jakarta.annotation.Resource;
@@ -33,6 +34,7 @@ public class SYSUserRoleController {
      * @return 插入的数量
      */
     @PostMapping("/batch")
+    @SysLog(value = "批量插入用户角色关联", operation = "BATCH_INSERT_USER_ROLES", saveRequestData = true)
     public CubeResponse<Integer> batchInsertUserRoles(@RequestBody List<SYSUserRole> userRoles) {
         LOG.info("Batch inserting {} user-role associations", userRoles.size());
         try {
@@ -53,6 +55,7 @@ public class SYSUserRoleController {
      * @return 移除结果
      */
     @DeleteMapping("/remove")
+    @SysLog(value = "移除用户的角色", operation = "REMOVE_ROLE_FROM_USER")
     public CubeResponse<Boolean> removeRoleFromUser(
             @RequestParam Long userId,
             @RequestParam Long roleId) {

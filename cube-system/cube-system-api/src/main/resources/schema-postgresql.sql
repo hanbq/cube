@@ -203,6 +203,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_SYS_LOG (
     method          VARCHAR(500),
     params          TEXT,
     ip              VARCHAR(50),
+    status          VARCHAR(20) DEFAULT 'SUCCESS',
     created_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -213,7 +214,12 @@ COMMENT ON COLUMN CUBE_SYS_SYS_LOG.operation IS '操作描述';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.method IS '方法名';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.params IS '参数';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.ip IS 'IP地址';
+COMMENT ON COLUMN CUBE_SYS_SYS_LOG.status IS '操作状态';
 COMMENT ON COLUMN CUBE_SYS_SYS_LOG.created_time IS '创建时间';
+
+CREATE INDEX IF NOT EXISTS idx_sys_log_username ON CUBE_SYS_SYS_LOG(username);
+CREATE INDEX IF NOT EXISTS idx_sys_log_created_time ON CUBE_SYS_SYS_LOG(created_time);
+CREATE INDEX IF NOT EXISTS idx_sys_log_status ON CUBE_SYS_SYS_LOG(status);
 
 
 -- ========================================

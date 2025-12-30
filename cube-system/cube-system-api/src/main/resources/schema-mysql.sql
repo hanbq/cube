@@ -141,9 +141,11 @@ CREATE TABLE IF NOT EXISTS `CUBE_SYS_SYS_LOG` (
     `method`          VARCHAR(500) COMMENT '方法名',
     `params`          TEXT COMMENT '参数',
     `ip`              VARCHAR(50) COMMENT 'IP地址',
+    `status`          VARCHAR(20) DEFAULT 'SUCCESS' COMMENT '操作状态',
     `created_time`    DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     INDEX `idx_log_username` (`username`),
-    INDEX `idx_log_created_time` (`created_time`)
+    INDEX `idx_log_created_time` (`created_time`),
+    INDEX `idx_log_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统日志表';
 
 -- ========================================

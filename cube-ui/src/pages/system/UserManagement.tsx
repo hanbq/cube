@@ -54,6 +54,12 @@ export default function UserManagement() {
     batchDeleteUsers,
   } = useUser();
 
+  // 邮箱格式验证函数
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<SYSUser | null>(null);
@@ -467,11 +473,14 @@ export default function UserManagement() {
             <TextField
               label={t('userManagement.email')}
               type="email"
+              required
               fullWidth
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
+              error={formData.email && !isValidEmail(formData.email)}
+              helperText={formData.email && !isValidEmail(formData.email) ? t('userManagement.invalidEmail') : ''}
             />
             <TextField
               label={t('userManagement.description')}
@@ -522,7 +531,12 @@ export default function UserManagement() {
             variant="contained"
             startIcon={<SaveIcon />}
             onClick={handleSaveUser}
-            disabled={!formData.username.trim() || (!editingUser && !formData.password?.trim())}
+            disabled={
+              !formData.username.trim() || 
+              (!editingUser && !formData.password?.trim()) ||
+              !formData.email.trim() ||
+              !isValidEmail(formData.email)
+            }
           >
             {t('userManagement.save')}
           </Button>

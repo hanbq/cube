@@ -2,6 +2,7 @@ package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
+import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSSysLog;
 import com.cube.system.param.SYSLogParam;
 import com.cube.system.service.SYSSysLogService;
@@ -34,6 +35,7 @@ public class SYSSysLogController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SysLog(value = "删除系统日志", operation = "DELETE_SYS_LOG")
     public CubeResponse<Boolean> deleteSysLog(@PathVariable Long id) {
         LOG.info("Deleting system log with ID: {}", id);
         try {
@@ -58,6 +60,7 @@ public class SYSSysLogController {
      * @return 删除结果
      */
     @DeleteMapping("/batch")
+    @SysLog(value = "批量删除系统日志", operation = "BATCH_DELETE_SYS_LOG", saveRequestData = true)
     public CubeResponse<Integer> deleteSysLogs(@RequestBody List<Long> ids) {
         LOG.info("Batch deleting {} system logs", ids.size());
         try {

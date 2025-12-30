@@ -87,7 +87,7 @@ public SYSUser getUser(@PathVariable Long id) {
 本系统已经实现了自定义的 `UserPrincipal`，可以直接从 `Authentication` 对象中获取 `userId`，**无需查询数据库**。
 
 ```java
-import com.cube.security.UserPrincipal;
+import com.cube.entity.UserPrincipal;
 
 @RestController
 @RequestMapping("/api/menus")

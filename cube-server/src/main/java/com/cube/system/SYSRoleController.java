@@ -2,6 +2,7 @@ package com.cube.system;
 
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
+import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSRole;
 import com.cube.system.param.SYSRoleParam;
 import com.cube.system.service.SYSRoleService;
@@ -35,6 +36,7 @@ public class SYSRoleController {
      * @return 创建结果
      */
     @PostMapping
+    @SysLog(value = "创建角色", operation = "CREATE_ROLE", saveRequestData = true)
     public CubeResponse<Boolean> createRole(@RequestBody SYSRole role) {
         LOG.info("Creating role: {}", role.getRoleName());
         try {
@@ -55,6 +57,7 @@ public class SYSRoleController {
      * @return 更新结果
      */
     @PutMapping("/{id}")
+    @SysLog(value = "更新角色", operation = "UPDATE_ROLE", saveRequestData = true)
     public CubeResponse<Boolean> updateRole(@PathVariable Long id, @RequestBody SYSRole role) {
         LOG.info("Updating role with ID: {}", id);
         try {
@@ -80,6 +83,7 @@ public class SYSRoleController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SysLog(value = "删除角色", operation = "DELETE_ROLE")
     public CubeResponse<Boolean> deleteRole(@PathVariable Long id) {
         LOG.info("Deleting role with ID: {}", id);
         try {
@@ -104,6 +108,7 @@ public class SYSRoleController {
      * @return 删除结果
      */
     @DeleteMapping("/batch")
+    @SysLog(value = "批量删除角色", operation = "BATCH_DELETE_ROLES", saveRequestData = true)
     public CubeResponse<Integer> deleteRoles(@RequestBody List<Long> roleIds) {
         LOG.info("Batch deleting {} roles", roleIds.size());
         try {

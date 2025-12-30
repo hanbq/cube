@@ -19,6 +19,10 @@ import {
   Checkbox,
   TextField,
   Stack,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -44,6 +48,7 @@ export default function SysLogs() {
     searchUsername: '',
     searchOperation: '',
     searchMethod: '',
+    searchStatus: '',
     searchIp: '',
     searchCreatedTimeStart: '',
     searchCreatedTimeEnd: '',
@@ -61,6 +66,7 @@ export default function SysLogs() {
         username: queryState.searchUsername || undefined,
         operation: queryState.searchOperation || undefined,
         method: queryState.searchMethod || undefined,
+        status: queryState.searchStatus || undefined,
         ip: queryState.searchIp || undefined,
         createdTimeStart: queryState.searchCreatedTimeStart || undefined,
         createdTimeEnd: queryState.searchCreatedTimeEnd || undefined,
@@ -175,6 +181,20 @@ export default function SysLogs() {
       <Paper sx={{ p: 3 }}>
         <Box sx={{ mb: 3 }}>
           <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-start" flexWrap="wrap">
+            <FormControl size="small" sx={{ width: 150 }}>
+              <InputLabel id="status-select-label">{t('sysLogManagement.status')}</InputLabel>
+              <Select
+                labelId="status-select-label"
+                value={queryState.searchStatus}
+                label={t('sysLogManagement.status')}
+                onChange={(e) => setQueryState(prev => ({ ...prev, searchStatus: e.target.value }))}
+              >
+                <MenuItem value="">{t('common.all')}</MenuItem>
+                <MenuItem value="success">{t('common.success')}</MenuItem>
+                <MenuItem value="failure">{t('common.failure')}</MenuItem>
+                <MenuItem value="error">{t('common.error')}</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label={t('sysLogManagement.username')}
               size="small"
@@ -199,6 +219,7 @@ export default function SysLogs() {
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               sx={{ width: 150 }}
             />
+            
             <TextField
               label={t('sysLogManagement.ip')}
               size="small"
@@ -273,9 +294,11 @@ export default function SysLogs() {
                     />
                   </TableCell>
                   <TableCell>{t('sysLogManagement.logId')}</TableCell>
+                  <TableCell>{t('sysLogManagement.status')}</TableCell>
                   <TableCell>{t('sysLogManagement.username')}</TableCell>
                   <TableCell>{t('sysLogManagement.operation')}</TableCell>
                   <TableCell>{t('sysLogManagement.method')}</TableCell>
+                  <TableCell>{t('sysLogManagement.params')}</TableCell>
                   <TableCell>{t('sysLogManagement.ip')}</TableCell>
                   <TableCell>{t('sysLogManagement.createdTime')}</TableCell>
                   <TableCell align="right">{t('sysLogManagement.operations')}</TableCell>
@@ -284,7 +307,7 @@ export default function SysLogs() {
               <TableBody>
                 {logs.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} align="center">
+                    <TableCell colSpan={10} align="center">
                       {t('sysLogManagement.noData')}
                     </TableCell>
                   </TableRow>
@@ -298,9 +321,17 @@ export default function SysLogs() {
                         />
                       </TableCell>
                       <TableCell>{log.logId}</TableCell>
+                      <TableCell>{log.status || '-'}</TableCell>
                       <TableCell>{log.username || '-'}</TableCell>
                       <TableCell>{log.operation || '-'}</TableCell>
                       <TableCell>{log.method || '-'}</TableCell>
+                      <TableCell>
+                        <Box sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <Tooltip title={log.params || '-'}>
+                            <span>{log.params || '-'}</span>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
                       <TableCell>{log.ip || '-'}</TableCell>
                       <TableCell>
                         {log.createdTime

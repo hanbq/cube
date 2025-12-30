@@ -9,6 +9,7 @@ public class SYSSysLog {
     String method;
     String params;
     String ip;
+    String status;
     ZonedDateTime createdTime;
 
     public Long getLogId() {
@@ -59,6 +60,14 @@ public class SYSSysLog {
         this.ip = ip;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public ZonedDateTime getCreatedTime() {
         return createdTime;
     }
@@ -67,4 +76,17 @@ public class SYSSysLog {
         this.createdTime = createdTime;
     }
 
+    @Override
+    public String toString() {
+        return "SYSSysLog{" +
+                "logId=" + logId +
+                ", username='" + username + '\'' +
+                ", operation='" + operation + '\'' +
+                ", method='" + method + '\'' +
+                ", params='" + params + '\'' +
+                ", ip='" + ip + '\'' +
+                ", status='" + status + '\'' +
+                ", createdTime=" + createdTime +
+                '}';
+    }
 }

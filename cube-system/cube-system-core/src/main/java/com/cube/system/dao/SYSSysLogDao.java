@@ -38,7 +38,7 @@ public class SYSSysLogDao {
     private static final String TABLE_NAME = "CUBE_SYS_SYS_LOG";
 
     private static final String INSERT_SQL = "INSERT INTO " + TABLE_NAME +
-            " (user_name, operation, method, params, ip, created_time) VALUES (?, ?, ?, ?, ?, ?)";
+            " (username, operation, method, params, ip, status, created_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     private static final String DELETE_BY_ID_SQL = "DELETE FROM " + TABLE_NAME + " WHERE log_id = ?";
 
@@ -50,12 +50,12 @@ public class SYSSysLogDao {
             SYSSysLog log = new SYSSysLog();
 
             log.setLogId(rs.getLong("log_id"));
-            log.setUsername(rs.getString("user_name"));
+            log.setUsername(rs.getString("username"));
             log.setOperation(rs.getString("operation"));
             log.setMethod(rs.getString("method"));
             log.setParams(rs.getString("params"));
             log.setIp(rs.getString("ip"));
-
+            log.setStatus(rs.getString("status"));
             Timestamp createdTime = rs.getTimestamp("created_time");
             if (createdTime != null) {
                 log.setCreatedTime(ZonedDateTime.ofInstant(createdTime.toInstant(),
@@ -79,7 +79,8 @@ public class SYSSysLogDao {
             ps.setString(3, entity.getMethod());
             ps.setString(4, entity.getParams());
             ps.setString(5, entity.getIp());
-            ps.setTimestamp(6, Timestamp.from(entity.getCreatedTime().toInstant()));
+            ps.setString(6, entity.getStatus());
+            ps.setTimestamp(7, Timestamp.from(entity.getCreatedTime().toInstant()));
             return ps;
         });
     }
@@ -124,7 +125,7 @@ public class SYSSysLogDao {
 
         // 如果username不为空，添加username条件（模糊查询+忽略大小写）
         if (param != null && param.getUsername() != null && !param.getUsername().trim().isEmpty()) {
-            sql.append(" AND LOWER(user_name) LIKE LOWER(?)");
+            sql.append(" AND LOWER(username) LIKE LOWER(?)");
             params.add("%" + param.getUsername() + "%");
         }
 
@@ -144,6 +145,12 @@ public class SYSSysLogDao {
         if (param != null && param.getIp() != null && !param.getIp().trim().isEmpty()) {
             sql.append(" AND ip = ?");
             params.add(param.getIp());
+        }
+
+        // 如果status不为空，添加status条件（忽略大小写）
+        if (param != null && param.getStatus() != null && !param.getStatus().trim().isEmpty()) {
+            sql.append(" AND LOWER(status) = LOWER(?)");
+            params.add(param.getStatus());
         }
 
         // 如果createdTimeStart不为空，添加createdTime开始时间条件

@@ -1,4 +1,4 @@
-package com.cube.security;
+package com.cube.gateway.filter;
 
 import com.cube.system.utils.SYSJwtUtil;
 import jakarta.servlet.FilterChain;
