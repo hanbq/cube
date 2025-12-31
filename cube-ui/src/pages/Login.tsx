@@ -57,7 +57,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      setError(t?.('login.validationError') || '请输入用户名和密码');
+      setError(t?.('login.validationError'));
       return;
     }
 
@@ -81,7 +81,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
       navigate('/');
     } catch (error: any) {
       console.error('Login failed:', error);
-      setError(error.message || t?.('login.loginError') || '登录失败，请检查用户名和密码');
+      setError(error.message || t?.('login.loginError'));
       setLoading(false);
     }
   };
@@ -107,7 +107,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: theme => theme.palette.login?.background || 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 15%, #d5e0cc 30%, #88b04b 50%, #d5e0cc 70%, #f0f4ed 85%, #e8ede3 100%)',
+          background: theme => theme.palette.login?.background,
           overflow: 'hidden',
           '&::before': {
             content: '""',
@@ -116,7 +116,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
             left: 0,
             right: 0,
             bottom: 0,
-            background: theme => theme.palette.login?.backgroundRadial || 'radial-gradient(ellipse at 30% 20%, rgba(136, 176, 75, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(163, 197, 103, 0.25) 0%, transparent 50%)',
+            background: theme => theme.palette.login?.backgroundRadial,
             pointerEvents: 'none',
           },
           '&::after': {
@@ -126,7 +126,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
             left: 0,
             right: 0,
             bottom: 0,
-            background: theme => theme.palette.login?.backgroundLinear || 'linear-gradient(45deg, transparent 0%, rgba(45, 80, 22, 0.08) 25%, transparent 50%, rgba(136, 176, 75, 0.1) 75%, transparent 100%)',
+            background: theme => theme.palette.login?.backgroundLinear,
             pointerEvents: 'none',
           },
         }}
@@ -140,10 +140,10 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
             width: '420px',
             padding: '48px 40px',
             borderRadius: '16px',
-            background: theme => theme.palette.login?.cardBackground || 'linear-gradient(135deg, rgba(250, 252, 248, 0.95) 0%, rgba(245, 248, 240, 0.98) 50%, rgba(250, 252, 248, 0.95) 100%)',
+            background: theme => theme.palette.login?.cardBackground,
             backdropFilter: 'blur(20px)',
             border: '2px solid',
-            borderImage: theme => theme.palette.login?.cardBorder || 'linear-gradient(135deg, rgba(136, 176, 75, 0.4) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(136, 176, 75, 0.4) 100%) 1',
+            borderImage: theme => theme.palette.login?.cardBorder,
             boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.8)',
             position: 'relative',
             '&::before': {
@@ -204,7 +204,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <TextField
               fullWidth
-              label={t?.('login.username') || '用户名'}
+              label={t?.('login.username')}
               value={username}
               onChange={handleUsernameChange}
               onKeyDown={handleKeyPress}
@@ -219,14 +219,14 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  background: theme => theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                  background: theme => theme.palette.login?.inputBackground,
                   borderRadius: '12px',
                   '& fieldset': {
-                    borderColor: theme => theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                    borderColor: theme => theme.palette.login?.inputBorder,
                     borderWidth: '2px',
                   },
                   '&:hover fieldset': {
-                    borderColor: theme => theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                    borderColor: theme => theme.palette.login?.inputBorderHover,
                   },
                   '&.Mui-focused fieldset': {
                     borderColor: 'primary.main',
@@ -240,7 +240,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
 
             <TextField
               fullWidth
-              label={t?.('login.password') || '密码'}
+              label={t?.('login.password')}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={handlePasswordChange}
@@ -263,14 +263,14 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  background: theme => theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                  background: theme => theme.palette.login?.inputBackground,
                   borderRadius: '12px',
                   '& fieldset': {
-                    borderColor: theme => theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                    borderColor: theme => theme.palette.login?.inputBorder,
                     borderWidth: '2px',
                   },
                   '&:hover fieldset': {
-                    borderColor: theme => theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                    borderColor: theme => theme.palette.login?.inputBorderHover,
                   },
                   '&.Mui-focused fieldset': {
                     borderColor: 'primary.main',
@@ -295,7 +295,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
                   }}
                 />
               }
-              label={t?.('login.rememberMe') || '记住我'}
+              label={t?.('login.rememberMe')}
               sx={{
                 '& .MuiFormControlLabel-label': {
                   fontSize: '0.9rem',
@@ -317,7 +317,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
                 fontSize: '1.1rem',
                 fontWeight: 600,
                 letterSpacing: '1px',
-                background: theme => theme.palette.login?.buttonGradient || 'linear-gradient(135deg, #88b04b 0%, #6d8f3a 25%, #2d5016 50%, #6d8f3a 75%, #88b04b 100%)',
+                background: theme => theme.palette.login?.buttonGradient,
                 boxShadow: theme => `0 6px 20px ${theme.palette.mode === 'dark' ? 'rgba(0, 112, 243, 0.35)' : 'rgba(45, 80, 22, 0.35)'}`,
                 position: 'relative',
                 overflow: 'hidden',
@@ -332,7 +332,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
                   transition: 'left 0.5s',
                 },
                 '&:hover': {
-                  background: theme => theme.palette.login?.buttonHoverGradient || 'linear-gradient(135deg, #a3c567 0%, #88b04b 25%, #2d5016 50%, #88b04b 75%, #a3c567 100%)',
+                  background: theme => theme.palette.login?.buttonHoverGradient,
                   boxShadow: theme => `0 8px 24px ${theme.palette.mode === 'dark' ? 'rgba(0, 112, 243, 0.45)' : 'rgba(45, 80, 22, 0.45)'}`,
                   '&::before': {
                     left: '100%',
@@ -350,7 +350,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
               {loading ? (
                 <CircularProgress size={24} sx={{ color: 'white' }} />
               ) : (
-                t?.('login.loginButton') || '登录'
+                t?.('login.loginButton')
               )}
             </Button>
           </Box>
@@ -359,7 +359,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
             sx={{
               mt: 3,
               pt: 3,
-              borderTop: theme => `1px solid ${theme.palette.login?.borderTop || 'rgba(45, 80, 22, 0.15)'}`,
+              borderTop: theme => `1px solid ${theme.palette.login?.borderTop}`,
               display: 'flex',
               justifyContent: 'center',
               gap: 2,
@@ -376,7 +376,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
                 },
               }}
             >
-              {t?.('login.forgotPassword') || '忘记密码？'}
+              {t?.('login.forgotPassword')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'rgba(45, 80, 22, 0.3)' }}>
               |
@@ -393,7 +393,7 @@ function LoginClass({ navigate, t, setAuth }: LoginProps) {
               }}
               onClick={handleRegister}
             >
-              {t?.('login.register') || '注册账号'}
+              {t?.('login.register')}
             </Typography>
           </Box>
         </Card>

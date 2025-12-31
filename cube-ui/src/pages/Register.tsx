@@ -71,28 +71,28 @@ export default function Register() {
 
   const validateForm = useCallback(() => {
     if (!username || !password || !confirmPassword || !email) {
-      setError(t?.('register.validationError') || '请填写所有必填字段');
+      setError(t?.('register.validationError') );
       return false;
     }
 
     if (username.length < 3) {
-      setError(t?.('register.usernameError') || '用户名至少需要3个字符');
+      setError(t?.('register.usernameError') );
       return false;
     }
 
     if (password.length < 6) {
-      setError(t?.('register.passwordError') || '密码至少需要6个字符');
+      setError(t?.('register.passwordError') );
       return false;
     }
 
     if (password !== confirmPassword) {
-      setError(t?.('register.passwordMismatchError') || '两次输入的密码不一致');
+      setError(t?.('register.passwordMismatchError') );
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError(t?.('register.emailError') || '请输入有效的邮箱地址');
+      setError(t?.('register.emailError'));
       return false;
     }
 
@@ -121,13 +121,13 @@ export default function Register() {
       setLoading(false);
     } catch (error: any) {
       console.error('Registration failed:', error);
-      let errorMessage = t?.('register.registerError') || '注册失败，请重试';
+      let errorMessage = t?.('register.registerError');
       
       // 处理特定的错误消息
       if (error.message.includes('用户名已存在')) {
-        errorMessage = t?.('register.usernameExistsError') || '用户名已存在';
+        errorMessage = t?.('register.usernameExistsError');
       } else if (error.message.includes('邮箱已被注册')) {
-        errorMessage = t?.('register.emailExistsError') || '邮箱已被注册';
+        errorMessage = t?.('register.emailExistsError');
       }
       
       setError(errorMessage);
@@ -157,7 +157,7 @@ export default function Register() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: theme.palette.login?.background || 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 15%, #d5e0cc 30%, #88b04b 50%, #d5e0cc 70%, #f0f4ed 85%, #e8ede3 100%)',
+          background: theme.palette.login?.background,
           overflow: 'hidden',
         }}
       >
@@ -170,10 +170,10 @@ export default function Register() {
             width: '420px',
             padding: '48px 40px',
             borderRadius: '16px',
-            background: theme.palette.login?.cardBackground || 'linear-gradient(135deg, rgba(250, 252, 248, 0.95) 0%, rgba(245, 248, 240, 0.98) 50%, rgba(250, 252, 248, 0.95) 100%)',
+            background: theme.palette.login?.cardBackground,
             backdropFilter: 'blur(20px)',
             border: '2px solid',
-            borderImage: theme.palette.login?.cardBorder || 'linear-gradient(135deg, rgba(136, 176, 75, 0.4) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(136, 176, 75, 0.4) 100%) 1',
+            borderImage: theme.palette.login?.cardBorder,
             textAlign: 'center',
           }}
         >
@@ -182,7 +182,7 @@ export default function Register() {
           </Box>
           
           <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-            {t?.('register.registerSuccess') || '注册成功！'}
+            {t?.('register.registerSuccess')}
           </Typography>
           
           <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -200,11 +200,11 @@ export default function Register() {
               fontSize: '1.1rem',
               fontWeight: 600,
               letterSpacing: '1px',
-              background: theme.palette.login?.buttonGradient || 'linear-gradient(135deg, #88b04b 0%, #6d8f3a 25%, #2d5016 50%, #6d8f3a 75%, #88b04b 100%)',
+              background: theme.palette.login?.buttonGradient,
               boxShadow: '0 6px 20px rgba(45, 80, 22, 0.35)',
             }}
           >
-            {t?.('register.backToLogin') || '返回登录'}
+            {t?.('register.backToLogin')}
           </Button>
         </Card>
       </Box>
@@ -222,7 +222,7 @@ export default function Register() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: theme.palette.login?.background || 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 15%, #d5e0cc 30%, #88b04b 50%, #d5e0cc 70%, #f0f4ed 85%, #e8ede3 100%)',
+        background: theme.palette.login?.background ,
         overflow: 'hidden',
         '&::before': {
           content: '""',
@@ -231,7 +231,7 @@ export default function Register() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: theme.palette.login?.backgroundRadial || 'radial-gradient(ellipse at 30% 20%, rgba(136, 176, 75, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(163, 197, 103, 0.25) 0%, transparent 50%)',
+          background: theme.palette.login?.backgroundRadial,
           pointerEvents: 'none',
         },
         '&::after': {
@@ -241,7 +241,7 @@ export default function Register() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: theme.palette.login?.backgroundLinear || 'linear-gradient(45deg, transparent 0%, rgba(45, 80, 22, 0.08) 25%, transparent 50%, rgba(136, 176, 75, 0.1) 75%, transparent 100%)',
+          background: theme.palette.login?.backgroundLinear,
           pointerEvents: 'none',
         },
       }}
@@ -255,10 +255,10 @@ export default function Register() {
           width: '420px',
           padding: '48px 40px',
           borderRadius: '16px',
-          background: theme.palette.login?.cardBackground || 'linear-gradient(135deg, rgba(250, 252, 248, 0.95) 0%, rgba(245, 248, 240, 0.98) 50%, rgba(250, 252, 248, 0.95) 100%)',
+          background: theme.palette.login?.cardBackground ,
           backdropFilter: 'blur(20px)',
           border: '2px solid',
-          borderImage: theme.palette.login?.cardBorder || 'linear-gradient(135deg, rgba(136, 176, 75, 0.4) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(136, 176, 75, 0.4) 100%) 1',
+          borderImage: theme.palette.login?.cardBorder ,
         }}
       >
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -274,7 +274,7 @@ export default function Register() {
               letterSpacing: '0.5px',
             }}
           >
-            {t?.('register.title') || '注册账号'}
+            {t?.('register.title') }
           </Typography>
           <Box sx={{ width: 40 }} /> {/* Empty box for centering */}
         </Box>
@@ -290,7 +290,7 @@ export default function Register() {
             mb: 3,
           }}
         >
-          {t?.('register.subtitle') || '创建您的Cube账户'}
+          {t?.('register.subtitle') }
         </Typography>
 
         {error && (
@@ -302,7 +302,7 @@ export default function Register() {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             fullWidth
-            label={t?.('register.username') || '用户名'}
+            label={t?.('register.username')}
             value={username}
             onChange={handleUsernameChange}
             onKeyDown={handleKeyPress}
@@ -317,14 +317,14 @@ export default function Register() {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                background: theme.palette.login?.inputBackground,
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                  borderColor: theme.palette.login?.inputBorder,
                   borderWidth: '2px',
                 },
                 '&:hover fieldset': {
-                  borderColor: theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                  borderColor: theme.palette.login?.inputBorderHover,
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: 'primary.main',
@@ -338,7 +338,7 @@ export default function Register() {
 
           <TextField
             fullWidth
-            label={t?.('register.email') || '邮箱'}
+            label={t?.('register.email') }
             type="email"
             value={email}
             onChange={handleEmailChange}
@@ -354,14 +354,14 @@ export default function Register() {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                background: theme.palette.login?.inputBackground ,
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                  borderColor: theme.palette.login?.inputBorder ,
                   borderWidth: '2px',
                 },
                 '&:hover fieldset': {
-                  borderColor: theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                  borderColor: theme.palette.login?.inputBorderHover,
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: 'primary.main',
@@ -375,7 +375,7 @@ export default function Register() {
 
           <TextField
             fullWidth
-            label={t?.('register.password') || '密码'}
+            label={t?.('register.password') }
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={handlePasswordChange}
@@ -398,14 +398,14 @@ export default function Register() {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                background: theme.palette.login?.inputBackground  ,
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                  borderColor: theme.palette.login?.inputBorder ,
                   borderWidth: '2px',
                 },
                 '&:hover fieldset': {
-                  borderColor: theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                  borderColor: theme.palette.login?.inputBorderHover ,
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: 'primary.main',
@@ -419,7 +419,7 @@ export default function Register() {
 
           <TextField
             fullWidth
-            label={t?.('register.confirmPassword') || '确认密码'}
+            label={t?.('register.confirmPassword')}
             type={showConfirmPassword ? 'text' : 'password'}
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
@@ -442,14 +442,14 @@ export default function Register() {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                background: theme.palette.login?.inputBackground ,
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                  borderColor: theme.palette.login?.inputBorder,
                   borderWidth: '2px',
                 },
                 '&:hover fieldset': {
-                  borderColor: theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                  borderColor: theme.palette.login?.inputBorderHover ,
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: 'primary.main',
@@ -463,7 +463,7 @@ export default function Register() {
 
           <TextField
             fullWidth
-            label={t?.('register.description') || '描述'}
+            label={t?.('register.description')}
             value={description}
             onChange={handleDescriptionChange}
             onKeyDown={handleKeyPress}
@@ -478,14 +478,14 @@ export default function Register() {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
+                background: theme.palette.login?.inputBackground ,
                 borderRadius: '12px',
                 '& fieldset': {
-                  borderColor: theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
+                  borderColor: theme.palette.login?.inputBorder ,
                   borderWidth: '2px',
                 },
                 '&:hover fieldset': {
-                  borderColor: theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
+                  borderColor: theme.palette.login?.inputBorderHover ,
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: 'primary.main',
@@ -510,7 +510,7 @@ export default function Register() {
               fontSize: '1.1rem',
               fontWeight: 600,
               letterSpacing: '1px',
-              background: theme.palette.login?.buttonGradient || 'linear-gradient(135deg, #88b04b 0%, #6d8f3a 25%, #2d5016 50%, #6d8f3a 75%, #88b04b 100%)',
+              background: theme.palette.login?.buttonGradient ,
               boxShadow: '0 6px 20px rgba(45, 80, 22, 0.35)',
               position: 'relative',
               overflow: 'hidden',
@@ -525,7 +525,7 @@ export default function Register() {
                 transition: 'left 0.5s',
               },
               '&:hover': {
-                background: theme.palette.login?.buttonHoverGradient || 'linear-gradient(135deg, #a3c567 0%, #88b04b 25%, #2d5016 50%, #88b04b 75%, #a3c567 100%)',
+                background: theme.palette.login?.buttonHoverGradient,
                 boxShadow: '0 8px 24px rgba(45, 80, 22, 0.45)',
                 '&::before': {
                   left: '100%',
@@ -543,7 +543,7 @@ export default function Register() {
             {loading ? (
               <CircularProgress size={24} sx={{ color: 'white' }} />
             ) : (
-              t?.('register.registerButton') || '注册'
+              t?.('register.registerButton')
             )}
           </Button>
         </Box>
