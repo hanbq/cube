@@ -211,9 +211,9 @@ export default function SysLogs() {
             mb: 3,
             p: 2,
             border: 1,
-            borderColor: 'grey.300',
+            borderColor: 'divider',
             borderRadius: 1,
-            backgroundColor: 'grey.50'
+            backgroundColor: 'background.paper'
           }}
         >
           <Stack 
@@ -328,7 +328,8 @@ export default function SysLogs() {
             <TableContainer sx={{ 
               flex: 1, 
               overflow: 'auto',
-              border: '1px solid rgba(224, 224, 224, 1)',
+              border: '1px solid',
+              borderColor: 'divider',
               borderRadius: 1
             }}>
               <Table stickyHeader>
