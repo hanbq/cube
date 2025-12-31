@@ -156,4 +156,35 @@ const theme = createTheme({
   },
 });
 
+// 全局样式
+theme.components = theme.components || {};
+theme.components.MuiCssBaseline = {
+  styleOverrides: {
+    '.menu-paper': {
+      background: 'linear-gradient(180deg, rgba(136, 176, 75, 0.28) 0%, rgba(109, 143, 58, 0.35) 8%, rgba(88, 176, 75, 0.4) 15%, rgba(45, 80, 22, 0.45) 30%, rgba(26, 61, 10, 0.5) 45%, rgba(45, 80, 22, 0.45) 60%, rgba(88, 176, 75, 0.4) 75%, rgba(109, 143, 58, 0.35) 88%, rgba(136, 176, 75, 0.28) 100%)',
+      backdropFilter: 'blur(20px)',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'linear-gradient(0deg, rgba(45, 80, 22, 0.15) 0%, rgba(136, 176, 75, 0.25) 15%, rgba(163, 197, 103, 0.2) 30%, transparent 45%, transparent 55%, rgba(163, 197, 103, 0.2) 70%, rgba(136, 176, 75, 0.25) 85%, rgba(45, 80, 22, 0.15) 100%)',
+        pointerEvents: 'none',
+      },
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: '3px',
+        height: '100%',
+        background: 'linear-gradient(180deg, rgba(136, 176, 75, 0.3) 0%, rgba(45, 80, 22, 0.5) 15%, rgba(26, 61, 10, 0.6) 30%, rgba(45, 80, 22, 0.7) 50%, rgba(26, 61, 10, 0.6) 70%, rgba(45, 80, 22, 0.5) 85%, rgba(136, 176, 75, 0.3) 100%)',
+        pointerEvents: 'none',
+      },
+    },
+  },
+};
+
 export default theme;
