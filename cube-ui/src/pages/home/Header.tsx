@@ -13,6 +13,7 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 interface HeaderProps {
@@ -20,6 +21,7 @@ interface HeaderProps {
   notificationCount?: number;
   onLogout?: () => void;
   t?: any;
+  navigate?: (path: string) => void;
 }
 
 interface HeaderState {
@@ -42,6 +44,13 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
 
   handleUserMenuClose = () => {
     this.setState({ userMenuAnchor: null });
+  };
+
+  handleProfileClick = () => {
+    this.handleUserMenuClose();
+    if (this.props.navigate) {
+      this.props.navigate('/mine/profile');
+    }
   };
 
   handleNotificationMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -128,11 +137,11 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={this.handleUserMenuClose}>
-              {t?.('header.profile') || '个人资料'}
+            <MenuItem onClick={this.handleProfileClick}>
+              {t?.('header.profile')}
             </MenuItem>
             <MenuItem onClick={this.handleLogout}>
-              {t?.('header.logout') || '退出登录'}
+              {t?.('header.logout')}
             </MenuItem>
           </Menu>
         </Toolbar>
@@ -141,7 +150,8 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
   }
 }
 
-export default function Header(props: Omit<HeaderProps, 't'>) {
+export default function Header(props: Omit<HeaderProps, 't' | 'navigate'>) {
   const { t } = useTranslation();
-  return <HeaderClass {...props} t={t} />;
+  const navigate = useNavigate();
+  return <HeaderClass {...props} t={t} navigate={navigate} />;
 }

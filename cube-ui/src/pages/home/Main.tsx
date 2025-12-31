@@ -34,7 +34,7 @@ class MainClass extends React.Component<MainProps> {
       icon?: React.ReactElement;
     }> = [
       {
-        label: t?.('breadcrumb.home') || '首页',
+        label: t?.('breadcrumb.home'),
         path: '/',
         icon: <HomeIcon sx={{ fontSize: 16, mr: 0.5 }} />
       }
@@ -42,23 +42,18 @@ class MainClass extends React.Component<MainProps> {
 
     if (getMenuByPath) {
       // 处理"我的"菜单的子菜单
-      if (pathname === '/profile' || pathname === '/change-password') {
-        // 添加"我的"父菜单
-        breadcrumbs.push({
-          label: t?.('menu.mine'),
-          path: '/mine'
-        });
+      if (pathname === '/mine/profile' || pathname === '/mine/change-password') {
         
         // 添加子菜单
-        if (pathname === '/profile') {
+        if (pathname === '/mine/profile') {
           breadcrumbs.push({
             label: t?.('menu.userProfile') ,
-            path: '/profile'
+            path: '/mine/profile'
           });
-        } else if (pathname === '/change-password') {
+        } else if (pathname === '/mine/change-password') {
           breadcrumbs.push({
             label: t?.('menu.changePassword') ,
-            path: '/change-password'
+            path: '/mine/change-password'
           });
         }
       } else {

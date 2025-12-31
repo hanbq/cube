@@ -81,7 +81,7 @@ export default {
       settings: '系统设置',
       menu_management: '菜单管理',
       mine: '我的',
-      userProfile: '用户信息',
+      userProfile: '个人信息',
       changePassword: '修改密码',
     },
 
@@ -89,6 +89,7 @@ export default {
     header: {
       notifications: '通知',
       profile: '个人信息',
+      changePassword: '修改密码',
       logout: '退出登录',
       noNotifications: '暂无通知',
     },
