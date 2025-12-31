@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTranslation as useI18n } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -41,6 +42,7 @@ import type { SYSMenu, MenuFormData } from '../../types/menu';
 
 export default function MenuManagement() {
   const { t } = useTranslation();
+  const i18n = useI18n();
   const {
     menus,
     loading,
@@ -535,11 +537,19 @@ export default function MenuManagement() {
       </Paper>
 
       {/* 删除确认对话框 */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      <Dialog 
+        open={deleteDialogOpen} 
+        onClose={() => setDeleteDialogOpen(false)}
+        PaperProps={{
+          sx: {
+            minWidth: '260px'
+          }
+        }}
+      >
         <DialogTitle>{t('menuManagement.confirmDelete')}</DialogTitle>
         <DialogContent>
           <Typography>
-            {t('menuManagement.deleteWarning', { name: menuToDelete?.menuName || '' })}
+            {t('menuManagement.deleteWarning')}
             {menuToDelete?.children && menuToDelete.children.length > 0 && (
               <Alert severity="warning" sx={{ mt: 2 }}>
                 {t('menuManagement.deleteWithChildren', { count: menuToDelete.children.length })}

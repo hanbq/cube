@@ -106,7 +106,7 @@ export default {
       deleteMenu: 'Delete Menu',
       addChild: 'Add Child',
       confirmDelete: 'Confirm Delete',
-      deleteWarning: 'Are you sure you want to delete menu "{name}"?',
+      deleteWarning: 'Are you sure you want to delete menu ?',
       deleteWithChildren: 'This menu contains {count} sub-menu(s), which will also be deleted.',
       noData: 'No menu data, click "Create Menu" to get started',
       loadError: 'Load failed: {message}',

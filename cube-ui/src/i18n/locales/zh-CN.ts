@@ -107,7 +107,7 @@ export default {
       deleteMenu: '删除菜单',
       addChild: '添加子节点',
       confirmDelete: '确认删除',
-      deleteWarning: '确定要删除菜单 "{name}" 吗?',
+      deleteWarning: '确定要删除菜单吗?',
       deleteWithChildren: '此菜单包含 {count} 个子菜单,删除后子菜单也会被删除。',
       noData: '暂无菜单数据,点击"新建菜单"开始添加',
       loadError: '加载失败: {message}',
