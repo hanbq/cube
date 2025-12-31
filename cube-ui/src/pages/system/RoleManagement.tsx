@@ -242,8 +242,24 @@ export default function RoleManagement() {
     <Box sx={{ m: -3 }}>
       <Paper sx={{ p: 3 }}>
         {/* 工具栏 */}
-        <Box sx={{ mb: 3 }}>
-          <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-start">
+        <Box 
+          sx={{ 
+            mb: 3,
+            p: 2,
+            border: 1,
+            borderColor: 'grey.300',
+            borderRadius: 1,
+            backgroundColor: 'grey.50'
+          }}
+        >
+          <Stack 
+            direction="row" 
+            spacing={2} 
+            alignItems="center" 
+            justifyContent="flex-start"
+            flexWrap="wrap"
+            sx={{ gap: 2 }}
+          >
             <TextField
               label={t('roleManagement.roleId')}
               size="small"
@@ -297,84 +313,96 @@ export default function RoleManagement() {
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={
-                        roles.some(role => selectedRoles.includes(role.roleId!)) &&
-                        !roles.every(role => selectedRoles.includes(role.roleId!))
-                      }
-                      checked={
-                        roles.length > 0 &&
-                        roles.every(role => selectedRoles.includes(role.roleId!))
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell>
-                  <TableCell>{t('roleManagement.roleId')}</TableCell>
-                  <TableCell>{t('roleManagement.roleName')}</TableCell>
-                  <TableCell>{t('roleManagement.description')}</TableCell>
-                  <TableCell>{t('roleManagement.createdTime')}</TableCell>
-                  <TableCell>{t('roleManagement.updatedTime')}</TableCell>
-                  <TableCell align="right">{t('roleManagement.operations')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {roles.length === 0 ? (
+          <Box sx={{ 
+            height: 'calc(100vh - 300px)', 
+            minHeight: 400,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <TableContainer sx={{ 
+              flex: 1, 
+              overflow: 'auto',
+              border: '1px solid rgba(224, 224, 224, 1)',
+              borderRadius: 1
+            }}>
+              <Table stickyHeader>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      {t('roleManagement.noData')}
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        indeterminate={
+                          roles.some(role => selectedRoles.includes(role.roleId!)) &&
+                          !roles.every(role => selectedRoles.includes(role.roleId!))
+                        }
+                        checked={
+                          roles.length > 0 &&
+                          roles.every(role => selectedRoles.includes(role.roleId!))
+                        }
+                        onChange={handleSelectAll}
+                      />
                     </TableCell>
+                    <TableCell>{t('roleManagement.roleId')}</TableCell>
+                    <TableCell>{t('roleManagement.roleName')}</TableCell>
+                    <TableCell>{t('roleManagement.description')}</TableCell>
+                    <TableCell>{t('roleManagement.isSystem')}</TableCell>
+                    <TableCell>{t('roleManagement.createdTime')}</TableCell>
+                    <TableCell align="right">{t('roleManagement.operations')}</TableCell>
                   </TableRow>
-                ) : (
-                  roles.map((role) => (
-                    <TableRow key={role.roleId} hover>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedRoles.includes(role.roleId!)}
-                          onChange={() => handleSelectOne(role.roleId!)}
-                        />
-                      </TableCell>
-                      <TableCell>{role.roleId}</TableCell>
-                      <TableCell>{role.roleName}</TableCell>
-                      <TableCell>{role.description || '-'}</TableCell>
-                      <TableCell>
-                        {role.createdTime
-                          ? new Date(role.createdTime).toLocaleString()
-                          : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {role.updatedTime
-                          ? new Date(role.updatedTime).toLocaleString()
-                          : '-'}
-                      </TableCell>
-                      <TableCell align="right">
-                        <Tooltip title={t('roleManagement.edit')}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleOpenEdit(role)}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t('roleManagement.delete')}>
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeleteRole(role.roleId!)}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                </TableHead>
+                <TableBody>
+                  {roles.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        {t('roleManagement.noData')}
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    roles.map((role) => (
+                      <TableRow key={role.roleId} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedRoles.includes(role.roleId!)}
+                            onChange={() => handleSelectOne(role.roleId!)}
+                          />
+                        </TableCell>
+                        <TableCell>{role.roleId}</TableCell>
+                        <TableCell>{role.roleName}</TableCell>
+                        <TableCell>{role.description || '-'}</TableCell>
+                        <TableCell>
+                          {role.isSystem ? t('roleManagement.yes') : t('roleManagement.no')}
+                        </TableCell>
+                        <TableCell>
+                          {role.createdTime
+                            ? new Date(role.createdTime).toLocaleString()
+                            : '-'}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Tooltip title={t('roleManagement.edit')}>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleOpenEdit(role)}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={t('roleManagement.delete')}>
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeleteRole(role.roleId!)}
+                              disabled={role.isSystem}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
             <TablePagination
               rowsPerPageOptions={[20, 50, 100]}
               component="div"
@@ -388,7 +416,7 @@ export default function RoleManagement() {
                 `${from}-${to} ${t('common.of')} ${count !== -1 ? count : `${to}+`} ${t('common.items')}`
               }
             />
-          </TableContainer>
+          </Box>
         )}
       </Paper>
 

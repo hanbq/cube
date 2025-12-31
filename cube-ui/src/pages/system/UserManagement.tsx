@@ -277,8 +277,24 @@ export default function UserManagement() {
     <Box sx={{ m: -3 }}>
       <Paper sx={{ p: 3 }}>
         {/* 工具栏 */}
-        <Box sx={{ mb: 3 }}>
-          <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-start">
+        <Box 
+          sx={{ 
+            mb: 3,
+            p: 2,
+            border: 1,
+            borderColor: 'grey.300',
+            borderRadius: 1,
+            backgroundColor: 'grey.50'
+          }}
+        >
+          <Stack 
+            direction="row" 
+            spacing={2} 
+            alignItems="center" 
+            justifyContent="flex-start"
+            flexWrap="wrap"
+            sx={{ gap: 2 }}
+          >
             <TextField
               label={t('userManagement.userId')}
               size="small"
@@ -344,88 +360,101 @@ export default function UserManagement() {
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={
-                        users.some(user => selectedUsers.includes(user.userId!)) &&
-                        !users.every(user => selectedUsers.includes(user.userId!))
-                      }
-                      checked={
-                        users.length > 0 &&
-                        users.every(user => selectedUsers.includes(user.userId!))
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell>
-                  <TableCell>{t('userManagement.userId')}</TableCell>
-                  <TableCell>{t('userManagement.username')}</TableCell>
-                  <TableCell>{t('userManagement.email')}</TableCell>
-                  <TableCell>{t('userManagement.status')}</TableCell>
-                  <TableCell>{t('userManagement.isSuperAdmin')}</TableCell>
-                  <TableCell>{t('userManagement.createdTime')}</TableCell>
-                  <TableCell align="right">{t('userManagement.operations')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.length === 0 ? (
+          <Box sx={{ 
+            height: 'calc(100vh - 300px)', 
+            minHeight: 400,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <TableContainer sx={{ 
+              flex: 1, 
+              overflow: 'auto',
+              border: '1px solid rgba(224, 224, 224, 1)',
+              borderRadius: 1
+            }}>
+              <Table stickyHeader>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      {t('userManagement.noData')}
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        indeterminate={
+                          users.some(user => selectedUsers.includes(user.userId!)) &&
+                          !users.every(user => selectedUsers.includes(user.userId!))
+                        }
+                        checked={
+                          users.length > 0 &&
+                          users.every(user => selectedUsers.includes(user.userId!))
+                        }
+                        onChange={handleSelectAll}
+                      />
                     </TableCell>
+                    <TableCell>{t('userManagement.userId')}</TableCell>
+                    <TableCell>{t('userManagement.username')}</TableCell>
+                    <TableCell>{t('userManagement.email')}</TableCell>
+                    <TableCell>{t('userManagement.status')}</TableCell>
+                    <TableCell>{t('userManagement.isSuperAdmin')}</TableCell>
+                    <TableCell>{t('userManagement.createdTime')}</TableCell>
+                    <TableCell align="right">{t('userManagement.operations')}</TableCell>
                   </TableRow>
-                ) : (
-                  users.map((user) => (
-                    <TableRow key={user.userId} hover>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedUsers.includes(user.userId!)}
-                          onChange={() => handleSelectOne(user.userId!)}
-                        />
-                      </TableCell>
-                      <TableCell>{user.userId}</TableCell>
-                      <TableCell>{user.username}</TableCell>
-                      <TableCell>{user.email || '-'}</TableCell>
-                      <TableCell>
-                        {user.status === USER_STATUS.ACTIVE
-                          ? t('userManagement.active')
-                          : user.status === USER_STATUS.INACTIVE
-                          ? t('userManagement.inactive')
-                          : '-'}
-                      </TableCell>
-                      <TableCell>{user.isSuperAdmin ? t('userManagement.yes') : t('userManagement.no')}</TableCell>
-                      <TableCell>
-                        {user.createdTime
-                          ? new Date(user.createdTime).toLocaleString()
-                          : '-'}
-                      </TableCell>
-                      <TableCell align="right">
-                        <Tooltip title={t('userManagement.edit')}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleOpenEdit(user)}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t('userManagement.delete')}>
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeleteUser(user.userId!)}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                </TableHead>
+                <TableBody>
+                  {users.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} align="center">
+                        {t('userManagement.noData')}
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    users.map((user) => (
+                      <TableRow key={user.userId} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedUsers.includes(user.userId!)}
+                            onChange={() => handleSelectOne(user.userId!)}
+                          />
+                        </TableCell>
+                        <TableCell>{user.userId}</TableCell>
+                        <TableCell>{user.username}</TableCell>
+                        <TableCell>{user.email || '-'}</TableCell>
+                        <TableCell>
+                          {user.status === USER_STATUS.ACTIVE
+                            ? t('userManagement.active')
+                            : user.status === USER_STATUS.INACTIVE
+                            ? t('userManagement.inactive')
+                            : '-'}
+                        </TableCell>
+                        <TableCell>{user.isSuperAdmin ? t('userManagement.yes') : t('userManagement.no')}</TableCell>
+                        <TableCell>
+                          {user.createdTime
+                            ? new Date(user.createdTime).toLocaleString()
+                            : '-'}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Tooltip title={t('userManagement.edit')}>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleOpenEdit(user)}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={t('userManagement.delete')}>
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeleteUser(user.userId!)}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
             <TablePagination
               rowsPerPageOptions={[20, 50, 100]}
               component="div"
@@ -439,7 +468,7 @@ export default function UserManagement() {
                 `${from}-${to} ${t('common.of')} ${count !== -1 ? count : `${to}+`} ${t('common.items')}`
               }
             />
-          </TableContainer>
+          </Box>
         )}
       </Paper>
 

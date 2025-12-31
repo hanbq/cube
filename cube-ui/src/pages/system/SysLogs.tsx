@@ -4,8 +4,6 @@ import {
   Box,
   Paper,
   Button,
-  IconButton,
-  Tooltip,
   Alert,
   Snackbar,
   CircularProgress,
@@ -16,13 +14,17 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Checkbox,
   TextField,
   Stack,
   Select,
+  Tooltip,
   MenuItem,
   FormControl,
   InputLabel,
+  Typography,
+  Chip,
+  Checkbox,
+  IconButton,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -30,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import { sysLogService } from '../../services/sysLogService';
 import type { SYSSysLog, SYSLogParam } from '../../types/syslog';
+import { LOG_STATUS } from '../../constants/logConstants';
 
 export default function SysLogs() {
   const { t } = useTranslation();
@@ -116,12 +119,20 @@ export default function SysLogs() {
     }
   };
 
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleSelectAll(event);
+  };
+
   const handleSelectOne = (logId: number) => {
     setSelectedLogs((prev) =>
       prev.includes(logId)
         ? prev.filter((id) => id !== logId)
         : [...prev, logId]
     );
+  };
+
+  const handleSelectClick = (logId: number) => {
+    handleSelectOne(logId);
   };
 
   const handleDeleteLog = async (logId: number) => {
@@ -143,6 +154,10 @@ export default function SysLogs() {
         });
       }
     }
+  };
+
+  const handleDelete = async (logId: number) => {
+    handleDeleteLog(logId);
   };
 
   const handleBatchDelete = async () => {
@@ -179,8 +194,25 @@ export default function SysLogs() {
   return (
     <Box sx={{ m: -3 }}>
       <Paper sx={{ p: 3 }}>
-        <Box sx={{ mb: 3 }}>
-          <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-start" flexWrap="wrap">
+        {/* 工具栏 */}
+        <Box 
+          sx={{ 
+            mb: 3,
+            p: 2,
+            border: 1,
+            borderColor: 'grey.300',
+            borderRadius: 1,
+            backgroundColor: 'grey.50'
+          }}
+        >
+          <Stack 
+            direction="row" 
+            spacing={2} 
+            alignItems="center" 
+            justifyContent="flex-start"
+            flexWrap="wrap"
+            sx={{ gap: 2 }}
+          >
             <FormControl size="small" sx={{ width: 150 }}>
               <InputLabel id="status-select-label">{t('sysLogManagement.status')}</InputLabel>
               <Select
@@ -276,84 +308,99 @@ export default function SysLogs() {
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={
-                        logs.some(log => selectedLogs.includes(log.logId!)) &&
-                        !logs.every(log => selectedLogs.includes(log.logId!))
-                      }
-                      checked={
-                        logs.length > 0 &&
-                        logs.every(log => selectedLogs.includes(log.logId!))
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell>
-                  <TableCell>ID</TableCell>
-                  <TableCell>{t('sysLogManagement.status')}</TableCell>
-                  <TableCell>{t('sysLogManagement.username')}</TableCell>
-                  <TableCell>{t('sysLogManagement.operation')}</TableCell>
-                  <TableCell>{t('sysLogManagement.method')}</TableCell>
-                  <TableCell>{t('sysLogManagement.params')}</TableCell>
-                  <TableCell>{t('sysLogManagement.ip')}</TableCell>
-                  <TableCell>{t('sysLogManagement.createdTime')}</TableCell>
-                  <TableCell align="right">{t('sysLogManagement.operations')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {logs.length === 0 ? (
+          <Box sx={{ 
+            height: 'calc(100vh - 300px)', 
+            minHeight: 400,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <TableContainer sx={{ 
+              flex: 1, 
+              overflow: 'auto',
+              border: '1px solid rgba(224, 224, 224, 1)',
+              borderRadius: 1
+            }}>
+              <Table stickyHeader>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={10} align="center">
-                      {t('sysLogManagement.noData')}
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        indeterminate={selectedLogs.length > 0 && selectedLogs.length < logs.length}
+                        checked={logs.length > 0 && selectedLogs.length === logs.length}
+                        onChange={handleSelectAllClick}
+                      />
                     </TableCell>
+                    <TableCell>ID</TableCell>
+                    <TableCell>{t('sysLogManagement.status')}</TableCell>
+                    <TableCell>{t('sysLogManagement.username')}</TableCell>
+                    <TableCell>{t('sysLogManagement.operation')}</TableCell>
+                    <TableCell>{t('sysLogManagement.method')}</TableCell>
+                    <TableCell>{t('sysLogManagement.params')}</TableCell>
+                    <TableCell sx={{ minWidth: 180 }}>{t('sysLogManagement.createdTime')}</TableCell>
+                    <TableCell>{t('sysLogManagement.ip')}</TableCell>
+                    <TableCell>{t('sysLogManagement.operations')}</TableCell>
                   </TableRow>
-                ) : (
-                  logs.map((log) => (
-                    <TableRow key={log.logId} hover>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedLogs.includes(log.logId!)}
-                          onChange={() => handleSelectOne(log.logId!)}
-                        />
-                      </TableCell>
-                      <TableCell>{log.logId}</TableCell>
-                      <TableCell>{log.status || '-'}</TableCell>
-                      <TableCell>{log.username || '-'}</TableCell>
-                      <TableCell>{log.operation || '-'}</TableCell>
-                      <TableCell>{log.method || '-'}</TableCell>
-                      <TableCell>
-                        <Box sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          <Tooltip title={log.params || '-'}>
-                            <span>{log.params || '-'}</span>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                      <TableCell>{log.ip || '-'}</TableCell>
-                      <TableCell>
-                        {log.createdTime
-                          ? new Date(log.createdTime).toLocaleString()
-                          : '-'}
-                      </TableCell>
-                      <TableCell align="right">
-                        <Tooltip title={t('sysLogManagement.delete')}>
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeleteLog(log.logId!)}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                </TableHead>
+                <TableBody>
+                  {logs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={10} align="center">
+                        {t('sysLogManagement.noData')}
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    logs.map((log) => (
+                      <TableRow key={log.logId} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={selectedLogs.includes(log.logId)}
+                            onChange={() => handleSelectClick(log.logId)}
+                          />
+                        </TableCell>
+                        <TableCell>{log.logId}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={log.status === LOG_STATUS.SUCCESS ? t('common.success') : t('common.failure')}
+                            color={log.status === LOG_STATUS.SUCCESS ? 'success' : 'error'}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>{log.username || '-'}</TableCell>
+                        <TableCell>{log.operation}</TableCell>
+                        <TableCell>{log.method}</TableCell>
+                        <TableCell>
+                          {log.params ? (
+                            <Tooltip title={JSON.stringify(log.params, null, 2)} arrow>
+                              <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {JSON.stringify(log.params)}
+                              </Typography>
+                            </Tooltip>
+                          ) : (
+                            '-'
+                          )}
+                        </TableCell>
+                        <TableCell sx={{ minWidth: 180 }}>
+                          {log.createdTime ? new Date(log.createdTime).toLocaleString() : '-'}
+                        </TableCell>
+                        <TableCell>{log.ip || '-'}</TableCell>
+                        <TableCell>
+                          <IconButton
+                            color="error"
+                            size="small"
+                            onClick={() => handleDelete(log.logId)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
             <TablePagination
               rowsPerPageOptions={[20, 50, 100]}
               component="div"
@@ -367,7 +414,7 @@ export default function SysLogs() {
                 `${from}-${to} ${t('common.of')} ${count !== -1 ? count : `${to}+`} ${t('common.items')}`
               }
             />
-          </TableContainer>
+          </Box>
         )}
       </Paper>
 
