@@ -36,6 +36,21 @@ const linearTheme = createTheme({
     info: {
       main: '#79c0ff',      // 信息蓝色
     },
+    // 登录/注册页面自定义颜色
+    // @ts-ignore - 添加自定义 login 颜色配置
+    login: {
+      background: 'linear-gradient(135deg, #0d1117 0%, #161b22 15%, #0d1117 30%, #0070f3 50%, #0d1117 70%, #161b22 85%, #0d1117 100%)',
+      backgroundRadial: 'radial-gradient(ellipse at 30% 20%, rgba(0, 112, 243, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(121, 40, 202, 0.25) 0%, transparent 50%)',
+      backgroundLinear: 'linear-gradient(45deg, transparent 0%, rgba(0, 112, 243, 0.08) 25%, transparent 50%, rgba(0, 112, 243, 0.1) 75%, transparent 100%)',
+      cardBackground: 'linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(13, 17, 23, 0.98) 50%, rgba(22, 27, 34, 0.95) 100%)',
+      cardBorder: 'linear-gradient(135deg, rgba(0, 112, 243, 0.4) 0%, rgba(121, 40, 202, 0.6) 50%, rgba(0, 112, 243, 0.4) 100%)',
+      buttonGradient: 'linear-gradient(135deg, #0070f3 0%, #0051cc 25%, #7928ca 50%, #0051cc 75%, #0070f3 100%)',
+      buttonHoverGradient: 'linear-gradient(135deg, #66a3ff 0%, #0070f3 25%, #a855f7 50%, #0070f3 75%, #66a3ff 100%)',
+      inputBackground: 'rgba(13, 17, 23, 0.7)',
+      inputBorder: 'rgba(0, 112, 243, 0.2)',
+      inputBorderHover: 'rgba(0, 112, 243, 0.5)',
+      borderTop: 'rgba(0, 112, 243, 0.15)',
+    },
   },
   typography: {
     fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',

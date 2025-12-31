@@ -382,9 +382,6 @@ export default function RoleManagement() {
                         <TableCell>{role.roleName}</TableCell>
                         <TableCell>{role.description || '-'}</TableCell>
                         <TableCell>
-                          {role.isSystem ? t('roleManagement.yes') : t('roleManagement.no')}
-                        </TableCell>
-                        <TableCell>
                           {role.createdTime
                             ? new Date(role.createdTime).toLocaleString()
                             : '-'}
@@ -403,7 +400,6 @@ export default function RoleManagement() {
                               size="small"
                               color="error"
                               onClick={() => handleDeleteRole(role.roleId!)}
-                              disabled={role.isSystem}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>

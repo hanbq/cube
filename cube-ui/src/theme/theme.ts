@@ -33,6 +33,21 @@ const theme = createTheme({
     warning: {
       main: '#d4a574',
     },
+    // 登录/注册页面自定义颜色
+    // @ts-ignore - 添加自定义 login 颜色配置
+    login: {
+      background: 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 15%, #d5e0cc 30%, #88b04b 50%, #d5e0cc 70%, #f0f4ed 85%, #e8ede3 100%)',
+      backgroundRadial: 'radial-gradient(ellipse at 30% 20%, rgba(136, 176, 75, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(163, 197, 103, 0.25) 0%, transparent 50%)',
+      backgroundLinear: 'linear-gradient(45deg, transparent 0%, rgba(45, 80, 22, 0.08) 25%, transparent 50%, rgba(136, 176, 75, 0.1) 75%, transparent 100%)',
+      cardBackground: 'linear-gradient(135deg, rgba(250, 252, 248, 0.95) 0%, rgba(245, 248, 240, 0.98) 50%, rgba(250, 252, 248, 0.95) 100%)',
+      cardBorder: 'linear-gradient(135deg, rgba(136, 176, 75, 0.4) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(136, 176, 75, 0.4) 100%)',
+      buttonGradient: 'linear-gradient(135deg, #88b04b 0%, #6d8f3a 25%, #2d5016 50%, #6d8f3a 75%, #88b04b 100%)',
+      buttonHoverGradient: 'linear-gradient(135deg, #a3c567 0%, #88b04b 25%, #2d5016 50%, #88b04b 75%, #a3c567 100%)',
+      inputBackground: 'rgba(255, 255, 255, 0.7)',
+      inputBorder: 'rgba(45, 80, 22, 0.2)',
+      inputBorderHover: 'rgba(136, 176, 75, 0.5)',
+      borderTop: 'rgba(45, 80, 22, 0.15)',
+    },
   },
   typography: {
     fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif',

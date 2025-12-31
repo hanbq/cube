@@ -12,6 +12,7 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@mui/material';
+
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
@@ -23,59 +24,45 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import { authService } from '../services/authService';
 import { useAuthStore } from '../store/authStore';
 
-interface LoginState {
-  username: string;
-  password: string;
-  showPassword: boolean;
-  loading: boolean;
-  error: string | null;
-  rememberMe: boolean;
+interface LoginProps {
+  navigate: (path: string) => void;
+  t?: any;
+  setAuth: (token: string, userInfo: any) => void;
 }
 
-class LoginClass extends React.Component<{ navigate: (path: string) => void; t?: any; setAuth: (token: string, userInfo: any) => void }, LoginState> {
-  constructor(props: { navigate: (path: string) => void; t?: any; setAuth: (token: string, userInfo: any) => void }) {
-    super(props);
-    
-    const savedUsername = localStorage.getItem('savedUsername') || '';
-    const savedPassword = localStorage.getItem('savedPassword') || '';
-    const savedRememberMe = localStorage.getItem('savedRememberMe') === 'true';
-    
-    this.state = {
-      username: savedUsername,
-      password: savedPassword,
-      showPassword: false,
-      loading: false,
-      error: null,
-      rememberMe: savedRememberMe,
-    };
-  }
+function LoginClass({ navigate, t, setAuth }: LoginProps) {
+  const [username, setUsername] = React.useState(localStorage.getItem('savedUsername') || '');
 
-  handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ username: event.target.value });
+  const [password, setPassword] = React.useState(localStorage.getItem('savedPassword') || '');
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [rememberMe, setRememberMe] = React.useState(localStorage.getItem('savedRememberMe') === 'true');
+
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
   };
 
-  handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ password: event.target.value });
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
   };
 
-  handleTogglePassword = () => {
-    this.setState((prevState) => ({ showPassword: !prevState.showPassword }));
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
-  handleRememberMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ rememberMe: event.target.checked });
+  const handleRememberMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRememberMe(event.target.checked);
   };
 
-  handleLogin = async () => {
-    const { username, password, rememberMe } = this.state;
-    const { t } = this.props;
-
+  const handleLogin = async () => {
     if (!username || !password) {
-      this.setState({ error: t?.('login.validationError') || '请输入用户名和密码' });
+      setError(t?.('login.validationError') || '请输入用户名和密码');
       return;
     }
 
-    this.setState({ loading: true, error: null });
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await authService.login({ username, password });
@@ -90,33 +77,26 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
         localStorage.removeItem('savedRememberMe');
       }
 
-      this.props.setAuth(response.token, response.userInfo);
-
-      this.props.navigate('/');
+      setAuth(response.token, response.userInfo);
+      navigate('/');
     } catch (error: any) {
       console.error('Login failed:', error);
-      this.setState({
-        error: error.message || t?.('login.loginError') || '登录失败，请检查用户名和密码',
-        loading: false,
-      });
+      setError(error.message || t?.('login.loginError') || '登录失败，请检查用户名和密码');
+      setLoading(false);
     }
   };
 
-  handleKeyPress = (event: React.KeyboardEvent) => {
+  const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      this.handleLogin();
+      handleLogin();
     }
   };
 
-  handleRegister = () => {
-    this.props.navigate('/register');
+  const handleRegister = () => {
+    navigate('/register');
   };
 
-  render() {
-    const { username, password, showPassword, loading, error, rememberMe } = this.state;
-    const { t } = this.props;
-
-    return (
+  return (
       <Box
         sx={{
           width: '100vw',
@@ -127,7 +107,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 15%, #d5e0cc 30%, #88b04b 50%, #d5e0cc 70%, #f0f4ed 85%, #e8ede3 100%)',
+          background: theme => theme.palette.login?.background || 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 15%, #d5e0cc 30%, #88b04b 50%, #d5e0cc 70%, #f0f4ed 85%, #e8ede3 100%)',
           overflow: 'hidden',
           '&::before': {
             content: '""',
@@ -136,7 +116,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'radial-gradient(ellipse at 30% 20%, rgba(136, 176, 75, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(163, 197, 103, 0.25) 0%, transparent 50%)',
+            background: theme => theme.palette.login?.backgroundRadial || 'radial-gradient(ellipse at 30% 20%, rgba(136, 176, 75, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(163, 197, 103, 0.25) 0%, transparent 50%)',
             pointerEvents: 'none',
           },
           '&::after': {
@@ -146,7 +126,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'linear-gradient(45deg, transparent 0%, rgba(45, 80, 22, 0.08) 25%, transparent 50%, rgba(136, 176, 75, 0.1) 75%, transparent 100%)',
+            background: theme => theme.palette.login?.backgroundLinear || 'linear-gradient(45deg, transparent 0%, rgba(45, 80, 22, 0.08) 25%, transparent 50%, rgba(136, 176, 75, 0.1) 75%, transparent 100%)',
             pointerEvents: 'none',
           },
         }}
@@ -160,11 +140,11 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
             width: '420px',
             padding: '48px 40px',
             borderRadius: '16px',
-            background: 'linear-gradient(135deg, rgba(250, 252, 248, 0.95) 0%, rgba(245, 248, 240, 0.98) 50%, rgba(250, 252, 248, 0.95) 100%)',
+            background: theme => theme.palette.login?.cardBackground || 'linear-gradient(135deg, rgba(250, 252, 248, 0.95) 0%, rgba(245, 248, 240, 0.98) 50%, rgba(250, 252, 248, 0.95) 100%)',
             backdropFilter: 'blur(20px)',
             border: '2px solid',
-            borderImage: 'linear-gradient(135deg, rgba(136, 176, 75, 0.4) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(136, 176, 75, 0.4) 100%) 1',
-            boxShadow: '0 12px 40px rgba(45, 80, 22, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.8)',
+            borderImage: theme => theme.palette.login?.cardBorder || 'linear-gradient(135deg, rgba(136, 176, 75, 0.4) 0%, rgba(45, 80, 22, 0.6) 50%, rgba(136, 176, 75, 0.4) 100%) 1',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.8)',
             position: 'relative',
             '&::before': {
               content: '""',
@@ -173,7 +153,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'radial-gradient(circle at 50% 0%, rgba(136, 176, 75, 0.15) 0%, transparent 70%)',
+              background: 'radial-gradient(circle at 50% 0%, rgba(0, 112, 243, 0.15) 0%, transparent 70%)',
               borderRadius: '16px',
               pointerEvents: 'none',
             },
@@ -185,14 +165,14 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                 fontSize: 72,
                 color: 'primary.main',
                 mb: 2.5,
-                filter: 'drop-shadow(0 4px 12px rgba(45, 80, 22, 0.35))',
+                filter: 'drop-shadow(0 4px 12px rgba(0, 112, 243, 0.35))',
               }}
             />
             <Typography
               variant="h3"
               sx={{
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #88b04b 0%, #2d5016 50%, #88b04b 100%)',
+                background: theme => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 50%, ${theme.palette.primary.main} 100%)`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -226,8 +206,8 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               fullWidth
               label={t?.('login.username') || '用户名'}
               value={username}
-              onChange={this.handleUsernameChange}
-              onKeyDown={this.handleKeyPress}
+              onChange={handleUsernameChange}
+              onKeyDown={handleKeyPress}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -239,14 +219,14 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  background: 'rgba(255, 255, 255, 0.7)',
+                  background: theme => theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
                   borderRadius: '12px',
                   '& fieldset': {
-                    borderColor: 'rgba(45, 80, 22, 0.2)',
+                    borderColor: theme => theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
                     borderWidth: '2px',
                   },
                   '&:hover fieldset': {
-                    borderColor: 'rgba(136, 176, 75, 0.5)',
+                    borderColor: theme => theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
                   },
                   '&.Mui-focused fieldset': {
                     borderColor: 'primary.main',
@@ -263,8 +243,8 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               label={t?.('login.password') || '密码'}
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={this.handlePasswordChange}
-              onKeyDown={this.handleKeyPress}
+              onChange={handlePasswordChange}
+              onKeyDown={handleKeyPress}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -274,7 +254,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={this.handleTogglePassword} edge="end">
+                      <IconButton onClick={handleTogglePassword} edge="end">
                         {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                       </IconButton>
                     </InputAdornment>
@@ -283,14 +263,14 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  background: 'rgba(255, 255, 255, 0.7)',
+                  background: theme => theme.palette.login?.inputBackground || 'rgba(255, 255, 255, 0.7)',
                   borderRadius: '12px',
                   '& fieldset': {
-                    borderColor: 'rgba(45, 80, 22, 0.2)',
+                    borderColor: theme => theme.palette.login?.inputBorder || 'rgba(45, 80, 22, 0.2)',
                     borderWidth: '2px',
                   },
                   '&:hover fieldset': {
-                    borderColor: 'rgba(136, 176, 75, 0.5)',
+                    borderColor: theme => theme.palette.login?.inputBorderHover || 'rgba(136, 176, 75, 0.5)',
                   },
                   '&.Mui-focused fieldset': {
                     borderColor: 'primary.main',
@@ -306,7 +286,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               control={
                 <Checkbox
                   checked={rememberMe}
-                  onChange={this.handleRememberMeChange}
+                  onChange={handleRememberMeChange}
                   sx={{
                     color: 'primary.main',
                     '&.Mui-checked': {
@@ -328,7 +308,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
               fullWidth
               variant="contained"
               size="large"
-              onClick={this.handleLogin}
+              onClick={handleLogin}
               disabled={loading}
               sx={{
                 mt: 2,
@@ -337,8 +317,8 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                 fontSize: '1.1rem',
                 fontWeight: 600,
                 letterSpacing: '1px',
-                background: 'linear-gradient(135deg, #88b04b 0%, #6d8f3a 25%, #2d5016 50%, #6d8f3a 75%, #88b04b 100%)',
-                boxShadow: '0 6px 20px rgba(45, 80, 22, 0.35)',
+                background: theme => theme.palette.login?.buttonGradient || 'linear-gradient(135deg, #88b04b 0%, #6d8f3a 25%, #2d5016 50%, #6d8f3a 75%, #88b04b 100%)',
+                boxShadow: theme => `0 6px 20px ${theme.palette.mode === 'dark' ? 'rgba(0, 112, 243, 0.35)' : 'rgba(45, 80, 22, 0.35)'}`,
                 position: 'relative',
                 overflow: 'hidden',
                 '&::before': {
@@ -352,8 +332,8 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                   transition: 'left 0.5s',
                 },
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #a3c567 0%, #88b04b 25%, #2d5016 50%, #88b04b 75%, #a3c567 100%)',
-                  boxShadow: '0 8px 24px rgba(45, 80, 22, 0.45)',
+                  background: theme => theme.palette.login?.buttonHoverGradient || 'linear-gradient(135deg, #a3c567 0%, #88b04b 25%, #2d5016 50%, #88b04b 75%, #a3c567 100%)',
+                  boxShadow: theme => `0 8px 24px ${theme.palette.mode === 'dark' ? 'rgba(0, 112, 243, 0.45)' : 'rgba(45, 80, 22, 0.45)'}`,
                   '&::before': {
                     left: '100%',
                   },
@@ -362,7 +342,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                   transform: 'scale(0.98)',
                 },
                 '&.Mui-disabled': {
-                  background: 'rgba(136, 176, 75, 0.5)',
+                  background: theme => theme.palette.primary.main + '80',
                   color: 'rgba(255, 255, 255, 0.7)',
                 },
               }}
@@ -379,7 +359,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
             sx={{
               mt: 3,
               pt: 3,
-              borderTop: '1px solid rgba(45, 80, 22, 0.15)',
+              borderTop: theme => `1px solid ${theme.palette.login?.borderTop || 'rgba(45, 80, 22, 0.15)'}`,
               display: 'flex',
               justifyContent: 'center',
               gap: 2,
@@ -411,7 +391,7 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
                   color: 'primary.main',
                 },
               }}
-              onClick={this.handleRegister}
+              onClick={handleRegister}
             >
               {t?.('login.register') || '注册账号'}
             </Typography>
@@ -419,7 +399,6 @@ class LoginClass extends React.Component<{ navigate: (path: string) => void; t?:
         </Card>
       </Box>
     );
-  }
 }
 
 export default function Login() {
