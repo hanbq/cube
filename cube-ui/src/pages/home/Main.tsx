@@ -75,17 +75,14 @@ class MainClass extends React.Component<MainProps> {
         }}
       >
         <Box
+          className="breadcrumb-container"
           sx={{
             px: 2,
             py: 1,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-            backdropFilter: 'blur(10px)',
           }}
         >
           <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" sx={{ color: 'text.secondary' }} />}
+            separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
           >
             {breadcrumbs.map((crumb, index) => {
@@ -97,7 +94,6 @@ class MainClass extends React.Component<MainProps> {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    color: 'primary.main',
                     fontWeight: 600,
                     fontSize: '0.875rem',
                   }}

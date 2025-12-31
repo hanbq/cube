@@ -65,7 +65,7 @@ class HomeClass extends React.Component<HomeProps> {
             flexGrow: 1,
             display: 'flex',
             overflow: 'hidden',
-            background: 'linear-gradient(135deg, #e8ede3 0%, #f0f4ed 20%, #f5f8f0 40%, #fafcf8 50%, #f5f8f0 60%, #f0f4ed 80%, #e8ede3 100%)',
+            backgroundColor: 'background.default',
           }}
         >
           <Box sx={{ flexShrink: 0, overflow: 'auto' }}>
@@ -75,28 +75,7 @@ class HomeClass extends React.Component<HomeProps> {
             sx={{
               flexGrow: 1,
               overflow: 'auto',
-              background: 'linear-gradient(135deg, rgba(136, 176, 75, 0.12) 0%, rgba(109, 143, 58, 0.15) 15%, rgba(163, 197, 103, 0.18) 30%, rgba(136, 176, 75, 0.08) 50%, rgba(163, 197, 103, 0.18) 70%, rgba(109, 143, 58, 0.15) 85%, rgba(136, 176, 75, 0.12) 100%)',
-              position: 'relative',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'radial-gradient(ellipse at 20% 20%, rgba(136, 176, 75, 0.2) 0%, rgba(163, 197, 103, 0.15) 25%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(163, 197, 103, 0.18) 0%, rgba(136, 176, 75, 0.12) 25%, transparent 50%)',
-                pointerEvents: 'none',
-              },
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'linear-gradient(45deg, transparent 0%, rgba(136, 176, 75, 0.08) 25%, transparent 50%, rgba(163, 197, 103, 0.1) 75%, transparent 100%)',
-                pointerEvents: 'none',
-              },
+              backgroundColor: 'background.paper',
             }}
           >
             <Main />

@@ -184,6 +184,18 @@ theme.components.MuiCssBaseline = {
         pointerEvents: 'none',
       },
     },
+    '.breadcrumb-container': {
+      backgroundColor: 'rgba(255, 255, 255, 0.6)',
+      backdropFilter: 'blur(10px)',
+      borderBottom: '1px solid',
+      borderColor: 'rgba(45, 80, 22, 0.12)',
+      '& .MuiBreadcrumbs-separator': {
+        color: 'rgba(45, 80, 22, 0.7)',
+      },
+      '& .MuiTypography-root:last-child': {
+        color: '#2d5016',
+      },
+    },
   },
 };
 
