@@ -91,7 +91,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
               color="inherit"
               onClick={this.handleUserMenuOpen}
             >
-              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+              <Avatar sx={{ width: 32, height: 32 }}>
                 {userName.charAt(0).toUpperCase()}
               </Avatar>
             </IconButton>

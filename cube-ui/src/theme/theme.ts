@@ -137,6 +137,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#2d5016',
+        },
+      },
+    },
     MuiBadge: {
       styleOverrides: {
         badge: {
@@ -183,6 +190,12 @@ theme.components.MuiCssBaseline = {
         background: 'linear-gradient(180deg, rgba(136, 176, 75, 0.3) 0%, rgba(45, 80, 22, 0.5) 15%, rgba(26, 61, 10, 0.6) 30%, rgba(45, 80, 22, 0.7) 50%, rgba(26, 61, 10, 0.6) 70%, rgba(45, 80, 22, 0.5) 85%, rgba(136, 176, 75, 0.3) 100%)',
         pointerEvents: 'none',
       },
+      '& .MuiListItemIcon-root': {
+        color: 'rgba(45, 80, 22, 0.7)',
+      },
+      '& .Mui-selected .MuiListItemIcon-root': {
+        color: '#2d5016',
+      },
     },
     '.breadcrumb-container': {
       backgroundColor: 'rgba(255, 255, 255, 0.6)',
@@ -194,6 +207,12 @@ theme.components.MuiCssBaseline = {
       },
       '& .MuiTypography-root:last-child': {
         color: '#2d5016',
+      },
+      '& .MuiLink-root': {
+        color: 'rgba(45, 80, 22, 0.8)',
+        '&:hover': {
+          color: '#2d5016',
+        },
       },
     },
   },

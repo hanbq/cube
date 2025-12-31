@@ -234,7 +234,6 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
             <ListItemIcon sx={{ minWidth: collapsed ? 'auto' : 40 }}>
               <IconComponent
                 sx={{
-                  color: isSelected ? 'primary.main' : 'text.secondary',
                   fontSize: level > 0 ? '1.2rem' : '1.5rem',
                 }}
               />

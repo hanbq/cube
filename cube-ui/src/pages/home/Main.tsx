@@ -108,12 +108,8 @@ class MainClass extends React.Component<MainProps> {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    color: 'text.secondary',
                     cursor: 'pointer',
                     fontSize: '0.875rem',
-                    '&:hover': {
-                      color: 'primary.main',
-                    },
                   }}
                   onClick={() => this.handleNavigate(crumb.path)}
                 >
