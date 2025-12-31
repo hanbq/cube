@@ -25,6 +25,10 @@ import {
   Chip,
   Checkbox,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -46,6 +50,11 @@ export default function SysLogs() {
     message: '',
     severity: 'success' as 'success' | 'error',
   });
+  
+  // 删除确认对话框状态
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [logToDelete, setLogToDelete] = useState<number | null>(null);
+  const [isBatchDelete, setIsBatchDelete] = useState(false);
 
   const [queryState, setQueryState] = useState({
     searchUsername: '',
@@ -136,28 +145,50 @@ export default function SysLogs() {
   };
 
   const handleDeleteLog = async (logId: number) => {
-    if (window.confirm(t('sysLogManagement.confirmDelete'))) {
-      try {
-        await sysLogService.deleteSysLog(logId);
+    setLogToDelete(logId);
+    setIsBatchDelete(false);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async (logId: number) => {
+    handleDeleteLog(logId);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      if (isBatchDelete) {
+        await sysLogService.batchDeleteSysLogs(selectedLogs);
+        setSelectedLogs([]);
+        setSnackbar({
+          open: true,
+          message: t('sysLogManagement.batchDeleteSuccess'),
+          severity: 'success',
+        });
+      } else if (logToDelete !== null) {
+        await sysLogService.deleteSysLog(logToDelete);
         setSnackbar({
           open: true,
           message: t('sysLogManagement.deleteSuccess'),
           severity: 'success',
         });
-        await performSearch(queryState.page, queryState.rowsPerPage);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
       }
+      await performSearch(queryState.page, queryState.rowsPerPage);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setLogToDelete(null);
     }
   };
 
-  const handleDelete = async (logId: number) => {
-    handleDeleteLog(logId);
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setLogToDelete(null);
   };
 
   const handleBatchDelete = async () => {
@@ -170,25 +201,9 @@ export default function SysLogs() {
       return;
     }
 
-    if (window.confirm(t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length }))) {
-      try {
-        await sysLogService.batchDeleteSysLogs(selectedLogs);
-        setSelectedLogs([]);
-        setSnackbar({
-          open: true,
-          message: t('sysLogManagement.batchDeleteSuccess'),
-          severity: 'success',
-        });
-        await performSearch(queryState.page, queryState.rowsPerPage);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
-      }
-    }
+    setLogToDelete(null);
+    setIsBatchDelete(true);
+    setDeleteDialogOpen(true);
   };
 
   return (
@@ -442,6 +457,27 @@ export default function SysLogs() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* 删除确认对话框 */}
+      <Dialog 
+        open={deleteDialogOpen} 
+        onClose={cancelDelete}
+        PaperProps={{ sx: { minWidth: '200px' } }}
+      >
+        <DialogTitle>{t('sysLogManagement.confirmDelete')}</DialogTitle>
+        <DialogContent>
+          {isBatchDelete 
+            ? t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length })
+            : t('sysLogManagement.deleteWarning')
+          }
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete}>{t('common.cancel')}</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            {t('common.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

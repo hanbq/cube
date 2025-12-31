@@ -76,6 +76,11 @@ export default function UserManagement() {
     message: '',
     severity: 'success' as 'success' | 'error',
   });
+  
+  // 删除确认对话框状态
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [isBatchDelete, setIsBatchDelete] = useState(false);
 
   // 查询和分页状态
   const [queryState, setQueryState] = useState({
@@ -221,24 +226,48 @@ export default function UserManagement() {
 
   // 删除单个用户
   const handleDeleteUser = async (userId: number) => {
-    if (window.confirm(t('userManagement.confirmDelete'))) {
-      try {
-        await deleteUser(userId);
+    setUserToDelete(userId);
+    setIsBatchDelete(false);
+    setDeleteDialogOpen(true);
+  };
+
+  // 确认删除
+  const confirmDelete = async () => {
+    try {
+      if (isBatchDelete) {
+        await batchDeleteUsers(selectedUsers);
+        setSelectedUsers([]);
+        setSnackbar({
+          open: true,
+          message: t('userManagement.batchDeleteSuccess'),
+          severity: 'success',
+        });
+      } else if (userToDelete !== null) {
+        await deleteUser(userToDelete);
         setSnackbar({
           open: true,
           message: t('userManagement.deleteSuccess'),
           severity: 'success',
         });
-        await performSearch(queryState.page, queryState.rowsPerPage);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
       }
+      await performSearch(queryState.page, queryState.rowsPerPage);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
     }
+  };
+
+  // 取消删除
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setUserToDelete(null);
   };
 
   // 批量删除
@@ -252,25 +281,9 @@ export default function UserManagement() {
       return;
     }
 
-    if (window.confirm(t('userManagement.confirmBatchDelete', { count: selectedUsers.length }))) {
-      try {
-        await batchDeleteUsers(selectedUsers);
-        setSelectedUsers([]);
-        setSnackbar({
-          open: true,
-          message: t('userManagement.batchDeleteSuccess'),
-          severity: 'success',
-        });
-        await performSearch(queryState.page, queryState.rowsPerPage);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
-      }
-    }
+    setUserToDelete(null);
+    setIsBatchDelete(true);
+    setDeleteDialogOpen(true);
   };
 
   return (
@@ -587,6 +600,27 @@ export default function UserManagement() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* 删除确认对话框 */}
+      <Dialog 
+            open={deleteDialogOpen} 
+            onClose={cancelDelete}
+            PaperProps={{ sx: { minWidth: '200px' } }}
+          >
+            <DialogTitle>{t('userManagement.confirmDelete')}</DialogTitle>
+            <DialogContent>
+              {isBatchDelete 
+                ? t('userManagement.confirmBatchDelete', { count: selectedUsers.length })
+                : t('userManagement.deleteWarning')
+              }
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={cancelDelete}>{t('common.cancel')}</Button>
+              <Button onClick={confirmDelete} color="error" variant="contained">
+                {t('common.delete')}
+              </Button>
+            </DialogActions>
+          </Dialog>
     </Box>
   );
 }

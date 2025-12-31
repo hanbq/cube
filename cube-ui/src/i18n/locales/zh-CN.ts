@@ -176,6 +176,7 @@ export default {
       // 提示
       confirmDelete: '确定要删除这个角色吗?',
       confirmBatchDelete: '确定要删除选中的 {count} 个角色吗?',
+      deleteWarning: '确定要删除这个角色吗?',
       selectFirst: '请先选择要删除的角色',
       loadError: '加载失败: {message}',
 
@@ -238,6 +239,7 @@ export default {
       // 提示
       confirmDelete: '确定要删除这个用户吗?',
       confirmBatchDelete: '确定要删除选中的 {count} 个用户吗?',
+      deleteWarning: '确定要删除这个用户吗?',
       selectFirst: '请先选择要删除的用户',
       passwordHint: '留空则不修改密码',
 
@@ -284,6 +286,7 @@ export default {
       // 提示
       confirmDelete: '确定要删除这条日志吗?',
       confirmBatchDelete: '确定要删除选中的 {count} 条日志吗?',
+      deleteWarning: '确定要删除这条日志吗?',
       selectFirst: '请先选择要删除的日志',
 
       // 成功消息

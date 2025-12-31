@@ -175,6 +175,7 @@ export default {
       // Prompts
       confirmDelete: 'Are you sure you want to delete this role?',
       confirmBatchDelete: 'Are you sure you want to delete {count} selected role(s)?',
+      deleteWarning: 'Are you sure you want to delete this role?',
       selectFirst: 'Please select roles to delete first',
       loadError: 'Load failed: {message}',
 
@@ -238,6 +239,7 @@ export default {
       // Prompts
       confirmDelete: 'Are you sure you want to delete this user?',
       confirmBatchDelete: 'Are you sure you want to delete {count} selected users?',
+      deleteWarning: 'Are you sure you want to delete this user?',
       selectFirst: 'Please select users to delete first',
       passwordHint: 'Leave blank to keep current password',
 
@@ -284,6 +286,7 @@ export default {
       // Prompts
       confirmDelete: 'Are you sure you want to delete this log?',
       confirmBatchDelete: 'Are you sure you want to delete {count} selected logs?',
+      deleteWarning: 'Are you sure you want to delete this log?',
       selectFirst: 'Please select logs to delete first',
 
       // Success Messages

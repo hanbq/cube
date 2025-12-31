@@ -61,6 +61,11 @@ export default function RoleManagement() {
     message: '',
     severity: 'success' as 'success' | 'error',
   });
+  
+  // 删除确认对话框状态
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<number | null>(null);
+  const [isBatchDelete, setIsBatchDelete] = useState(false);
 
   // 查询和分页状态
   const [queryState, setQueryState] = useState({
@@ -186,24 +191,48 @@ export default function RoleManagement() {
 
   // 删除单个角色
   const handleDeleteRole = async (roleId: number) => {
-    if (window.confirm(t('roleManagement.confirmDelete'))) {
-      try {
-        await deleteRole(roleId);
+    setRoleToDelete(roleId);
+    setIsBatchDelete(false);
+    setDeleteDialogOpen(true);
+  };
+
+  // 确认删除
+  const confirmDelete = async () => {
+    try {
+      if (isBatchDelete) {
+        await batchDeleteRoles(selectedRoles);
+        setSelectedRoles([]);
+        setSnackbar({
+          open: true,
+          message: t('roleManagement.batchDeleteSuccess'),
+          severity: 'success',
+        });
+      } else if (roleToDelete !== null) {
+        await deleteRole(roleToDelete);
         setSnackbar({
           open: true,
           message: t('roleManagement.deleteSuccess'),
           severity: 'success',
         });
-        await performSearch(queryState.page, queryState.rowsPerPage);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
       }
+      await performSearch(queryState.page, queryState.rowsPerPage);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setRoleToDelete(null);
     }
+  };
+
+  // 取消删除
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setRoleToDelete(null);
   };
 
   // 批量删除
@@ -217,25 +246,9 @@ export default function RoleManagement() {
       return;
     }
 
-    if (window.confirm(t('roleManagement.confirmBatchDelete', { count: selectedRoles.length }))) {
-      try {
-        await batchDeleteRoles(selectedRoles);
-        setSelectedRoles([]);
-        setSnackbar({
-          open: true,
-          message: t('roleManagement.batchDeleteSuccess'),
-          severity: 'success',
-        });
-        await performSearch(queryState.page, queryState.rowsPerPage);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
-      }
-    }
+    setRoleToDelete(null);
+    setIsBatchDelete(true);
+    setDeleteDialogOpen(true);
   };
 
   return (
@@ -357,7 +370,6 @@ export default function RoleManagement() {
                     <TableCell>{t('roleManagement.roleId')}</TableCell>
                     <TableCell>{t('roleManagement.roleName')}</TableCell>
                     <TableCell>{t('roleManagement.description')}</TableCell>
-                    <TableCell>{t('roleManagement.isSystem')}</TableCell>
                     <TableCell>{t('roleManagement.createdTime')}</TableCell>
                     <TableCell align="right">{t('roleManagement.operations')}</TableCell>
                   </TableRow>
@@ -488,6 +500,27 @@ export default function RoleManagement() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* 删除确认对话框 */}
+      <Dialog 
+            open={deleteDialogOpen} 
+            onClose={cancelDelete}
+            PaperProps={{ sx: { minWidth: '200px' } }}
+          >
+            <DialogTitle>{t('roleManagement.confirmDelete')}</DialogTitle>
+            <DialogContent>
+              {isBatchDelete 
+                ? t('roleManagement.confirmBatchDelete', { count: selectedRoles.length })
+                : t('roleManagement.deleteWarning')
+              }
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={cancelDelete}>{t('common.cancel')}</Button>
+              <Button onClick={confirmDelete} color="error" variant="contained">
+                {t('common.delete')}
+              </Button>
+            </DialogActions>
+          </Dialog>
     </Box>
   );
 }
