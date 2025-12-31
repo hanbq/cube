@@ -192,8 +192,19 @@ export default function SysLogs() {
   };
 
   return (
-    <Box sx={{ m: -3 }}>
-      <Paper sx={{ p: 3 }}>
+    <Box sx={{ 
+      m: -3, 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column' 
+    }}>
+      <Paper sx={{ 
+        p: 3, 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}>
         {/* 工具栏 */}
         <Box 
           sx={{ 
@@ -309,7 +320,7 @@ export default function SysLogs() {
           </Box>
         ) : (
           <Box sx={{ 
-            height: 'calc(100vh - 300px)', 
+            flex: 1,
             minHeight: 400,
             overflow: 'hidden',
             display: 'flex',
