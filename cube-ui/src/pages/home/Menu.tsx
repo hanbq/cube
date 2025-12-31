@@ -76,7 +76,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
 
   componentDidUpdate(prevProps: MenuProps) {
     // 当currentPath变化时更新选中状态
-    if (prevProps.currentPath !== this.props.currentPath) {
+    if (prevProps.currentPath !== this.props.currentPath && this.props.currentPath) {
       this.updateSelectedPath(this.props.currentPath);
     }
     
@@ -111,7 +111,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
           }
           
           // 如果当前路径以菜单路径开头，记录为可能的匹配项
-          if (currentPath.startsWith(menu.path + '/')) {
+          if (menu.path && currentPath.startsWith(menu.path + '/')) {
             // 只有当找到更深层级的匹配时才更新
             if (level > bestMatchLevel) {
               bestMatch = menu;
@@ -121,7 +121,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
           
           // 递归搜索子菜单
           if (menu.children) {
-            const currentParents = [...parents, menu.menuId!];
+            const currentParents = menu.menuId ? [...parents, menu.menuId] : parents;
             const found = searchMenu(menu.children, currentParents, level + 1);
             if (found) {
               // 如果在子菜单中找到精确匹配，直接返回
@@ -146,7 +146,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
 
     const foundMenu = findMenuByPath(this.props.menus);
     if (foundMenu) {
-      this.setState({ selectedPath: foundMenu.path });
+      this.setState({ selectedPath: foundMenu.path || '' });
       
       // 展开所有父菜单
       if (parentMenusToExpand.length > 0) {
@@ -164,13 +164,15 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
   handleMenuItemClick = (menu: SYSMenu) => {
     // 如果有子菜单,切换展开状态
     if (menu.children && menu.children.length > 0) {
-      this.toggleExpand(menu.menuId!);
+      if (menu.menuId) {
+        this.toggleExpand(menu.menuId);
+      }
       // 如果父菜单没有component,不导航
       if (!menu.component) return;
     }
 
-    this.setState({ selectedPath: menu.path });
-    if (this.props.onNavigate) {
+    this.setState({ selectedPath: menu.path || '' });
+    if (this.props.onNavigate && menu.path) {
       this.props.onNavigate(menu.path);
     }
   };
@@ -201,7 +203,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
   getMenuLabel = (menu: SYSMenu) => {
     const { i18n } = this.props;
     if (i18n && i18n.language === 'en-US') {
-      return menu.menuNameEng;
+      return menu.menuNameEng || menu.menuName;
     }
     return menu.menuName;
   };
@@ -210,14 +212,14 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
     const { selectedPath, collapsed, expandedMenus } = this.state;
 
     return menus.map(menu => {
-      const IconComponent = iconMap[menu.iconCls] || DashboardIcon;
+      const IconComponent = menu.iconCls ? iconMap[menu.iconCls] : DashboardIcon;
       const hasChildren = menu.children && menu.children.length > 0;
       const isExpanded = menu.menuId ? expandedMenus.has(menu.menuId) : false;
       const isSelected = selectedPath === menu.path;
       const label = this.getMenuLabel(menu);
 
       const menuItem = (
-        <React.Fragment key={menu.menuId || menu.path}>
+        <React.Fragment key={menu.menuId || menu.path || Math.random()}>
           <ListItemButton
             selected={isSelected}
             onClick={() => this.handleMenuItemClick(menu)}
@@ -258,7 +260,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
           {hasChildren && !collapsed && (
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                {this.renderMenuItems(menu.children!, level + 1)}
+                {this.renderMenuItems(menu.children || [], level + 1)}
               </List>
             </Collapse>
           )}
@@ -266,7 +268,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
       );
 
       return collapsed && level === 0 ? (
-        <Tooltip key={menu.menuId || menu.path} title={label} placement="right">
+        <Tooltip key={menu.menuId || menu.path || Math.random()} title={label} placement="right">
           {menuItem}
         </Tooltip>
       ) : (
