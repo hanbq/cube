@@ -510,8 +510,8 @@ export default function RoleManagement() {
             <DialogTitle>{t('roleManagement.confirmDelete')}</DialogTitle>
             <DialogContent>
               {isBatchDelete 
-                ? t('roleManagement.confirmBatchDelete', { count: selectedRoles.length })
-                : t('roleManagement.deleteWarning')
+                ? t('roleManagement.confirmBatchDelete', { count: selectedRoles.length }, `确定要删除选中的 ${selectedRoles.length} 个角色吗?`)
+                : t('roleManagement.deleteWarning', undefined, '确定要删除这个角色吗?')
               }
             </DialogContent>
             <DialogActions>

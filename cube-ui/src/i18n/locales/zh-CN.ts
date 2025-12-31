@@ -108,7 +108,7 @@ export default {
       addChild: '添加子节点',
       confirmDelete: '确认删除',
       deleteWarning: '确定要删除菜单吗?',
-      deleteWithChildren: '此菜单包含 {count} 个子菜单,删除后子菜单也会被删除。',
+      deleteWithChildren: '此菜单包含 {{count}} 个子菜单,删除后子菜单也会被删除。',
       noData: '暂无菜单数据,点击"新建菜单"开始添加',
       loadError: '加载失败: {message}',
       backendTip: '提示: 请确保后端服务运行在 {url}',
@@ -175,7 +175,7 @@ export default {
 
       // 提示
       confirmDelete: '确定要删除这个角色吗?',
-      confirmBatchDelete: '确定要删除选中的 {count} 个角色吗?',
+      confirmBatchDelete: '确定要删除选中的 {{count}} 个角色吗?',
       deleteWarning: '确定要删除这个角色吗?',
       selectFirst: '请先选择要删除的角色',
       loadError: '加载失败: {message}',
@@ -238,7 +238,7 @@ export default {
 
       // 提示
       confirmDelete: '确定要删除这个用户吗?',
-      confirmBatchDelete: '确定要删除选中的 {count} 个用户吗?',
+      confirmBatchDelete: '确定要删除选中的 {{count}} 个用户吗?',
       deleteWarning: '确定要删除这个用户吗?',
       selectFirst: '请先选择要删除的用户',
       passwordHint: '留空则不修改密码',
@@ -285,7 +285,7 @@ export default {
 
       // 提示
       confirmDelete: '确定要删除这条日志吗?',
-      confirmBatchDelete: '确定要删除选中的 {count} 条日志吗?',
+      confirmBatchDelete: '确定要删除选中的 {{count}} 条日志吗?',
       deleteWarning: '确定要删除这条日志吗?',
       selectFirst: '请先选择要删除的日志',
 

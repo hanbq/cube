@@ -107,7 +107,7 @@ export default {
       addChild: 'Add Child',
       confirmDelete: 'Confirm Delete',
       deleteWarning: 'Are you sure you want to delete menu ?',
-      deleteWithChildren: 'This menu contains {count} sub-menu(s), which will also be deleted.',
+      deleteWithChildren: 'This menu contains {{count}} sub-menu(s), which will also be deleted.',
       noData: 'No menu data, click "Create Menu" to get started',
       loadError: 'Load failed: {message}',
       backendTip: 'Tip: Please ensure the backend service is running at {url}',
@@ -174,7 +174,7 @@ export default {
 
       // Prompts
       confirmDelete: 'Are you sure you want to delete this role?',
-      confirmBatchDelete: 'Are you sure you want to delete {count} selected role(s)?',
+      confirmBatchDelete: 'Are you sure you want to delete {{count}} selected role(s)?',
       deleteWarning: 'Are you sure you want to delete this role?',
       selectFirst: 'Please select roles to delete first',
       loadError: 'Load failed: {message}',
@@ -238,7 +238,7 @@ export default {
 
       // Prompts
       confirmDelete: 'Are you sure you want to delete this user?',
-      confirmBatchDelete: 'Are you sure you want to delete {count} selected users?',
+      confirmBatchDelete: 'Are you sure you want to delete {{count}} selected users?',
       deleteWarning: 'Are you sure you want to delete this user?',
       selectFirst: 'Please select users to delete first',
       passwordHint: 'Leave blank to keep current password',
@@ -285,7 +285,7 @@ export default {
 
       // Prompts
       confirmDelete: 'Are you sure you want to delete this log?',
-      confirmBatchDelete: 'Are you sure you want to delete {count} selected logs?',
+      confirmBatchDelete: 'Are you sure you want to delete {{count}} selected logs?',
       deleteWarning: 'Are you sure you want to delete this log?',
       selectFirst: 'Please select logs to delete first',
 
