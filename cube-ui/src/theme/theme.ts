@@ -57,15 +57,6 @@ const theme = createTheme({
         },
       },
     },
-    MuiBox: {
-      styleOverrides: {
-        root: {
-          '& > .MuiBox-root': {
-            padding: '3px',
-          },
-        },
-      },
-    },
     MuiPaper: {
       styleOverrides: {
         root: {

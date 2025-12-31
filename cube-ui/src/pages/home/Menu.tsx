@@ -89,26 +89,24 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
   }
 
   // 更新选中路径
-  updateSelectedPath = (currentPath?: string) => {
+  updateSelectedPath = (currentPath: string) => {
     if (!currentPath || !this.props.menus) return;
 
-    // 找到匹配的菜单项，优先匹配最精确的路径
-    const findMenuByPath = (menus: SYSMenu[]): SYSMenu | null => {
+    // 存储需要展开的父菜单ID
+    const parentMenusToExpand: number[] = [];
+    
+    // 递归查找菜单项
+    const findMenuByPath = (menuList: SYSMenu[]): SYSMenu | null => {
       let bestMatch: SYSMenu | null = null;
       let bestMatchLevel = -1;
-      const parentMenusToExpand: number[] = [];
 
       // 递归搜索函数，返回匹配的菜单项
-      const searchMenu = (menuList: SYSMenu[], level = 0, parents: SYSMenu[] = []): SYSMenu | null => {
+      const searchMenu = (menuList: SYSMenu[], parents: number[] = [], level = 0): SYSMenu | null => {
         for (const menu of menuList) {
           // 精确匹配当前路径
           if (currentPath === menu.path) {
-            // 找到精确匹配，展开所有父级菜单
-            parents.forEach(parent => {
-              if (parent.menuId) {
-                parentMenusToExpand.push(parent.menuId);
-              }
-            });
+            // 收集所有父菜单ID
+            parentMenusToExpand.push(...parents);
             return menu;
           }
           
@@ -123,16 +121,12 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
           
           // 递归搜索子菜单
           if (menu.children) {
-            const found = searchMenu(menu.children, level + 1, [...parents, menu]);
+            const currentParents = [...parents, menu.menuId!];
+            const found = searchMenu(menu.children, currentParents, level + 1);
             if (found) {
               // 如果在子菜单中找到精确匹配，直接返回
               if (currentPath === found.path) {
                 return found;
-              }
-              
-              // 展开父菜单
-              if (menu.menuId) {
-                parentMenusToExpand.push(menu.menuId);
               }
             }
           }
@@ -141,18 +135,8 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
       };
 
       // 先尝试找到精确匹配
-      const exactMatch = searchMenu(menus);
+      const exactMatch = searchMenu(menuList);
       if (exactMatch) {
-        // 展开所有需要展开的父菜单
-        if (parentMenusToExpand.length > 0) {
-          this.setState(prevState => {
-            const newExpanded = new Set(prevState.expandedMenus);
-            parentMenusToExpand.forEach(menuId => {
-              newExpanded.add(menuId);
-            });
-            return { expandedMenus: newExpanded };
-          });
-        }
         return exactMatch;
       }
       
@@ -163,6 +147,17 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
     const foundMenu = findMenuByPath(this.props.menus);
     if (foundMenu) {
       this.setState({ selectedPath: foundMenu.path });
+      
+      // 展开所有父菜单
+      if (parentMenusToExpand.length > 0) {
+        this.setState(prevState => {
+          const newExpanded = new Set(prevState.expandedMenus);
+          parentMenusToExpand.forEach(menuId => {
+            newExpanded.add(menuId);
+          });
+          return { expandedMenus: newExpanded };
+        });
+      }
     }
   };
 
