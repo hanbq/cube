@@ -233,9 +233,8 @@ export default function SysLogs() {
                 onChange={(e) => setQueryState(prev => ({ ...prev, searchStatus: e.target.value }))}
               >
                 <MenuItem value="">{t('common.all')}</MenuItem>
-                <MenuItem value="success">{t('common.success')}</MenuItem>
-                <MenuItem value="failure">{t('common.failure')}</MenuItem>
-                <MenuItem value="error">{t('common.error')}</MenuItem>
+                <MenuItem value="SUCCESS">{t('common.success')}</MenuItem>
+                <MenuItem value="FAILED">{t('common.failure')}</MenuItem>
               </Select>
             </FormControl>
             <TextField
