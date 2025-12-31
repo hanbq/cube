@@ -121,16 +121,7 @@ export default function Register() {
       setLoading(false);
     } catch (error: any) {
       console.error('Registration failed:', error);
-      let errorMessage = t?.('register.registerError');
-      
-      // 处理特定的错误消息
-      if (error.message.includes('用户名已存在')) {
-        errorMessage = t?.('register.usernameExistsError');
-      } else if (error.message.includes('邮箱已被注册')) {
-        errorMessage = t?.('register.emailExistsError');
-      }
-      
-      setError(errorMessage);
+      setError(error.message);
       setLoading(false);
     }
   }, [username, password, confirmPassword, email, description, validateForm, t]);
