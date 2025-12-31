@@ -258,7 +258,6 @@ export default {
     // 系统日志管理
     sysLogManagement: {
       // 字段
-      logId: '日志ID',
       username: '用户名',
       operation: '操作',
       method: '方法',

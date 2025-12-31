@@ -293,7 +293,7 @@ export default function SysLogs() {
                       onChange={handleSelectAll}
                     />
                   </TableCell>
-                  <TableCell>{t('sysLogManagement.logId')}</TableCell>
+                  <TableCell>ID</TableCell>
                   <TableCell>{t('sysLogManagement.status')}</TableCell>
                   <TableCell>{t('sysLogManagement.username')}</TableCell>
                   <TableCell>{t('sysLogManagement.operation')}</TableCell>

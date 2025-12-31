@@ -56,46 +56,108 @@ const iconMap: Record<string, any> = {
 class MenuClass extends React.Component<MenuProps, MenuState> {
   constructor(props: MenuProps) {
     super(props);
+    // 初始化时如果提供了currentPath，则使用它
     this.state = {
-      selectedPath: '',
+      selectedPath: props.currentPath || '',
       collapsed: false,
       expandedMenus: new Set(),
     };
   }
 
   componentDidMount() {
-    this.updateSelectedPath(this.props.currentPath);
+    // 如果初始化时没有currentPath，则尝试从props获取
+    if (!this.state.selectedPath && this.props.currentPath) {
+      this.updateSelectedPath(this.props.currentPath);
+    } else if (this.state.selectedPath) {
+      // 如果已经有selectedPath，确保菜单展开状态正确
+      this.updateSelectedPath(this.state.selectedPath);
+    }
   }
 
   componentDidUpdate(prevProps: MenuProps) {
+    // 当currentPath变化时更新选中状态
     if (prevProps.currentPath !== this.props.currentPath) {
+      this.updateSelectedPath(this.props.currentPath);
+    }
+    
+    // 当菜单数据加载完成时，重新设置选中状态
+    if ((!prevProps.menus || prevProps.menus.length === 0) && 
+        this.props.menus && this.props.menus.length > 0 && 
+        this.props.currentPath) {
       this.updateSelectedPath(this.props.currentPath);
     }
   }
 
+  // 更新选中路径
   updateSelectedPath = (currentPath?: string) => {
     if (!currentPath || !this.props.menus) return;
 
-    // 找到匹配的菜单项
+    // 找到匹配的菜单项，优先匹配最精确的路径
     const findMenuByPath = (menus: SYSMenu[]): SYSMenu | null => {
-      for (const menu of menus) {
-        if (currentPath === menu.path || currentPath.startsWith(menu.path + '/')) {
-          return menu;
-        }
-        if (menu.children) {
-          const found = findMenuByPath(menu.children);
-          if (found) {
-            // 展开父菜单
-            if (menu.menuId) {
-              this.setState(prevState => ({
-                expandedMenus: new Set(prevState.expandedMenus).add(menu.menuId!),
-              }));
+      let bestMatch: SYSMenu | null = null;
+      let bestMatchLevel = -1;
+      const parentMenusToExpand: number[] = [];
+
+      // 递归搜索函数，返回匹配的菜单项
+      const searchMenu = (menuList: SYSMenu[], level = 0, parents: SYSMenu[] = []): SYSMenu | null => {
+        for (const menu of menuList) {
+          // 精确匹配当前路径
+          if (currentPath === menu.path) {
+            // 找到精确匹配，展开所有父级菜单
+            parents.forEach(parent => {
+              if (parent.menuId) {
+                parentMenusToExpand.push(parent.menuId);
+              }
+            });
+            return menu;
+          }
+          
+          // 如果当前路径以菜单路径开头，记录为可能的匹配项
+          if (currentPath.startsWith(menu.path + '/')) {
+            // 只有当找到更深层级的匹配时才更新
+            if (level > bestMatchLevel) {
+              bestMatch = menu;
+              bestMatchLevel = level;
             }
-            return found;
+          }
+          
+          // 递归搜索子菜单
+          if (menu.children) {
+            const found = searchMenu(menu.children, level + 1, [...parents, menu]);
+            if (found) {
+              // 如果在子菜单中找到精确匹配，直接返回
+              if (currentPath === found.path) {
+                return found;
+              }
+              
+              // 展开父菜单
+              if (menu.menuId) {
+                parentMenusToExpand.push(menu.menuId);
+              }
+            }
           }
         }
+        return null;
+      };
+
+      // 先尝试找到精确匹配
+      const exactMatch = searchMenu(menus);
+      if (exactMatch) {
+        // 展开所有需要展开的父菜单
+        if (parentMenusToExpand.length > 0) {
+          this.setState(prevState => {
+            const newExpanded = new Set(prevState.expandedMenus);
+            parentMenusToExpand.forEach(menuId => {
+              newExpanded.add(menuId);
+            });
+            return { expandedMenus: newExpanded };
+          });
+        }
+        return exactMatch;
       }
-      return null;
+      
+      // 如果没有精确匹配，返回最佳匹配（最深层级）
+      return bestMatch;
     };
 
     const foundMenu = findMenuByPath(this.props.menus);

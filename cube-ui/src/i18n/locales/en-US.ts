@@ -258,7 +258,6 @@ export default {
     // System Log Management
     sysLogManagement: {
       // Fields
-      logId: 'Log ID',
       username: 'Username',
       operation: 'Operation',
       method: 'Method',
