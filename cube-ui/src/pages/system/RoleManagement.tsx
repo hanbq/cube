@@ -88,7 +88,7 @@ export default function RoleManagement() {
   };
 
   // 处理分页变化
-  const handleChangePage = async (event: unknown, newPage: number) => {
+  const handleChangePage = async (_event: unknown, newPage: number) => {
     setQueryState(prev => ({ ...prev, page: newPage }));
     await performSearch(newPage, queryState.rowsPerPage);
   };

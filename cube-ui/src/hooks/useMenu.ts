@@ -77,39 +77,7 @@ export const useMenu = () => {
     }
   }, []);
 
-  // 批量删除菜单
-  const batchDeleteMenus = useCallback(async (menuIds: number[]) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await menuService.batchDeleteMenus(menuIds);
-      const data = await menuService.getMenuTree();
-      setMenus(data);
-    } catch (err) {
-      setError(err as Error);
-      console.error('Failed to batch delete menus:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
-  // 更新菜单排序
-  const updateMenuSort = useCallback(async (menuId: number, sort: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await menuService.updateMenuSort(menuId, sort);
-      const data = await menuService.getMenuTree();
-      setMenus(data);
-    } catch (err) {
-      setError(err as Error);
-      console.error('Failed to update menu sort:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   // 获取扁平化的菜单列表(用于父级菜单选择)
   const getFlatMenus = useCallback((menuList: SYSMenu[] = menus): SYSMenu[] => {
@@ -154,8 +122,6 @@ export const useMenu = () => {
     createMenu,
     updateMenu,
     deleteMenu,
-    batchDeleteMenus,
-    updateMenuSort,
     getFlatMenus,
     findMenuById,
   };

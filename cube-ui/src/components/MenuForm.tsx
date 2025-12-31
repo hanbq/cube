@@ -35,6 +35,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({
   const { t } = useTranslation();
   const [formData, setFormData] = useState<MenuFormData>({
     menuName: '',
+    menuNameEng: '',
     path: '',
     iconCls: '',
     parentId: null,
@@ -50,6 +51,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({
       setFormData({
         menuId: menu.menuId,
         menuName: menu.menuName,
+        menuNameEng: menu.menuNameEng,
         path: menu.path,
         iconCls: menu.iconCls,
         parentId: menu.parentId || null,
@@ -60,6 +62,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({
       // 新建模式
       setFormData({
         menuName: '',
+        menuNameEng: '',
         path: '',
         iconCls: '',
         parentId: null,
@@ -90,7 +93,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({
       setError(t('menuManagement.form.menuPathRequired'));
       return;
     }
-    if (!formData.component.trim()) {
+    if (!formData.component?.trim()) {
       setError(t('menuManagement.form.componentRequired'));
       return;
     }
@@ -141,6 +144,14 @@ export const MenuForm: React.FC<MenuFormProps> = ({
               label={t('menuManagement.form.menuName')}
               value={formData.menuName}
               onChange={handleChange('menuName')}
+              required
+              disabled={submitting}
+            />
+            <TextField
+              fullWidth
+              label={t('menuManagement.form.menuNameEng')}
+              value={formData.menuNameEng}
+              onChange={handleChange('menuNameEng')}
               required
               disabled={submitting}
             />

@@ -105,7 +105,7 @@ export default function UserManagement() {
   };
 
   // 处理分页变化
-  const handleChangePage = async (event: unknown, newPage: number) => {
+  const handleChangePage = async (_event: unknown, newPage: number) => {
     setQueryState(prev => ({ ...prev, page: newPage }));
     await performSearch(newPage, queryState.rowsPerPage);
   };
@@ -519,7 +519,7 @@ export default function UserManagement() {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              error={formData.email && !isValidEmail(formData.email)}
+              error={formData.email ? !isValidEmail(formData.email) : false}
               helperText={formData.email && !isValidEmail(formData.email) ? t('userManagement.invalidEmail') : ''}
             />
             <TextField
