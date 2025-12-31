@@ -80,6 +80,9 @@ export default {
       user: '用户管理',
       settings: '系统设置',
       menu_management: '菜单管理',
+      mine: '我的',
+      userProfile: '用户信息',
+      changePassword: '修改密码',
     },
 
     // 头部
@@ -286,6 +289,42 @@ export default {
       // 成功消息
       deleteSuccess: '日志删除成功',
       batchDeleteSuccess: '批量删除成功',
+    },
+
+    // 用户信息修改
+    userProfile: {
+      title: '个人信息',
+      avatar: '头像',
+      username: '用户名',
+      password: '密码',
+      email: '邮箱',
+      description: '个人描述',
+      edit: '编辑',
+      save: '保存',
+      cancel: '取消',
+      usernameNotEditable: '用户名不可修改',
+      passwordNotEditable: '密码不可修改',
+      updateSuccess: '个人信息更新成功',
+      updateFailed: '个人信息更新失败: {error}',
+      emailRequired: '邮箱不能为空',
+      invalidEmail: '请输入有效的邮箱地址',
+      loading: '加载中...',
+    },
+
+    // 修改密码
+    changePassword: {
+      title: '修改密码',
+      oldPassword: '当前密码',
+      newPassword: '新密码',
+      confirmPassword: '确认新密码',
+      changeButton: '修改密码',
+      oldPasswordRequired: '请输入当前密码',
+      newPasswordRequired: '请输入新密码',
+      confirmPasswordRequired: '请确认新密码',
+      passwordMismatch: '两次输入的密码不一致',
+      changeSuccess: '密码修改成功',
+      changeFailed: '密码修改失败: {error}',
+      newPasswordMinLength: '新密码至少需要6个字符',
     },
   },
 };

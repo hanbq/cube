@@ -501,17 +501,6 @@ export default function UserManagement() {
               }
             />
             <TextField
-              label={t('userManagement.password')}
-              type="password"
-              required={!editingUser}
-              fullWidth
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              helperText={editingUser ? t('userManagement.passwordHint') : ''}
-            />
-            <TextField
               label={t('userManagement.email')}
               type="email"
               required

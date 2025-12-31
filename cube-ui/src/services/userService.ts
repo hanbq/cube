@@ -1,4 +1,4 @@
-import type { SYSUser, UserFormData, SYSUserParam, PageResult } from '../types/user';
+import type { SYSUser, UserFormData, SYSUserParam, PageResult, SYSChangePassword } from '../types/user';
 import { apiService } from './api';
 
 export const userService = {
@@ -40,5 +40,27 @@ export const userService = {
   // 批量删除用户
   batchDeleteUsers: async (userIds: number[]): Promise<void> => {
     await apiService.delete('/users/batch', { data: userIds });
+  },
+
+  // 更新用户个人信息
+  updateProfile: async (user: UserFormData): Promise<boolean> => {
+    // 将 UserFormData 转换为 SYSUser
+    const sysUser: SYSUser = {
+      username: user.username,
+      email: user.email,
+      description: user.description,
+      password: user.password,
+      status: user.status,
+      isSuperAdmin: user.isSuperAdmin,
+    };
+    
+    const response = await apiService.put<boolean>('/users/profile', sysUser);
+    return response.data;
+  },
+
+  // 修改密码
+  changePassword: async (changePasswordData: SYSChangePassword): Promise<boolean> => {
+    const apiResponse = await apiService.put<boolean>('/users/change-password', changePasswordData);
+    return apiResponse.data;
   },
 };

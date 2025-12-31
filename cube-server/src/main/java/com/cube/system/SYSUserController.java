@@ -3,12 +3,17 @@ package com.cube.system;
 import com.cube.gateway.annotation.SysLog;
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
+import com.cube.system.entity.SYSChangePassword;
+import com.cube.gateway.entity.UserPrincipal;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.param.SYSUserParam;
 import com.cube.system.service.SYSUserService;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +33,59 @@ public class SYSUserController {
 
     @Resource
     private SYSUserService userService;
+
+    /**
+     * 修改当前用户个人信息
+     *
+     * @param user 用户对象
+     * @return 更新结果
+     */
+    @PutMapping("/profile")
+    @SysLog(value = "修改个人信息", operation = "UPDATE_PROFILE", saveRequestData = true)
+    public CubeResponse<Boolean> updateProfile(@RequestBody SYSUser user) {
+        Long userId = getCurrentUserId();
+        user.setUserId(userId);
+        LOG.info("Updating profile for user with ID: {}", userId);
+        try {
+            boolean success = userService.updateProfile(user);
+            if (success) {
+                LOG.info("Profile updated successfully");
+                return CubeResponse.success(true, "Profile updated successfully");
+            } else {
+                LOG.warn("User not found or profile update failed");
+                return CubeResponse.failed("User not found or profile update failed");
+            }
+        } catch (Exception e) {
+            LOG.error("Error updating profile", e);
+            return CubeResponse.failed(e.getMessage());
+        }
+    }
+
+    /**
+     * 修改当前用户密码
+     *
+     * @param params 包含用户ID、旧密码和新密码
+     * @return 修改结果
+     */
+    @PutMapping("/change-password")
+    @SysLog(value = "修改密码", operation = "CHANGE_PASSWORD")
+    public CubeResponse<Boolean> changePassword(@RequestBody SYSChangePassword params) {
+        Long userId = getCurrentUserId();
+        LOG.info("Changing password for user with ID: {}", userId);
+        try {
+            boolean success = userService.changePassword(userId, params);
+            if (success) {
+                LOG.info("Password changed successfully");
+                return CubeResponse.success(true, "Password changed successfully");
+            } else {
+                LOG.warn("Password change failed");
+                return CubeResponse.failed("Password change failed");
+            }
+        } catch (Exception e) {
+            LOG.error("Error changing password", e);
+            return CubeResponse.failed(e.getMessage());
+        }
+    }
 
     /**
      * 创建用户
@@ -176,5 +234,15 @@ public class SYSUserController {
             LOG.error("Error getting users by role ID", e);
             return CubeResponse.failed(e.getMessage());
         }
+    }
+
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof String) {
+            throw new InsufficientAuthenticationException("User is not authenticated");
+        }
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        assert userPrincipal != null;
+        return userPrincipal.userId();
     }
 }

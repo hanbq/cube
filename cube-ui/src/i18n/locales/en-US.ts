@@ -79,6 +79,9 @@ export default {
       workflow: 'Workflow Management',
       user: 'User Management',
       settings: 'System Settings',
+      mine: 'Mine',
+      userProfile: 'User Profile',
+      changePassword: 'Change Password',
     },
 
     // Header
@@ -286,6 +289,39 @@ export default {
       // Success Messages
       deleteSuccess: 'Log deleted successfully',
       batchDeleteSuccess: 'Batch deletion successful',
+    },
+
+    // User Profile
+    userProfile: {
+      title: 'User Profile',
+      avatar: 'Avatar',
+      username: 'Username',
+      password: 'Password',
+      email: 'Email',
+      edit: 'Edit',
+      save: 'Save',
+      cancel: 'Cancel',
+      loading: 'Loading...',
+      updateSuccess: 'Profile updated successfully',
+      updateFailed: 'Update failed: {error}',
+      usernameNotEditable: 'Username cannot be edited',
+      passwordNotEditable: 'Password cannot be edited',
+    },
+
+    // Change Password
+    changePassword: {
+      title: 'Change Password',
+      oldPassword: 'Current Password',
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm New Password',
+      changeButton: 'Change Password',
+      oldPasswordRequired: 'Please enter current password',
+      newPasswordRequired: 'Please enter new password',
+      confirmPasswordRequired: 'Please confirm new password',
+      passwordMismatch: 'Passwords do not match',
+      changeSuccess: 'Password changed successfully',
+      changeFailed: 'Password change failed: {error}',
+      newPasswordMinLength: 'New password must be at least 6 characters',
     },
   },
 };

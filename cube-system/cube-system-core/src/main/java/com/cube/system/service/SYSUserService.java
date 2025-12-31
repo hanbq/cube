@@ -4,6 +4,7 @@ import com.cube.common.exception.DataException;
 import com.cube.common.page.PageRequest;
 import com.cube.common.page.PageResult;
 import com.cube.system.dao.SYSUserRoleDao;
+import com.cube.system.entity.SYSChangePassword;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.param.SYSUserParam;
 import com.cube.system.dao.SYSUserDao;
@@ -58,6 +59,58 @@ public class SYSUserService {
      */
     public boolean updateUser(SYSUser user) {
         return userDao.update(user) > 0;
+    }
+
+    /**
+     * 更新用户个人信息（不允许修改用户名和密码）
+     *
+     * @param user 用户对象
+     * @return 是否更新成功
+     */
+    public boolean updateProfile(SYSUser user) {
+        // 从数据库中获取当前用户信息
+        Optional<SYSUser> existingUserOptional = userDao.findById(user.getUserId());
+        if (existingUserOptional.isEmpty()) {
+            throw new DataException("User not found with ID: " + user.getUserId());
+        }
+        SYSUser existingUser = existingUserOptional.get();
+
+        // 不允许修改用户名
+        user.setUsername(existingUser.getUsername());
+        // 不允许修改密码
+        user.setPassword(existingUser.getPassword());
+
+        return userDao.update(user) > 0;
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param userId      用户ID
+     * @param params 旧密码、 新密码
+     * @return 是否修改成功
+     */
+    public boolean changePassword(Long userId, SYSChangePassword params) {
+        // 验证新密码和确认密码是否一致
+        if (!params.getNewPassword().equals(params.getConfirmNewPassword())) {
+            throw new DataException("The new password and confirm password do not match");
+        }
+
+        // 从数据库中获取当前用户信息
+        Optional<SYSUser> existingUserOptional = userDao.findById(userId);
+        if (existingUserOptional.isEmpty()) {
+            throw new DataException("User not found with ID: " + userId);
+        }
+        SYSUser existingUser = existingUserOptional.get();
+
+        // 验证旧密码
+        if (!existingUser.getPassword().equals(params.getOldPassword())) {
+            throw new DataException("Incorrect old password");
+        }
+
+        // 更新密码
+        existingUser.setPassword(params.getNewPassword());
+        return userDao.update(existingUser) > 0;
     }
 
     /**

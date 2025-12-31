@@ -29,11 +29,7 @@ function App() {
   const { flatMenus, initialized } = useMenuStore();
 
   useEffect(() => {
-    console.log('[App] flatMenus 更新:', flatMenus.length, '个菜单项');
-    console.log('[App] flatMenus 数据:', flatMenus);
   }, [flatMenus]);
-
-  console.log('[App] 渲染中, flatMenus.length =', flatMenus.length, 'initialized =', initialized);
 
   // 检查是否有 token 来决定默认路由
   const getDefaultRoute = () => {

@@ -9,11 +9,8 @@ import type { SYSMenu } from '../types/menu';
 export const generateDynamicRoutes = (flatMenus: SYSMenu[]) => {
   if (!flatMenus || flatMenus.length === 0) {
     // 如果还没有加载菜单,返回空数组
-    console.log('[DynamicRoutes] 菜单数据为空');
     return [];
   }
-
-  console.log('[DynamicRoutes] 菜单数据:', flatMenus);
 
   // 找到第一个有component的菜单作为默认路由
   const firstMenuWithComponent = flatMenus.find(menu => menu.component);
@@ -42,8 +39,6 @@ export const generateDynamicRoutes = (flatMenus: SYSMenu[]) => {
         relativePath = '';
       }
 
-      console.log(`[DynamicRoutes] 生成路由: ${relativePath} -> ${menu.component}`);
-
       routes.push(
         <Route
           key={menu.menuId || menu.path}
@@ -53,6 +48,5 @@ export const generateDynamicRoutes = (flatMenus: SYSMenu[]) => {
       );
     });
 
-  console.log(`[DynamicRoutes] 总共生成 ${routes.length} 个路由`);
   return routes;
 };

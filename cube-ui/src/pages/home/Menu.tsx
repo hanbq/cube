@@ -21,6 +21,8 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import SchemaIcon from '@mui/icons-material/Schema';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import PersonIcon from '@mui/icons-material/Person';
+import LockIcon from '@mui/icons-material/Lock';
 import { useTranslation } from 'react-i18next';
 import { useMenuStore } from '../../store/menuStore';
 import type { SYSMenu } from '../../types/menu';
@@ -51,6 +53,8 @@ const iconMap: Record<string, any> = {
   SchemaIcon,
   PlayArrowIcon,
   SettingsApplicationsIcon,
+  PersonIcon,
+  LockIcon,
 };
 
 class MenuClass extends React.Component<MenuProps, MenuState> {
@@ -212,7 +216,11 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
     const { selectedPath, collapsed, expandedMenus } = this.state;
 
     return menus.map(menu => {
-      const IconComponent = menu.iconCls ? iconMap[menu.iconCls] : DashboardIcon;
+      // 确保图标组件存在，如果不存在则使用默认图标
+      const IconComponent = menu.iconCls && iconMap[menu.iconCls] 
+        ? iconMap[menu.iconCls] 
+        : DashboardIcon;
+      
       const hasChildren = menu.children && menu.children.length > 0;
       const isExpanded = menu.menuId ? expandedMenus.has(menu.menuId) : false;
       const isSelected = selectedPath === menu.path;
@@ -232,11 +240,15 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
             }}
           >
             <ListItemIcon sx={{ minWidth: collapsed ? 'auto' : 40 }}>
-              <IconComponent
-                sx={{
-                  fontSize: level > 0 ? '1.2rem' : '1.5rem',
-                }}
-              />
+              {React.isValidElement(IconComponent) ? (
+                IconComponent
+              ) : (
+                <IconComponent
+                  sx={{
+                    fontSize: level > 0 ? '1.2rem' : '1.5rem',
+                  }}
+                />
+              )}
             </ListItemIcon>
             {!collapsed && (
               <>

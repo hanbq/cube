@@ -50,11 +50,10 @@ export const authService = {
       if (response.code === 200 && response.data?.token) {
         const newToken = response.data.token;
         localStorage.setItem('token', newToken);
-        console.log('Token refreshed successfully');
         return newToken;
       }
 
-      throw new Error(response.message || 'Token refresh failed');
+      throw new Error(response.message);
     } catch (error) {
       console.error('Failed to refresh token:', error);
       throw error;
@@ -67,17 +66,13 @@ export const authService = {
 
   getUserInfo(): any {
     const userInfo = localStorage.getItem('userInfo');
-    console.log('[authService] localStorage中的userInfo原始值:', userInfo);
     if (!userInfo || userInfo === 'undefined' || userInfo === 'null') {
-      console.log('[authService] userInfo为空或无效');
       return null;
     }
     try {
       const parsed = JSON.parse(userInfo);
-      console.log('[authService] 解析后的userInfo:', parsed);
       return parsed;
     } catch (error) {
-      console.error('[authService] Failed to parse userInfo:', error);
       return null;
     }
   },

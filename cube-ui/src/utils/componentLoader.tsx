@@ -73,8 +73,6 @@ export const loadComponent = (componentPath: string): React.ReactElement => {
         normalizedPath = `../pages/${normalizedPath}`; // "Dashboard" -> "../pages/Dashboard"
       }
 
-      console.log(`[ComponentLoader] Loading: ${componentPath} -> ${normalizedPath}`);
-
       return import(/* @vite-ignore */ normalizedPath).catch((error) => {
         console.error(`Failed to load component: ${componentPath} (${normalizedPath})`, error);
         // 返回一个错误组件

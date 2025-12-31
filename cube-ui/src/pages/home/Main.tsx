@@ -41,12 +41,35 @@ class MainClass extends React.Component<MainProps> {
     ];
 
     if (getMenuByPath) {
-      const menu = getMenuByPath(pathname);
-      if (menu) {
+      // 处理"我的"菜单的子菜单
+      if (pathname === '/profile' || pathname === '/change-password') {
+        // 添加"我的"父菜单
         breadcrumbs.push({
-          label: this.getMenuLabel(menu),
-          path: menu.path
+          label: t?.('menu.mine'),
+          path: '/mine'
         });
+        
+        // 添加子菜单
+        if (pathname === '/profile') {
+          breadcrumbs.push({
+            label: t?.('menu.userProfile') ,
+            path: '/profile'
+          });
+        } else if (pathname === '/change-password') {
+          breadcrumbs.push({
+            label: t?.('menu.changePassword') ,
+            path: '/change-password'
+          });
+        }
+      } else {
+        // 处理其他菜单
+        const menu = getMenuByPath(pathname);
+        if (menu) {
+          breadcrumbs.push({
+            label: this.getMenuLabel(menu),
+            path: menu.path
+          });
+        }
       }
     }
 

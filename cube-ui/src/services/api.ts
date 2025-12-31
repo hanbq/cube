@@ -82,7 +82,6 @@ class ApiService {
           switch (status) {
             case 401:
               // Unauthorized - attempt token refresh
-              console.log('收到401错误，尝试刷新token');
 
               // 避免无限循环：如果是刷新token接口本身失败，直接登出
               if (originalRequest.url?.includes('/auth/refresh-token')) {
@@ -93,7 +92,6 @@ class ApiService {
 
               // 如果已经在刷新token，将请求加入队列
               if (this.isRefreshing) {
-                console.log('Token刷新中，请求加入队列');
                 return new Promise((resolve, reject) => {
                   this.failedQueue.push({ resolve, reject });
                 })
@@ -116,7 +114,6 @@ class ApiService {
                 const { authService } = await import('./authService');
                 const newToken = await authService.refreshToken();
 
-                console.log('Token刷新成功，重试队列中的请求');
                 this.isRefreshing = false;
                 this.processQueue(null, newToken);
 

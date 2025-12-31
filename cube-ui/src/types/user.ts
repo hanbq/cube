@@ -38,3 +38,9 @@ export interface PageResult<T> {
   pageNum: number;
   pageSize: number;
 }
+
+export interface SYSChangePassword {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}

@@ -18,10 +18,8 @@ interface HomeProps {
 class HomeClass extends React.Component<HomeProps> {
   handleLogout = async () => {
     try {
-      console.log('退出登录中...');
       // 调用后端 logout 接口并清除本地存储
       await authService.logout();
-      console.log('退出登录成功');
       // 跳转到登录页
       if (this.props.navigate) {
         this.props.navigate('/login');
@@ -96,7 +94,6 @@ export default function Home() {
   React.useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log('[Home] 未找到 token，重定向到登录页');
       navigate('/login', { replace: true });
       return;
     }
@@ -104,9 +101,7 @@ export default function Home() {
     // 获取用户信息
     try {
       const userInfo = authService.getUserInfo();
-      console.log('[Home] 获取到的用户信息:', userInfo);
       if (userInfo?.username) {
-        console.log('[Home] 设置用户名:', userInfo.username);
         setUserName(userInfo.username);
       } else {
         console.warn('[Home] 用户信息不完整，使用默认用户名', userInfo);
@@ -128,13 +123,9 @@ export default function Home() {
       }
 
       try {
-        console.log('[Home] 开始加载菜单数据...');
         setLoading(true);
         const menus = await userMenuService.getUserMenus();
-        console.log('[Home] 菜单数据加载成功:', menus.length, '个顶级菜单项');
-        console.log('[Home] 菜单数据:', menus);
         setMenus(menus);
-        console.log('[Home] 已调用 setMenus 更新 store');
       } catch (error) {
         console.error('[Home] 加载菜单失败:', error);
         setError(error as Error);

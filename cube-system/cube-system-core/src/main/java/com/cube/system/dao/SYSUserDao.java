@@ -39,7 +39,7 @@ public class SYSUserDao {
 
     private static final String UPDATE_SQL =
             "UPDATE " + TABLE_NAME +
-            " SET username = ?, password = ?, description = ?, email = ?, status = ?, is_super_admin = ?, " +
+            " SET username = ?, password = ?, description = ?, email = ?, status = ?," +
             " updated_time = ?, updated_by = ? " +
             " WHERE user_id = ? AND deleted = false";
 
@@ -141,7 +141,6 @@ public class SYSUserDao {
                 entity.getDescription(),
                 entity.getEmail(),
                 entity.getStatus(),
-                entity.getIsSuperAdmin() != null && entity.getIsSuperAdmin(), // is_super_admin
                 Timestamp.from(ZonedDateTime.now().toInstant()), // updated_time
                 entity.getUpdatedBy(),
                 entity.getUserId()
