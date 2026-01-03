@@ -1,17 +1,16 @@
 package com.cube.workflow.bean;
 
-import java.time.ZonedDateTime;
 import java.util.Map;
 
-public class WFFlow<T> {
+public class WFEvent {
 
     Long requestId;
 
     Map<String, Object> extension;
 
-    Class<T> classType;
+    Class<?> clazz;
 
-    ZonedDateTime startTime;
+    Long startTime;
 
     public Long getRequestId() {
         return requestId;
@@ -29,19 +28,18 @@ public class WFFlow<T> {
         this.extension = extension;
     }
 
-    public Class<T> getClassType() {
-        return classType;
+    public Class<?> getClazz() {
+        return clazz;
+    }
+    public void setClazz(Class<?> clazz) {
+        this.clazz = clazz;
     }
 
-    public void setClassType(Class<T> classType) {
-        this.classType = classType;
-    }
-
-    public ZonedDateTime getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(ZonedDateTime startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 }
