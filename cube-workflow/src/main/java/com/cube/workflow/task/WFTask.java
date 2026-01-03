@@ -23,8 +23,8 @@ public abstract class WFTask {
         long start = System.currentTimeMillis();
         try {
             handle(event);
-        } catch (Throwable t) {//NOSONAR
-            postUnexpected(event, t);
+        } catch (Exception e) {
+            postUnexpected(event, e);
         } finally {
             long end = System.currentTimeMillis();
             logger.info("request: [{}] task [{}] cost {} ms", event.getRequestId(), this.getClass().getSimpleName(), end - start);
@@ -34,11 +34,11 @@ public abstract class WFTask {
 
     public abstract void handle(WFEvent event);
 
-    public void postUnexpected(WFEvent event, Throwable throwable) {
+    public void postUnexpected(WFEvent event, Exception e) {
         var unexpectedEvent = new WFUnexpectedEvent();
         BeanUtils.copyProperties(event, unexpectedEvent);
         unexpectedEvent.setUnexpectedClass(event.getClass());
-        unexpectedEvent.setThrowable(throwable);
+        unexpectedEvent.setThrowable(e);
         postEnd(unexpectedEvent);
     }
 
@@ -48,8 +48,6 @@ public abstract class WFTask {
      * @param event 任务结束事件
      */
     public void postEnd(WFEvent event) {
-        var endEvent = new WFUnexpectedEvent();
-        BeanUtils.copyProperties(event, endEvent);
-        engine.post(endEvent);
+        engine.post(event);
     }
 }
