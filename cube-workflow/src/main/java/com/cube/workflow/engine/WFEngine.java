@@ -1,6 +1,7 @@
 package com.cube.workflow.engine;
 
 import com.cube.workflow.event.WFEvent;
+import com.cube.workflow.listener.WFListener;
 import com.google.common.eventbus.EventBus;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -14,13 +15,16 @@ public class WFEngine{
 
     @Resource
     private EventBus workflowEventBus;
+    @Resource
+    private WFListener wfListener;
 
-    public void register(Object listener) {
-        workflowEventBus.register(listener);
+    @PostConstruct
+    public void register() {
+        workflowEventBus.register(wfListener);
     }
 
-    public void unregister(Object listener) {
-        workflowEventBus.unregister(listener);
+    public void unregister() {
+        workflowEventBus.unregister(wfListener);
     }
 
     public void post(WFEvent event) {
