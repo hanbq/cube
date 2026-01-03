@@ -1,6 +1,6 @@
 package com.cube.workflow.task;
 
-import com.cube.workflow.bean.WFEvent;
+import com.cube.workflow.event.WFEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +10,10 @@ public class WFEndTask extends WFTask {
 
     @Override
     public void handle(WFEvent event){
-        long start = event.getStartTime();
-        long end = System.currentTimeMillis();
+        Long start = event.getStartTime();
+        Long end = System.currentTimeMillis();
         logger.info("Total workflow execution time for request: [{}] is {} ms", event.getRequestId(), end - start);
     }
+
+
 }

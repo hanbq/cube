@@ -1,8 +1,9 @@
 package com.cube.workflow.task;
 
 
-import com.cube.workflow.bean.WFEvent;
-import com.cube.workflow.bean.WFUnexpectedEvent;
+import com.cube.workflow.event.WFEndEvent;
+import com.cube.workflow.event.WFEvent;
+import com.cube.workflow.event.WFUnexpectedEvent;
 import com.cube.workflow.engine.WFEngine;
 import com.cube.workflow.util.WFSpringUtil;
 import org.slf4j.Logger;
@@ -39,7 +40,11 @@ public abstract class WFTask {
         BeanUtils.copyProperties(event, unexpectedEvent);
         unexpectedEvent.setUnexpectedClass(event.getClass());
         unexpectedEvent.setThrowable(e);
-        postEnd(unexpectedEvent);
+        engine.post(unexpectedEvent);
+    }
+
+    public void postNext(WFEvent event) {
+        engine.post(event);
     }
 
     /**
@@ -48,6 +53,9 @@ public abstract class WFTask {
      * @param event 任务结束事件
      */
     public void postEnd(WFEvent event) {
-        engine.post(event);
+        var endEvent = new WFEndEvent();
+        BeanUtils.copyProperties(event, endEvent);
+        endEvent.setClazz(WFEndTask.class);
+        engine.post(endEvent);
     }
 }

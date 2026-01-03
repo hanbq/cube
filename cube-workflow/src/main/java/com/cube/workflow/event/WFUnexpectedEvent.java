@@ -1,4 +1,6 @@
-package com.cube.workflow.bean;
+package com.cube.workflow.event;
+
+import com.cube.workflow.task.WFUnexpectedTask;
 
 public class WFUnexpectedEvent extends WFEvent {
 
@@ -20,5 +22,10 @@ public class WFUnexpectedEvent extends WFEvent {
 
     public void setThrowable(Throwable throwable) {
         this.throwable = throwable;
+    }
+
+    @Override
+    public Class<WFUnexpectedTask> getClazz() {
+        return WFUnexpectedTask.class;
     }
 }

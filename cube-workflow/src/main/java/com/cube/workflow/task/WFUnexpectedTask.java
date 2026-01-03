@@ -1,7 +1,7 @@
 package com.cube.workflow.task;
 
-import com.cube.workflow.bean.WFEvent;
-import com.cube.workflow.bean.WFUnexpectedEvent;
+import com.cube.workflow.event.WFEvent;
+import com.cube.workflow.event.WFUnexpectedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

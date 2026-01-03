@@ -1,4 +1,4 @@
-package com.cube.workflow.bean;
+package com.cube.workflow.event;
 
 import java.util.Map;
 

@@ -1,10 +1,9 @@
 package com.cube.workflow.engine;
 
-import com.cube.workflow.bean.WFEvent;
+import com.cube.workflow.event.WFEvent;
 import com.google.common.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,8 +15,6 @@ public class WFEngine{
     @Resource
     private EventBus workflowEventBus;
 
-    private static final Logger logger = LoggerFactory.getLogger(WFEngine.class);
-
     public void register(Object listener) {
         workflowEventBus.register(listener);
     }
@@ -27,7 +24,6 @@ public class WFEngine{
     }
 
     public void post(WFEvent event) {
-        logger.info("Posting event: [{}]", event);
         workflowEventBus.post(event);
     }
 

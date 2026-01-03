@@ -1,16 +1,18 @@
 package com.cube.workflow.listener;
 
-import com.cube.workflow.bean.WFEvent;
+import com.cube.workflow.event.WFEvent;
 import com.cube.workflow.exception.WFException;
 import com.cube.workflow.task.WFTask;
 import com.google.common.eventbus.Subscribe;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 工作流事件监听器
  */
+@Component
 public class WFListener {
 
     @Resource
