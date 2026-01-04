@@ -399,9 +399,9 @@ export default function SysLogs() {
                         <TableCell>{log.method}</TableCell>
                         <TableCell>
                           {log.params ? (
-                            <Tooltip title={JSON.stringify(log.params, null, 2)} arrow>
+                            <Tooltip title={<pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(log.params, null, 2)}</pre>} arrow>
                               <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {JSON.stringify(log.params)}
+                                {typeof log.params === 'string' ? log.params : JSON.stringify(log.params).replace(/\\\//g, '/')}
                               </Typography>
                             </Tooltip>
                           ) : (
