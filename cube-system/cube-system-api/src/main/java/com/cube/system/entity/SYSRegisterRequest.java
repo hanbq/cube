@@ -1,5 +1,8 @@
 package com.cube.system.entity;
 
+import com.cube.common.annotation.SensitiveField;
+import com.cube.common.utils.SensitiveDataMasker.SensitiveType;
+
 /**
  * 注册请求DTO
  *
@@ -16,16 +19,19 @@ public class SYSRegisterRequest {
     /**
      * 密码
      */
+    @SensitiveField(SensitiveType.PASSWORD)
     private String password;
 
     /**
      * 确认密码
      */
+    @SensitiveField(SensitiveType.PASSWORD)
     private String confirmPassword;
 
     /**
      * 邮箱
      */
+    @SensitiveField(SensitiveType.EMAIL)
     private String email;
 
     /**

@@ -1,5 +1,8 @@
 package com.cube.system.entity;
 
+import com.cube.common.annotation.SensitiveField;
+import com.cube.common.utils.SensitiveDataMasker.SensitiveType;
+
 /**
  * 登录请求DTO
  *
@@ -16,6 +19,7 @@ public class SYSLoginRequest {
     /**
      * 密码
      */
+    @SensitiveField(SensitiveType.PASSWORD)
     private String password;
 
     public String getUsername() {

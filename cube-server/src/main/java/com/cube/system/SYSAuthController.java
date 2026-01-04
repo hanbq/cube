@@ -1,5 +1,6 @@
 package com.cube.system;
 
+import com.cube.common.annotation.LogMasking;
 import com.cube.common.entity.CubeResponse;
 import com.cube.gateway.annotation.SysLog;
 import com.cube.system.entity.SYSLoginRequest;
@@ -30,6 +31,7 @@ public class SYSAuthController {
      */
     @PostMapping("/register")
     @SysLog(value = "用户注册", operation = "USER_REGISTER")
+    @LogMasking(maskRequest = true, maskResponse = false)
     public CubeResponse<SYSRegisterResponse> register(@RequestBody SYSRegisterRequest registerRequest) {
         SYSRegisterResponse response = authService.register(registerRequest);
         if (response.isSuccess()) {
@@ -44,6 +46,7 @@ public class SYSAuthController {
      */
     @PostMapping("/login")
     @SysLog(value = "用户登录", operation = "USER_LOGIN")
+    @LogMasking(maskRequest = true, maskResponse = false)
     public CubeResponse<SYSLoginResponse> login(@RequestBody SYSLoginRequest loginRequest) {
         SYSLoginResponse response = authService.login(loginRequest);
         return CubeResponse.success(response, "Login successful");

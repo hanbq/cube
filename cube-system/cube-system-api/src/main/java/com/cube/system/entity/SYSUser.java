@@ -1,6 +1,8 @@
 package com.cube.system.entity;
 
 import com.cube.api.entity.BaseEntity;
+import com.cube.common.annotation.SensitiveField;
+import com.cube.common.utils.SensitiveDataMasker.SensitiveType;
 
 import java.util.List;
 
@@ -8,9 +10,15 @@ import java.util.List;
 public class SYSUser extends BaseEntity {
     Long userId;
     String username;
+
+    @SensitiveField(SensitiveType.PASSWORD)
     String password;
+
     String description;
+
+    @SensitiveField(SensitiveType.EMAIL)
     String email;
+
     String status;
     Boolean isSuperAdmin;
     List<SYSRole> roles;

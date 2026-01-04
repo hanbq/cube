@@ -1,5 +1,7 @@
 package com.cube.gateway.aspect;
 
+import com.cube.api.enums.Status;
+import com.cube.common.entity.CubeResponse;
 import com.cube.gateway.annotation.SysLog;
 import com.cube.gateway.entity.UserPrincipal;
 import com.cube.gateway.service.AsyncSysLogService;
@@ -119,10 +121,10 @@ public class SysLogAspect {
 
             // 设置异常信息
             // 设置状态信息
-            if (e != null) {
-                sysLog.setStatus("FAILED");
+            if (e != null || (result instanceof CubeResponse<?> response && response.getCode() == 500)) {
+                sysLog.setStatus(Status.FAILED.name());
             } else {
-                sysLog.setStatus("SUCCESS");
+                sysLog.setStatus(Status.SUCCESS.name());
             }
 
         } catch (Exception ex) {
