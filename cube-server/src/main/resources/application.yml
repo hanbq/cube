@@ -28,9 +28,11 @@ spring:
 ##      ddl-auto: update
     show-sql: true
 
-jasypt. encryptor:
-  key: ${ENCRYPTOR_KEY:test}
+jasypt.encryptor:
+  password: ${ENCRYPTOR_KEY:test}
   algorithm: PBEWithMD5AndDES
+  pool-size: 1
+  string-output-type: base64
 
 logging.file.max-history: 3
 logging.file.max-size: 50MB

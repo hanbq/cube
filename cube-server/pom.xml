@@ -57,6 +57,12 @@
             <artifactId>guava</artifactId>
         </dependency>
 
+        <!-- Jasypt for configuration encryption -->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.cube</groupId>
             <artifactId>cube-workflow</artifactId>

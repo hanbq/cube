@@ -3,5 +3,6 @@ spring:
     url: jdbc:postgresql://127.0.0.1:5432/cube
     username: postgres
     password: 123456
+    ###ENC(xW47M57A6C8fJmymEY0NsBlVzk873Jlyp7+ZUFHE5z0=)
 
 logging.file.name: logs/cube.log
