@@ -2,6 +2,7 @@ package com.cube.gateway.aspect;
 
 import com.cube.api.enums.Status;
 import com.cube.common.entity.CubeResponse;
+import com.cube.common.utils.SensitiveDataMasker;
 import com.cube.gateway.annotation.SysLog;
 import com.cube.gateway.entity.UserPrincipal;
 import com.cube.gateway.service.AsyncSysLogService;
@@ -107,11 +108,13 @@ public class SysLogAspect {
             }
             sysLog.setOperation(operation);
 
-            // 设置请求参数
+            // 设置请求参数（脱敏处理）
             if (sysLogAnnotation.saveRequestData()) {
                 Object[] args = joinPoint.getArgs();
                 String params = arrayToString(args);
-                sysLog.setParams(params);
+                // 对参数进行脱敏处理，隐藏密码等敏感信息
+                String maskedParams = SensitiveDataMasker.maskSensitiveJson(params);
+                sysLog.setParams(maskedParams);
             }
 
             // 设置方法信息
