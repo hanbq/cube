@@ -1,8 +1,8 @@
-package com.cube.bean;
+package com.cube.api.entity;
 
 import java.time.ZonedDateTime;
 
-public class BaseBean{
+public class BaseEntity {
 
     ZonedDateTime createdTime;
     String createdBy;

@@ -1,8 +1,8 @@
 package com.cube.system.entity;
 
-import com.cube.bean.BaseBean;
+import com.cube.api.entity.BaseEntity;
 
-public class SYSButtonRole extends BaseBean {
+public class SYSButtonRole extends BaseEntity {
     Long id;
     Long buttonId;
     Long roleId;

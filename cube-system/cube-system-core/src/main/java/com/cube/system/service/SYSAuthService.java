@@ -1,5 +1,6 @@
 package com.cube.system.service;
 
+import com.cube.api.enums.Status;
 import com.cube.common.exception.AuthException;
 import com.cube.system.utils.SYSJwtUtil;
 import com.cube.system.entity.SYSUser;
@@ -9,6 +10,7 @@ import com.cube.system.entity.SYSLoginResponse;
 import com.cube.system.entity.SYSRegisterRequest;
 import com.cube.system.entity.SYSRegisterResponse;
 import com.cube.system.exception.SYSAuthException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +29,12 @@ public class SYSAuthService {
 
     private final SYSUserDao userDao;
     private final SYSJwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    public SYSAuthService(SYSUserDao userDao, SYSJwtUtil jwtUtil) {
+    public SYSAuthService(SYSUserDao userDao, SYSJwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -67,10 +71,10 @@ public class SYSAuthService {
         // 创建新用户
         SYSUser newUser = new SYSUser();
         newUser.setUsername(registerRequest.getUsername());
-        newUser.setPassword(registerRequest.getPassword()); // 注意：实际应用中应该对密码进行加密
+        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword())); // 使用BCrypt加密密码
         newUser.setEmail(registerRequest.getEmail());
         newUser.setDescription(registerRequest.getDescription());
-        newUser.setStatus("ACTIVE"); // 默认状态为激活
+        newUser.setStatus(Status.ACTIVE.name()); // 默认状态为激活
         newUser.setIsSuperAdmin(false); // 默认不是超级管理员
 
         // 保存用户
@@ -104,13 +108,13 @@ public class SYSAuthService {
 
         SYSUser user = userOptional.get();
 
-        // Verify password (Note: Should use encrypted password in production)
-        if (!loginRequest.getPassword().equals(user.getPassword())) {
+        // Verify password using BCrypt
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new SYSAuthException("Invalid username or password");
         }
 
         // Check user status
-        if (!"ACTIVE".equals(user.getStatus())) {
+        if (!Status.ACTIVE.name().equalsIgnoreCase(user.getStatus())) {
             throw new SYSAuthException("User account is disabled");
         }
 
@@ -162,7 +166,7 @@ public class SYSAuthService {
         SYSUser user = userOptional.get();
 
         // Check user status
-        if (!"ACTIVE".equals(user.getStatus())) {
+        if (!Status.ACTIVE.name().equals(user.getStatus())) {
             throw new AuthException("User account is disabled");
         }
 

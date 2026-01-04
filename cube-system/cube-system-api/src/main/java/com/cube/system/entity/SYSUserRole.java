@@ -1,8 +1,8 @@
 package com.cube.system.entity;
 
-import com.cube.bean.BaseBean;
+import com.cube.api.entity.BaseEntity;
 
-public class SYSUserRole extends BaseBean {
+public class SYSUserRole extends BaseEntity {
 
     Long id;
     Long userId;

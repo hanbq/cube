@@ -1,11 +1,11 @@
 package com.cube.system.entity;
 
-import com.cube.bean.BaseBean;
+import com.cube.api.entity.BaseEntity;
 
 import java.util.List;
 
 
-public class SYSUser extends BaseBean {
+public class SYSUser extends BaseEntity {
     Long userId;
     String username;
     String password;

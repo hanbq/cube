@@ -1,8 +1,8 @@
 package com.cube.system.entity;
 
-import com.cube.bean.BaseBean;
+import com.cube.api.entity.BaseEntity;
 
-public class SYSMenuRole extends BaseBean {
+public class SYSMenuRole extends BaseEntity {
     Long id;
     Long menuId;
     Long roleId;

@@ -8,6 +8,7 @@ import com.cube.system.entity.SYSChangePassword;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.param.SYSUserParam;
 import com.cube.system.dao.SYSUserDao;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +27,12 @@ public class SYSUserService {
 
     private final SYSUserDao userDao;
     private final SYSUserRoleDao userRoleDao;
+    private final PasswordEncoder passwordEncoder;
 
-    public SYSUserService(SYSUserDao userDao, SYSUserRoleDao userRoleDao) {
+    public SYSUserService(SYSUserDao userDao, SYSUserRoleDao userRoleDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.userRoleDao = userRoleDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -103,13 +106,13 @@ public class SYSUserService {
         }
         SYSUser existingUser = existingUserOptional.get();
 
-        // 验证旧密码
-        if (!existingUser.getPassword().equals(params.getOldPassword())) {
+        // 验证旧密码 (使用BCrypt)
+        if (!passwordEncoder.matches(params.getOldPassword(), existingUser.getPassword())) {
             throw new DataException("Incorrect old password");
         }
 
-        // 更新密码
-        existingUser.setPassword(params.getNewPassword());
+        // 更新密码 (使用BCrypt加密)
+        existingUser.setPassword(passwordEncoder.encode(params.getNewPassword()));
         return userDao.update(existingUser) > 0;
     }
 
