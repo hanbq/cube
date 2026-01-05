@@ -1,4 +1,4 @@
-package com.cube.gateway.config;
+package com.cube.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

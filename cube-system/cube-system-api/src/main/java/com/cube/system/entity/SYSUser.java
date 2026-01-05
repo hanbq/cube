@@ -1,6 +1,6 @@
 package com.cube.system.entity;
 
-import com.cube.api.entity.BaseEntity;
+import com.cube.common.entity.BaseEntity;
 import com.cube.common.annotation.SensitiveField;
 import com.cube.common.utils.SensitiveDataMasker.SensitiveType;
 

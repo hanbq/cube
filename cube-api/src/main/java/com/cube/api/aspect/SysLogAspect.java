@@ -1,11 +1,11 @@
-package com.cube.gateway.aspect;
+package com.cube.api.aspect;
 
-import com.cube.api.enums.Status;
+import com.cube.api.entity.UserPrincipal;
+import com.cube.api.service.AsyncSysLogService;
+import com.cube.common.enums.Status;
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.utils.SensitiveDataMasker;
-import com.cube.gateway.annotation.SysLog;
-import com.cube.gateway.entity.UserPrincipal;
-import com.cube.gateway.service.AsyncSysLogService;
+import com.cube.api.annotation.SysLog;
 import com.cube.system.entity.SYSLoginRequest;
 import com.cube.system.entity.SYSSysLog;
 import jakarta.annotation.Resource;
@@ -39,6 +39,7 @@ import java.time.ZonedDateTime;
 public class SysLogAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(SysLogAspect.class);
+    public static final String UNKNOWN = "unknown";
 
     @Resource
     private AsyncSysLogService asyncSysLogService;
@@ -173,12 +174,11 @@ public class SysLogAspect {
             
             // 对于其他接口，从SecurityContext中获取用户名
             var authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
-                var principal = (UserPrincipal) authentication.getPrincipal();
+            if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal principal) {
                 return principal.userName();
             }
         } catch (Exception e) {
-            logger.debug("无法获取当前用户名", e);
+            logger.debug("Unable to retrieve current username", e);
         }
         
         return "anonymous";
@@ -228,39 +228,49 @@ public class SysLogAspect {
 
     private String getIpAddress(HttpServletRequest request) {
         if (request == null) {
-            return "unknown";
+            return UNKNOWN;
         }
-        
-        String ip = request.getHeader("X-Real-IP");
-        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Forwarded-For");
+
+        // 尝试从各种HTTP头中获取IP地址
+        String[] headers = {
+            "X-Real-IP",
+            "X-Forwarded-For",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_X_FORWARDED_FOR"
+        };
+
+        String ip = null;
+        for (String header : headers) {
+            ip = request.getHeader(header);
+            if (isValidIp(ip)) {
+                break;
+            }
         }
-        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (!StringUtils.hasLength(ip) || "unknown".equalsIgnoreCase(ip)) {
+
+        // 如果所有头都没有有效IP，使用远程地址
+        if (!isValidIp(ip)) {
             ip = request.getRemoteAddr();
         }
-        
+
         // 对于通过多个代理的情况，第一个IP才是客户端的真实IP
         if (StringUtils.hasLength(ip) && ip.contains(",")) {
             ip = ip.split(",")[0].trim();
         }
-        
+
         // 处理IPv6本地回环地址，转换为IPv4格式
         if ("0:0:0:0:0:0:0:1".equals(ip)) {
             ip = "127.0.0.1";
         }
-        
+
         return ip;
+    }
+
+    /**
+     * 检查IP地址是否有效
+     */
+    private boolean isValidIp(String ip) {
+        return StringUtils.hasLength(ip) && !UNKNOWN.equalsIgnoreCase(ip);
     }
 }

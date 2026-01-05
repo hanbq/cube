@@ -1,6 +1,6 @@
-package com.cube.gateway.service;
+package com.cube.api.service;
 
-import com.cube.gateway.entity.UserPrincipal;
+import com.cube.api.entity.UserPrincipal;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.entity.SYSRole;
 import com.cube.system.service.SYSUserService;

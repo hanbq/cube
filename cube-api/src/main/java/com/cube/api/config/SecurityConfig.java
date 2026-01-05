@@ -1,7 +1,7 @@
-package com.cube.gateway.config;
+package com.cube.api.config;
 
-import com.cube.gateway.filter.JwtAuthenticationEntryPoint;
-import com.cube.gateway.filter.JwtAuthenticationFilter;
+import com.cube.api.filter.JwtAuthenticationEntryPoint;
+import com.cube.api.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

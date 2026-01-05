@@ -1,8 +1,8 @@
-package com.cube.system;
+package com.cube.api.controller.system;
 
 import com.cube.common.entity.CubeResponse;
-import com.cube.gateway.annotation.SysLog;
-import com.cube.gateway.entity.UserPrincipal;
+import com.cube.api.annotation.SysLog;
+import com.cube.api.entity.UserPrincipal;
 import com.cube.system.entity.SYSMenu;
 import com.cube.system.service.SYSMenuService;
 import jakarta.annotation.Resource;

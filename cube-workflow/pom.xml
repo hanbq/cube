@@ -19,10 +19,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.cube</groupId>
-            <artifactId>cube-api</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.cube</groupId>

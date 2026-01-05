@@ -1,4 +1,4 @@
-package com.cube.api.enums;
+package com.cube.common.enums;
 
 public enum Status {
     SUCCESS,

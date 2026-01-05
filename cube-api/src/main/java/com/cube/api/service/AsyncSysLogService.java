@@ -1,4 +1,4 @@
-package com.cube.gateway.service;
+package com.cube.api.service;
 
 import com.cube.system.entity.SYSSysLog;
 import com.cube.system.service.SYSSysLogService;

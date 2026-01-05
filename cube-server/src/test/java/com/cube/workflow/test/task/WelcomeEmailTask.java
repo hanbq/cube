@@ -23,8 +23,7 @@ public class WelcomeEmailTask extends WFTask {
         log.info("Welcome email sent successfully for request: {}", event.getRequestId());
 
         // Post the next event
-        if (event instanceof BaseTestEvent) {
-            BaseTestEvent baseTestEvent = (BaseTestEvent) event;
+        if (event instanceof BaseTestEvent baseTestEvent) {
             ActivationEvent nextEvent = new ActivationEvent(baseTestEvent.getLatch());
             nextEvent.setRequestId(event.getRequestId());
             nextEvent.setStartTime(baseTestEvent.getStartTime());

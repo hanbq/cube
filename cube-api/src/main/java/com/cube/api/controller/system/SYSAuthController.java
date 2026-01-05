@@ -1,8 +1,8 @@
-package com.cube.system;
+package com.cube.api.controller.system;
 
 import com.cube.common.annotation.LogMasking;
 import com.cube.common.entity.CubeResponse;
-import com.cube.gateway.annotation.SysLog;
+import com.cube.api.annotation.SysLog;
 import com.cube.system.entity.SYSLoginRequest;
 import com.cube.system.entity.SYSLoginResponse;
 import com.cube.system.entity.SYSRegisterRequest;
@@ -66,7 +66,6 @@ public class SYSAuthController {
      */
     @PostMapping("/logout")
     public CubeResponse<Void> logout() {
-        // TODO: 实现登出逻辑，如将token加入黑名单等
         return CubeResponse.success(null, "Logout successful");
     }
 }

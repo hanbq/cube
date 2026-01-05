@@ -1,4 +1,4 @@
-package com.cube.gateway.annotation;
+package com.cube.api.annotation;
 
 import java.lang.annotation.*;
 

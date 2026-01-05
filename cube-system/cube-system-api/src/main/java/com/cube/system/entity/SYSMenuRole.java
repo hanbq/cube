@@ -1,6 +1,6 @@
 package com.cube.system.entity;
 
-import com.cube.api.entity.BaseEntity;
+import com.cube.common.entity.BaseEntity;
 
 public class SYSMenuRole extends BaseEntity {
     Long id;

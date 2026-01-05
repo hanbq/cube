@@ -1,4 +1,4 @@
-package com.cube.api.entity;
+package com.cube.common.entity;
 
 import java.time.ZonedDateTime;
 

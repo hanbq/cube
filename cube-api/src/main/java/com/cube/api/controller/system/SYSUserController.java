@@ -1,10 +1,10 @@
-package com.cube.system;
+package com.cube.api.controller.system;
 
-import com.cube.gateway.annotation.SysLog;
+import com.cube.api.annotation.SysLog;
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
 import com.cube.system.entity.SYSChangePassword;
-import com.cube.gateway.entity.UserPrincipal;
+import com.cube.api.entity.UserPrincipal;
 import com.cube.system.entity.SYSUser;
 import com.cube.system.param.SYSUserParam;
 import com.cube.system.service.SYSUserService;

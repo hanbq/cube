@@ -1,8 +1,8 @@
-package com.cube.system;
+package com.cube.api.controller.system;
 
 import com.cube.common.entity.CubeResponse;
 import com.cube.common.page.PageResult;
-import com.cube.gateway.annotation.SysLog;
+import com.cube.api.annotation.SysLog;
 import com.cube.system.entity.SYSRole;
 import com.cube.system.param.SYSRoleParam;
 import com.cube.system.service.SYSRoleService;

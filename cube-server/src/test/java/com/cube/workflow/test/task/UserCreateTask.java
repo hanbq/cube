@@ -23,8 +23,7 @@ public class UserCreateTask extends WFTask {
         log.info("User created successfully for request: {}", event.getRequestId());
 
         // Post the next event
-        if (event instanceof BaseTestEvent) {
-            BaseTestEvent baseTestEvent = (BaseTestEvent) event;
+        if (event instanceof BaseTestEvent baseTestEvent) {
             WelcomeEmailEvent nextEvent = new WelcomeEmailEvent(baseTestEvent.getLatch());
             nextEvent.setRequestId(event.getRequestId());
             nextEvent.setStartTime(baseTestEvent.getStartTime());

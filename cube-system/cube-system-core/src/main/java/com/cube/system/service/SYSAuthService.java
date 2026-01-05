@@ -1,6 +1,6 @@
 package com.cube.system.service;
 
-import com.cube.api.enums.Status;
+import com.cube.common.enums.Status;
 import com.cube.common.exception.AuthException;
 import com.cube.system.utils.SYSJwtUtil;
 import com.cube.system.entity.SYSUser;
