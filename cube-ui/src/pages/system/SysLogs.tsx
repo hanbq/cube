@@ -1,0 +1,483 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Box,
+  Paper,
+  Button,
+  Alert,
+  Snackbar,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  TextField,
+  Stack,
+  Select,
+  Tooltip,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Typography,
+  Chip,
+  Checkbox,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+import {
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material';
+import { sysLogService } from '../../services/sysLogService';
+import type { SYSSysLog, SYSLogParam } from '../../types/syslog';
+import { LOG_STATUS } from '../../constants/logConstants';
+
+export default function SysLogs() {
+  const { t } = useTranslation();
+  const [logs, setLogs] = useState<SYSSysLog[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
+  
+  // 删除确认对话框状态
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [logToDelete, setLogToDelete] = useState<number | null>(null);
+  const [isBatchDelete, setIsBatchDelete] = useState(false);
+
+  const [queryState, setQueryState] = useState({
+    searchUsername: '',
+    searchOperation: '',
+    searchMethod: '',
+    searchStatus: '',
+    searchIp: '',
+    searchCreatedTimeStart: '',
+    searchCreatedTimeEnd: '',
+    page: 0,
+    rowsPerPage: 20,
+  });
+
+  const performSearch = async (pageNum: number, pageSize: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const param: SYSLogParam = {
+        pageNum: pageNum + 1,
+        pageSize: pageSize,
+        username: queryState.searchUsername || undefined,
+        operation: queryState.searchOperation || undefined,
+        method: queryState.searchMethod || undefined,
+        status: queryState.searchStatus || undefined,
+        ip: queryState.searchIp || undefined,
+        createdTimeStart: queryState.searchCreatedTimeStart || undefined,
+        createdTimeEnd: queryState.searchCreatedTimeEnd || undefined,
+      };
+      const result = await sysLogService.searchSysLogs(param);
+      setLogs(result.records);
+      setTotal(result.total);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    setQueryState(prev => ({ ...prev, page: 0 }));
+    await performSearch(0, queryState.rowsPerPage);
+  };
+
+  const handleChangePage = async (_event: unknown, newPage: number) => {
+    setQueryState(prev => ({ ...prev, page: newPage }));
+    await performSearch(newPage, queryState.rowsPerPage);
+  };
+
+  const handleChangeRowsPerPage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setQueryState(prev => ({ ...prev, rowsPerPage: newRowsPerPage, page: 0 }));
+    await performSearch(0, newRowsPerPage);
+  };
+
+  React.useEffect(() => {
+    performSearch(0, queryState.rowsPerPage);
+  }, []);
+
+  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const currentPageIds = logs
+        .filter((log) => log.logId)
+        .map((log) => log.logId!);
+      const newSelected = [...new Set([...selectedLogs, ...currentPageIds])];
+      setSelectedLogs(newSelected);
+    } else {
+      const currentPageIds = logs
+        .filter((log) => log.logId)
+        .map((log) => log.logId!);
+      setSelectedLogs(selectedLogs.filter(id => !currentPageIds.includes(id)));
+    }
+  };
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleSelectAll(event);
+  };
+
+  const handleSelectOne = (logId: number) => {
+    setSelectedLogs((prev) =>
+      prev.includes(logId)
+        ? prev.filter((id) => id !== logId)
+        : [...prev, logId]
+    );
+  };
+
+  const handleSelectClick = (logId: number) => {
+    handleSelectOne(logId);
+  };
+
+  const handleDeleteLog = async (logId: number) => {
+    setLogToDelete(logId);
+    setIsBatchDelete(false);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async (logId: number) => {
+    handleDeleteLog(logId);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      if (isBatchDelete) {
+        await sysLogService.batchDeleteSysLogs(selectedLogs);
+        setSelectedLogs([]);
+        setSnackbar({
+          open: true,
+          message: t('sysLogManagement.batchDeleteSuccess'),
+          severity: 'success',
+        });
+      } else if (logToDelete !== null) {
+        await sysLogService.deleteSysLog(logToDelete);
+        setSnackbar({
+          open: true,
+          message: t('sysLogManagement.deleteSuccess'),
+          severity: 'success',
+        });
+      }
+      await performSearch(queryState.page, queryState.rowsPerPage);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setLogToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setLogToDelete(null);
+  };
+
+  const handleBatchDelete = async () => {
+    if (selectedLogs.length === 0) {
+      setSnackbar({
+        open: true,
+        message: t('sysLogManagement.selectFirst'),
+        severity: 'error',
+      });
+      return;
+    }
+
+    setLogToDelete(null);
+    setIsBatchDelete(true);
+    setDeleteDialogOpen(true);
+  };
+
+  return (
+    <Box sx={{ 
+      m: -3, 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column' 
+    }}>
+      <Paper sx={{ 
+        p: 3, 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}>
+        {/* 工具栏 */}
+        <Box 
+          sx={{ 
+            mb: 3,
+            p: 2,
+            border: 1,
+            borderColor: 'divider',
+            borderRadius: 1,
+            backgroundColor: 'background.paper'
+          }}
+        >
+          <Stack 
+            direction="row" 
+            spacing={2} 
+            alignItems="center" 
+            justifyContent="flex-start"
+            flexWrap="wrap"
+            sx={{ gap: 2 }}
+          >
+            <FormControl size="small" sx={{ width: 150 }}>
+              <InputLabel id="status-select-label">{t('sysLogManagement.status')}</InputLabel>
+              <Select
+                labelId="status-select-label"
+                value={queryState.searchStatus}
+                label={t('sysLogManagement.status')}
+                onChange={(e) => setQueryState(prev => ({ ...prev, searchStatus: e.target.value }))}
+              >
+                <MenuItem value="">{t('common.all')}</MenuItem>
+                <MenuItem value="SUCCESS">{t('common.success')}</MenuItem>
+                <MenuItem value="FAILED">{t('common.failure')}</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label={t('sysLogManagement.username')}
+              size="small"
+              value={queryState.searchUsername}
+              onChange={(e) => setQueryState(prev => ({ ...prev, searchUsername: e.target.value }))}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              sx={{ width: 150 }}
+            />
+            <TextField
+              label={t('sysLogManagement.operation')}
+              size="small"
+              value={queryState.searchOperation}
+              onChange={(e) => setQueryState(prev => ({ ...prev, searchOperation: e.target.value }))}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              sx={{ width: 150 }}
+            />
+            <TextField
+              label={t('sysLogManagement.method')}
+              size="small"
+              value={queryState.searchMethod}
+              onChange={(e) => setQueryState(prev => ({ ...prev, searchMethod: e.target.value }))}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              sx={{ width: 150 }}
+            />
+            
+            <TextField
+              label={t('sysLogManagement.ip')}
+              size="small"
+              value={queryState.searchIp}
+              onChange={(e) => setQueryState(prev => ({ ...prev, searchIp: e.target.value }))}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              sx={{ width: 150 }}
+            />
+            <TextField
+              label={t('sysLogManagement.createdTimeStart')}
+              type="datetime-local"
+              size="small"
+              value={queryState.searchCreatedTimeStart}
+              onChange={(e) => setQueryState(prev => ({ ...prev, searchCreatedTimeStart: e.target.value }))}
+              InputLabelProps={{ shrink: true }}
+              sx={{ width: 200 }}
+            />
+            <TextField
+              label={t('sysLogManagement.createdTimeEnd')}
+              type="datetime-local"
+              size="small"
+              value={queryState.searchCreatedTimeEnd}
+              onChange={(e) => setQueryState(prev => ({ ...prev, searchCreatedTimeEnd: e.target.value }))}
+              InputLabelProps={{ shrink: true }}
+              sx={{ width: 200 }}
+            />
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={handleSearch}
+            >
+              {t('sysLogManagement.search')}
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleBatchDelete}
+              disabled={selectedLogs.length === 0}
+            >
+              {t('sysLogManagement.batchDelete')}
+            </Button>
+          </Stack>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error.message}
+          </Alert>
+        )}
+
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box sx={{ 
+            flex: 1,
+            minHeight: 400,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <TableContainer sx={{ 
+              flex: 1, 
+              overflow: 'auto',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1
+            }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        indeterminate={selectedLogs.length > 0 && selectedLogs.length < logs.length}
+                        checked={logs.length > 0 && selectedLogs.length === logs.length}
+                        onChange={handleSelectAllClick}
+                      />
+                    </TableCell>
+                    <TableCell>ID</TableCell>
+                    <TableCell>{t('sysLogManagement.status')}</TableCell>
+                    <TableCell>{t('sysLogManagement.username')}</TableCell>
+                    <TableCell>{t('sysLogManagement.operation')}</TableCell>
+                    <TableCell>{t('sysLogManagement.method')}</TableCell>
+                    <TableCell>{t('sysLogManagement.params')}</TableCell>
+                    <TableCell sx={{ minWidth: 180 }}>{t('sysLogManagement.createdTime')}</TableCell>
+                    <TableCell>{t('sysLogManagement.ip')}</TableCell>
+                    <TableCell>{t('sysLogManagement.operations')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {logs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={10} align="center">
+                        {t('sysLogManagement.noData')}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    logs.map((log) => (
+                      <TableRow key={log.logId} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={log.logId ? selectedLogs.includes(log.logId) : false}
+                            onChange={() => log.logId && handleSelectClick(log.logId)}
+                          />
+                        </TableCell>
+                        <TableCell>{log.logId}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={log.status === LOG_STATUS.SUCCESS ? t('common.success') : t('common.failure')}
+                            color={log.status === LOG_STATUS.SUCCESS ? 'success' : 'error'}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>{log.username || '-'}</TableCell>
+                        <TableCell>{log.operation}</TableCell>
+                        <TableCell>{log.method}</TableCell>
+                        <TableCell>
+                          {log.params ? (
+                            <Tooltip title={<pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(log.params, null, 2)}</pre>} arrow>
+                              <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {typeof log.params === 'string' ? log.params : JSON.stringify(log.params).replace(/\\\//g, '/')}
+                              </Typography>
+                            </Tooltip>
+                          ) : (
+                            '-'
+                          )}
+                        </TableCell>
+                        <TableCell sx={{ minWidth: 180 }}>
+                          {log.createdTime ? new Date(log.createdTime).toLocaleString() : '-'}
+                        </TableCell>
+                        <TableCell>{log.ip || '-'}</TableCell>
+                        <TableCell>
+                          <IconButton
+                            color="error"
+                            size="small"
+                            onClick={() => log.logId && handleDelete(log.logId)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[20, 50, 100]}
+              component="div"
+              count={total}
+              rowsPerPage={queryState.rowsPerPage}
+              page={queryState.page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage={t('sysLogManagement.rowsPerPage')}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}-${to} ${t('common.of')} ${count !== -1 ? count : `${to}+`} ${t('common.items')}`
+              }
+            />
+          </Box>
+        )}
+      </Paper>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* 删除确认对话框 */}
+      <Dialog 
+        open={deleteDialogOpen} 
+        onClose={cancelDelete}
+        PaperProps={{ sx: { minWidth: '200px' } }}
+      >
+        <DialogTitle>{t('sysLogManagement.confirmDelete')}</DialogTitle>
+        <DialogContent>
+          {isBatchDelete 
+            ? t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length }, `确定要删除选中的 ${selectedLogs.length} 条日志吗?`)
+            : t('sysLogManagement.deleteWarning', undefined, '确定要删除这条日志吗?')
+          }
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete}>{t('common.cancel')}</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            {t('common.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}

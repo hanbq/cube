@@ -1,2 +1,17 @@
 /.idea/workspace.xml
 **/target/
+/.idea/.gitignore
+/.idea/compiler.xml
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/copilot.data.migration.edit.xml
+/.idea/encodings.xml
+/.idea/jarRepositories.xml
+/.idea/MarsCodeWorkspaceAppSettings.xml
+/.idea/misc.xml
+/.idea/vcs.xml
+/.idea/modules.xml
+/cube-system/cube-system-core/cube-system-core.iml
+**/logs/**
+/.idea/kotlinc.xml
+/.idea/copilot.data.migration.ask.xml

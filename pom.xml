@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.7</version>
+        <version>4.0.1</version>
     </parent>
 
     <groupId>com.cube</groupId>
@@ -15,12 +15,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <cube.version>0.0.1-SNAPSHOT</cube.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -28,14 +30,83 @@
             </dependency>
 
             <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>2.0.1</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>4.0.0-M2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.11.5</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.11.5</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>26.0.2-1</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- Jasypt for configuration encryption -->
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>3.0.5</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>4.0.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>3.8.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cube</groupId>
+                <artifactId>cube-common</artifactId>
+                <version>${cube.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.cube</groupId>
                 <artifactId>cube-api</artifactId>
+                <version>${cube.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cube</groupId>
+                <artifactId>cube-workflow</artifactId>
+                <version>${cube.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cube</groupId>
+                <artifactId>cube-system-api</artifactId>
+                <version>${cube.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cube</groupId>
+                <artifactId>cube-system-core</artifactId>
                 <version>${cube.version}</version>
             </dependency>
 
@@ -45,6 +116,9 @@
     <modules>
         <module>cube-api</module>
         <module>cube-server</module>
+        <module>cube-workflow</module>
+        <module>cube-system</module>
+        <module>cube-common</module>
     </modules>
 
 </project>
