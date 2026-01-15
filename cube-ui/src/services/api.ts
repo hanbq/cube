@@ -84,7 +84,7 @@ class ApiService {
               // Unauthorized - attempt token refresh
 
               // 避免无限循环：如果是刷新token接口本身失败，直接登出
-              if (originalRequest.url?.includes('/auth/refresh-token')) {
+              if (originalRequest.url?.includes('/auth/refresh')) {
                 console.error('Token刷新接口返回401，跳转登录页');
                 this.handleUnauthorized();
                 return Promise.reject(error);
