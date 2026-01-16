@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useMenuStore } from '../../store/menuStore';
 import { userMenuService } from '../../services/userMenuService';
 import { authService } from '../../services/authService';
+import { workspaceService } from '../../services/workspaceService';
 
 interface HomeProps {
   navigate?: (path: string) => void;
@@ -126,6 +127,9 @@ export default function Home() {
         setLoading(true);
         const menus = await userMenuService.getUserMenus();
         setMenus(menus);
+        
+        // 初始化默认工作区
+        await workspaceService.initializeDefaultWorkspace();
       } catch (error) {
         console.error('[Home] 加载菜单失败:', error);
         setError(error as Error);

@@ -2,6 +2,7 @@ package com.cube.api.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -25,7 +26,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
 
     @Override
-    public void commence(HttpServletRequest request,
+    public void commence(@NotNull HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         LOG.error("Unauthorized error: {}", authException.getMessage());
