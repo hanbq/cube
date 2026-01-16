@@ -549,13 +549,13 @@ export default function PermissionManagement() {
         )}
 
         <Grid container spacing={2} sx={{ flexGrow: 1, overflow: 'hidden'}}>
-          <Grid size={3} >
+          <Grid item xs={3} >
             <Paper variant="outlined" sx={{ height: '100%', overflow: 'auto' }}>
               {renderRoleList()}
             </Paper>
           </Grid>
 
-          <Grid size={9} >
+          <Grid item xs={9} >
             <Paper variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>

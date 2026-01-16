@@ -473,8 +473,8 @@ export default function SysLogs() {
         <DialogTitle>{t('sysLogManagement.confirmDelete')}</DialogTitle>
         <DialogContent>
           {isBatchDelete 
-            ? t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length }, `确定要删除选中的 ${selectedLogs.length} 条日志吗?`)
-            : t('sysLogManagement.deleteWarning', undefined, '确定要删除这条日志吗?')
+            ? t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length })
+            : t('sysLogManagement.deleteWarning', undefined)
           }
         </DialogContent>
         <DialogActions>
