@@ -20,10 +20,6 @@ public class SensitiveDataMasker {
             Pattern.CASE_INSENSITIVE
     );
 
-    private static final Pattern CREDIT_CARD_PATTERN = Pattern.compile(
-            "(\\d{4})[\\s-]?(\\d{4})[\\s-]?(\\d{4})[\\s-]?(\\d{4})"
-    );
-
     /**
      * 完全隐藏密码
      * 例如: "myPassword123" -> "******"
@@ -134,7 +130,6 @@ public class SensitiveDataMasker {
         while (matcher.find()) {
             String fieldName = matcher.group(1);
             String separator = matcher.group(2);
-            String value = matcher.group(3);
 
             String replacement = fieldName + separator + "\"******\"";
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
