@@ -379,7 +379,7 @@ export default {
       },
       // Delete Workspace
       delete: {
-        content: 'Are you sure you want to delete workspace "{name}"? This action cannot be undone.',
+        content: 'Are you sure you want to delete workspace "{{name}}"? This action cannot be undone.',
       },
     },
 

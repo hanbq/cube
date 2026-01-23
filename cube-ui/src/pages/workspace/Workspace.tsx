@@ -39,11 +39,12 @@ export default function Workspace() {
   const { 
     workspaces, 
     currentWorkspace, 
-    setCurrentWorkspaceOnly,
+    setCurrentWorkspace, 
     loading, 
     updateWorkspace, 
     createWorkspace, 
     deleteWorkspace,
+    fetchWorkspaces,
     // Widget methods
     addWidget,
     updateWidget,
@@ -93,11 +94,11 @@ export default function Workspace() {
           position: widget.position
         }));
         
-        updateWidgetPositions(currentWorkspace.id, positionUpdates).catch(err => {
+        updateWidgetPositions(currentWorkspace.id, positionUpdates).catch((err: any) => {
           console.error('Failed to update widget positions:', err);
           // 如果API调用失败，回滚到本地状态
           const finalUpdatedWorkspace = { ...currentWorkspace, widgets: updatedWidgetsWithPosition };
-          setCurrentWorkspaceOnly(finalUpdatedWorkspace);
+          setCurrentWorkspace(finalUpdatedWorkspace);
         });
       }
     }
@@ -161,7 +162,7 @@ export default function Workspace() {
     const workspaceId = event.target.value;
     const selectedWorkspace = workspaces.find(w => w.id === workspaceId);
     if (selectedWorkspace) {
-      await setCurrentWorkspaceOnly(selectedWorkspace);
+      await setCurrentWorkspace(selectedWorkspace);
     }
   };
 
@@ -197,13 +198,30 @@ export default function Workspace() {
       if (editingWorkspace) {
         await updateWorkspace(editingWorkspace.id, workspaceFormData);
       } else {
-        await createWorkspace({
+        const workspaceId = await createWorkspace({
           ...workspaceFormData,
           isDefault: false,
           widgets: [],
         });
+        
+        // 创建新工作区后，刷新工作区列表
+        await fetchWorkspaces();
+        
+        // 使用新创建的工作区ID构建一个临时工作区对象
+        // 这样可以立即切换到新工作区，而不需要等待状态更新
+        const newWorkspace = {
+          id: workspaceId,
+          name: workspaceFormData.name,
+          description: workspaceFormData.description,
+          isDefault: false,
+          widgets: [],
+          createdTime: new Date().toISOString(),
+          updatedTime: new Date().toISOString(),
+        };
+        
+        // 立即设置新工作区为当前工作区
+        await setCurrentWorkspace(newWorkspace);
       }
-      // 不需要重新获取所有工作区，因为updateWorkspace和createWorkspace内部已经处理了
       handleCloseWorkspaceDialog();
     } catch (err) {
       console.error('Failed to save workspace:', err);
@@ -224,7 +242,7 @@ export default function Workspace() {
       // 切换到默认工作区
       const defaultWorkspace = workspaces.find(w => w.isDefault);
       if (defaultWorkspace) {
-        await setCurrentWorkspaceOnly(defaultWorkspace);
+        await setCurrentWorkspace(defaultWorkspace);
       }
       setDeleteDialogOpen(false);
     } catch (err) {
@@ -265,7 +283,7 @@ export default function Workspace() {
             {/* 工作区切换下拉框 */}
             <FormControl size="small" sx={{ minWidth: 180 }}>
               <Select
-                value={currentWorkspace?.id || ''}
+                value={workspaces.find(w => w.id === currentWorkspace?.id)?.id || ''}
                 onChange={handleWorkspaceChange}
                 displayEmpty
                 renderValue={(value) => {

@@ -2,8 +2,6 @@ package com.cube.system.entity;
 
 import com.cube.common.entity.BaseEntity;
 
-import java.util.List;
-
 /**
  * 工作区实体类
  * 对应前端 Workspace 接口

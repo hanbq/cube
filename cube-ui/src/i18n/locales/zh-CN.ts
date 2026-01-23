@@ -383,7 +383,7 @@ export default {
       },
       // 删除工作区
       delete: {
-        content: '确定要删除工作区"{name}"吗？此操作不可撤销。',
+        content: '确定要删除工作区"{{name}}"吗？此操作不可撤销。',
       },
     },
 
