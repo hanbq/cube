@@ -47,7 +47,7 @@ public class SysLogAspect {
     /**
      * 定义切点，拦截带有@SysLog注解的方法
      */
-    @Pointcut("@annotation(com.cube.gateway.annotation.SysLog)")
+    @Pointcut("@annotation(com.cube.api.annotation.SysLog)")
     public void sysLogPointCut() {
     }
 

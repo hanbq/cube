@@ -9,12 +9,14 @@ import {
   MenuItem,
   Avatar,
   Box,
+  LinearProgress,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import { useLoading } from '../../contexts/LoadingContext';
 
 interface HeaderProps {
   userName?: string;
@@ -22,6 +24,8 @@ interface HeaderProps {
   onLogout?: () => void;
   t?: any;
   navigate?: (path: string) => void;
+  isLoading?: boolean;
+  loadingProgress?: number;
 }
 
 interface HeaderState {
@@ -74,6 +78,14 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
 
     return (
       <AppBar position="static">
+        {this.props.isLoading && (
+          <Box sx={{ width: '100%' }}>
+            <LinearProgress 
+              variant={this.props.loadingProgress && this.props.loadingProgress > 0 ? 'determinate' : 'indeterminate'} 
+              value={this.props.loadingProgress} 
+            />
+          </Box>
+        )}
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <ViewInArIcon sx={{ fontSize: 36 }} />
@@ -150,8 +162,9 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
   }
 }
 
-export default function Header(props: Omit<HeaderProps, 't' | 'navigate'>) {
+export default function Header(props: Omit<HeaderProps, 't' | 'navigate' | 'isLoading' | 'loadingProgress'>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  return <HeaderClass {...props} t={t} navigate={navigate} />;
+  const { isLoading, loadingProgress } = useLoading();
+  return <HeaderClass {...props} t={t} navigate={navigate} isLoading={isLoading} loadingProgress={loadingProgress} />;
 }

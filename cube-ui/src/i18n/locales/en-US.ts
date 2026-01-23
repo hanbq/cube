@@ -20,6 +20,21 @@ export default {
       success: 'Success',
       failure: 'Failure',
       error: 'Error',
+      add: 'Add',
+      update: 'Update',
+      title: 'Title',
+      value: 'Value',
+      description: 'Description',
+      text: 'Text',
+      content: 'Content',
+      small: 'Small',
+      medium: 'Medium',
+      large: 'Large',
+      select: 'Select',
+      placeholder: 'Please enter...',
+      required: 'Required',
+      updating: 'Updating...',
+      resize: 'Resize',
     },
 
     // Error Messages
@@ -30,6 +45,7 @@ export default {
       forbidden: 'Forbidden - insufficient permissions',
       notFound: 'Resource not found',
       serverError: 'Internal server error',
+      serverUnavailable: 'Backend service has stopped, please check if the backend service is running',
       apiError: 'API error with status {status}: {message}',
       noResponse: 'No response received from server: {message}',
       requestSetupError: 'Request setup error: {message}',
@@ -197,6 +213,7 @@ export default {
       roleList: 'Role List',
       userTab: 'Users',
       menuTab: 'Menus',
+      tabsAriaLabel: 'Permission management tabs',
       addUsers: 'Add Users',
       addMenus: 'Add Menus',
       deleteSelected: 'Delete Selected',
@@ -325,6 +342,137 @@ export default {
       changeSuccess: 'Password changed successfully',
       changeFailed: 'Password change failed: {error}',
       newPasswordMinLength: 'New password must be at least 6 characters',
+    },
+
+    // Dashboard
+    dashboard: {
+      title: 'Dashboard',
+      totalUsers: 'Total Users',
+      totalUsersDesc: 'Total number of registered users in the system',
+      totalWorkflows: 'Total Workflows',
+      totalWorkflowsDesc: 'Total number of workflows in the system',
+      activeTasks: 'Active Tasks',
+      activeTasksDesc: 'Currently executing tasks',
+      completionRate: 'Completion Rate',
+      completionRateDesc: 'Average task completion rate',
+    },
+
+    // Workspace
+    workspace: {
+      title: 'Workspace',
+      addWidget: 'Add Widget',
+      dragging: 'Dragging',
+      selectWorkspace: 'Select Workspace',
+      defaultWorkspace: 'Default Workspace',
+      noWorkspace: 'No Workspace',
+      noWidgets: 'No Widgets',
+      noWidgetsDescription: 'Click the button below to add the widgets you need',
+      loading: 'Loading...',
+      // Workspace Dialog
+      dialog: {
+        title: 'Workspace Management',
+        create: 'Create Workspace',
+        edit: 'Edit Workspace',
+        name: 'Workspace Name',
+        nameRequired: 'Workspace name is required',
+        description: 'Workspace Description',
+      },
+      // Delete Workspace
+      delete: {
+        content: 'Are you sure you want to delete workspace "{{name}}"? This action cannot be undone.',
+      },
+    },
+
+    // Widget
+    widget: {
+      chartPlaceholder: 'Chart Placeholder',
+      tablePlaceholder: 'Table Placeholder',
+      textContent: 'Text Content',
+    },
+
+    // Add widget dialog
+    addWidgetDialog: {
+      title: 'Add Widget',
+      selectWidget: 'Select Widget',
+      selectSize: 'Select Size',
+      searchPlaceholder: 'Search widgets...',
+      ariaLabel: 'Widget selection tabs',
+      categories: {
+        charts: 'Charts',
+        reports: 'Reports',
+        statistics: 'Statistics',
+        other: 'Other',
+      },
+      widgets: {
+        statistic: {
+          name: 'Statistic Card',
+          description: 'Display key metrics with values and descriptions',
+          preview: '1234\nTotal Users',
+        },
+        chart: {
+          name: 'Pie Chart',
+          description: 'Display data distribution in pie chart format',
+          preview: '📊\nPie Chart Preview',
+        },
+        barChart: {
+          name: 'Bar Chart',
+          description: 'Compare data in bar chart format',
+          preview: '📈\nBar Chart Preview',
+        },
+        lineChart: {
+          name: 'Line Chart',
+          description: 'Display trends in line chart format',
+          preview: '📉\nLine Chart Preview',
+        },
+        table: {
+          name: 'Table',
+          description: 'Display detailed data in table format',
+          preview: 'Header1 | Header2\nData1 | Data2',
+        },
+        text: {
+          name: 'Text',
+          description: 'Display custom text content',
+          preview: 'This is a preview of the text widget',
+        },
+        activity: {
+          name: 'Activity Feed',
+          description: 'Display recent activity records',
+          preview: 'User A completed task B\nUser C created issue D',
+        },
+        calendar: {
+          name: 'Calendar',
+          description: 'Display calendar view',
+          preview: '📅\nNovember 2023',
+        },
+      },
+      sizes: {
+        small: {
+          description: 'Small size widget',
+        },
+        medium: {
+          description: 'Standard size widget',
+        },
+        large: {
+          description: 'Full width widget',
+        },
+      },
+    },
+
+    // Edit Widget Dialog
+    editWidgetDialog: {
+      title: 'Edit Widget',
+      textLabel: 'Text Content',
+      errors: {
+        titleRequired: 'Please enter widget title',
+        valueRequired: 'Please enter statistic value',
+        textRequired: 'Please enter text content',
+        updateFailed: 'Failed to update widget',
+      },
+    },
+
+    // Resize Widget Dialog
+    resizeWidgetDialog: {
+      title: 'Resize Widget: {{widgetTitle}}',
     },
   },
 };

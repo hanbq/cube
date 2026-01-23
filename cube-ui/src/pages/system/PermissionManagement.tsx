@@ -54,8 +54,15 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+  
   return (
-    <div role="tabpanel" hidden={value !== index} id={`permission-tabpanel-${index}`} aria-labelledby={`permission-tab-${index}`} {...other}>
+    <div 
+      role="tabpanel" 
+      hidden={value !== index} 
+      id={`permission-tabpanel-${index}`} 
+      aria-labelledby={`permission-tab-${index}`} 
+      {...other}
+    >
       {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
@@ -555,10 +562,10 @@ export default function PermissionManagement() {
             </Paper>
           </Grid>
 
-          <Grid size={9} >
+          <Grid  size={9} >
             <Paper variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={tabValue} onChange={handleTabChange}>
+                <Tabs value={tabValue} onChange={handleTabChange} aria-label={t('permissionManagement.tabsAriaLabel')}>
                   <Tab label={t('permissionManagement.userTab')} />
                   <Tab label={t('permissionManagement.menuTab')} />
                 </Tabs>

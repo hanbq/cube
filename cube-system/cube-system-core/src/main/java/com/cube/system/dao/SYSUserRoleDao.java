@@ -62,9 +62,6 @@ public class SYSUserRoleDao {
     private static final String PHYSICAL_DELETE_BY_USER_ID_SQL =
             "DELETE FROM " + TABLE_NAME + " WHERE user_id = ?";
 
-    private static final String PHYSICAL_DELETE_BY_USER_IDS_SQL =
-            "DELETE FROM " + TABLE_NAME + " WHERE user_id IN (?)";
-
     public SYSUserRoleDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

@@ -20,6 +20,21 @@ export default {
       success: '成功',
       failure: '失败',
       error: '错误',
+      add: '添加',
+      update: '更新',
+      title: '标题',
+      value: '数值',
+      description: '描述',
+      text: '文本',
+      content: '内容',
+      small: '小',
+      medium: '中',
+      large: '大',
+      select: '选择',
+      placeholder: '请输入...',
+      required: '必填项',
+      updating: '更新中...',
+      resize: '调整大小',
     },
 
     // 错误信息
@@ -30,6 +45,7 @@ export default {
       forbidden: '禁止访问 - 权限不足',
       notFound: '资源未找到',
       serverError: '服务器内部错误',
+      serverUnavailable: '后端服务已停止，请检查后端服务是否已启动',
       apiError: 'API 错误 (状态码 {status}): {message}',
       noResponse: '服务器无响应: {message}',
       requestSetupError: '请求配置错误: {message}',
@@ -198,6 +214,7 @@ export default {
       roleList: '角色列表',
       userTab: '用户',
       menuTab: '菜单',
+      tabsAriaLabel: '权限管理标签页',
       addUsers: '添加用户',
       addMenus: '添加菜单',
       deleteSelected: '删除选中',
@@ -329,6 +346,137 @@ export default {
       changeSuccess: '密码修改成功',
       changeFailed: '密码修改失败: {error}',
       newPasswordMinLength: '新密码至少需要6个字符',
+    },
+
+    // 仪表盘
+    dashboard: {
+      title: '仪表盘',
+      totalUsers: '总用户数',
+      totalUsersDesc: '系统注册用户总数',
+      totalWorkflows: '工作流数',
+      totalWorkflowsDesc: '活跃工作流数量',
+      activeTasks: '活跃任务',
+      activeTasksDesc: '当前执行中的任务',
+      completionRate: '完成率',
+      completionRateDesc: '任务平均完成率',
+    },
+
+    // 工作区
+    workspace: {
+      title: '工作空间',
+      addWidget: '添加小部件',
+      dragging: '拖拽中',
+      selectWorkspace: '选择工作区',
+      defaultWorkspace: '默认工作区',
+      noWorkspace: '暂无工作区',
+      noWidgets: '暂无小部件',
+      noWidgetsDescription: '点击下方按钮添加您需要的小部件',
+      loading: '加载中...',
+      // 工作区对话框
+      dialog: {
+        title: '工作区管理',
+        create: '新建工作区',
+        edit: '编辑工作区',
+        name: '工作区名称',
+        nameRequired: '工作区名称不能为空',
+        description: '工作区描述',
+      },
+      // 删除工作区
+      delete: {
+        content: '确定要删除工作区"{{name}}"吗？此操作不可撤销。',
+      },
+    },
+
+    // 小部件
+    widget: {
+      chartPlaceholder: '图表占位符',
+      tablePlaceholder: '表格占位符',
+      textContent: '文本内容',
+    },
+
+    // 添加小部件对话框
+    addWidgetDialog: {
+      title: '添加小部件',
+      selectWidget: '选择小部件',
+      selectSize: '选择大小',
+      searchPlaceholder: '搜索小部件...',
+      ariaLabel: '小部件选择标签页',
+      categories: {
+        charts: '图表',
+        reports: '报告',
+        statistics: '统计',
+        other: '其他',
+      },
+      widgets: {
+        statistic: {
+          name: '统计卡片',
+          description: '显示带数值和描述的关键指标',
+          preview: '1234\n总用户数',
+        },
+        chart: {
+          name: '饼图',
+          description: '以饼图格式显示数据分布',
+          preview: '📊\n饼图预览',
+        },
+        barChart: {
+          name: '柱状图',
+          description: '以柱状图格式比较数据',
+          preview: '📈\n柱状图预览',
+        },
+        lineChart: {
+          name: '折线图',
+          description: '以折线图格式显示趋势',
+          preview: '📉\n折线图预览',
+        },
+        table: {
+          name: '表格',
+          description: '以表格格式显示详细数据',
+          preview: '标题1 | 标题2\n数据1 | 数据2',
+        },
+        text: {
+          name: '文本',
+          description: '显示自定义文本内容',
+          preview: '这是文本小部件的预览',
+        },
+        activity: {
+          name: '活动动态',
+          description: '显示最近的活动记录',
+          preview: '用户A完成了任务B\n用户C创建了问题D',
+        },
+        calendar: {
+          name: '日历',
+          description: '显示日历视图',
+          preview: '📅\n2023年11月',
+        },
+      },
+      sizes: {
+        small: {
+          description: '小尺寸小部件',
+        },
+        medium: {
+          description: '标准尺寸小部件',
+        },
+        large: {
+          description: '全宽尺寸小部件',
+        },
+      },
+    },
+
+    // 编辑小部件对话框
+    editWidgetDialog: {
+      title: '编辑小部件',
+      textLabel: '文本内容',
+      errors: {
+        titleRequired: '请输入小部件标题',
+        valueRequired: '请输入统计数值',
+        textRequired: '请输入文本内容',
+        updateFailed: '更新小部件失败',
+      },
+    },
+
+    // 调整小部件大小对话框
+    resizeWidgetDialog: {
+      title: '调整小部件大小: {{widgetTitle}}',
     },
   },
 };

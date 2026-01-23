@@ -65,7 +65,7 @@ class ApiService {
       (response: AxiosResponse) => {
         // 检查业务层面的认证失败
         const apiResponse = response.data as ApiResponse<any>;
-        if (apiResponse && (apiResponse.code === 401 || apiResponse.message?.includes('未授权') || apiResponse.message?.includes('token'))) {
+        if (apiResponse && apiResponse.code === 401){
           console.error(i18n.t('errors.tokenInvalidOrExpired'));
           this.handleUnauthorized();
           return Promise.reject(new Error(i18n.t('errors.unauthorized')));
@@ -84,7 +84,7 @@ class ApiService {
               // Unauthorized - attempt token refresh
 
               // 避免无限循环：如果是刷新token接口本身失败，直接登出
-              if (originalRequest.url?.includes('/auth/refresh-token')) {
+              if (originalRequest.url?.includes('/auth/refresh')) {
                 console.error('Token刷新接口返回401，跳转登录页');
                 this.handleUnauthorized();
                 return Promise.reject(error);
@@ -136,13 +136,37 @@ class ApiService {
               break;
             case 500:
               console.error(i18n.t('errors.serverError'));
-              break;
+              // 为500错误添加特定标记，以便在UI中区分
+              const serverError = new Error(i18n.t('errors.serverError'));
+              serverError.name = 'ServerError';
+              // 确保错误被全局处理器捕获
+              setTimeout(() => {
+                throw serverError;
+              }, 0);
+              return Promise.reject(serverError);
             default:
               console.error(i18n.t('errors.apiError', { status, message: error.message }));
           }
         } else if (error.request) {
           // Request made but no response received
           console.error(i18n.t('errors.noResponse', { message: error.message }));
+          // 检查是否是连接被拒绝错误（服务器未运行）
+          if (error.message.includes('ECONNREFUSED') || 
+              error.message.includes('ERR_CONNECTION_REFUSED') ||
+              error.message.includes('ERR_NETWORK') ||
+              error.message.includes('ERR_CONNECTION_RESET') ||
+              error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
+              error.message.includes('ECONNABORTED') ||
+              error.message.includes('timeout') ||
+              (error.response && (error.response as any).status && [502, 503, 504].includes((error.response as any).status))) {
+            const errorMessage = "后端服务已停止，请检查后端服务是否已启动";
+            console.error(errorMessage);
+            // 确保错误被全局处理器捕获
+            setTimeout(() => {
+              throw new Error(errorMessage);
+            }, 0);
+            return Promise.reject(new Error(errorMessage));
+          }
         } else {
           // Error in request setup
           console.error(i18n.t('errors.requestSetupError', { message: error.message }));

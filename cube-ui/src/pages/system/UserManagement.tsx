@@ -616,13 +616,12 @@ export default function UserManagement() {
       <Dialog 
             open={deleteDialogOpen} 
             onClose={cancelDelete}
-            PaperProps={{ sx: { minWidth: '200px' } }}
           >
             <DialogTitle>{t('userManagement.confirmDelete')}</DialogTitle>
             <DialogContent>
               {isBatchDelete 
-                ? t('userManagement.confirmBatchDelete', { count: selectedUsers.length }, `确定要删除选中的 ${selectedUsers.length} 个用户吗?`)
-                : t('userManagement.deleteWarning', undefined, '确定要删除这个用户吗?')
+                ? t('userManagement.confirmBatchDelete', { count: selectedUsers.length })
+                : t('userManagement.deleteWarning', undefined)
               }
             </DialogContent>
             <DialogActions>

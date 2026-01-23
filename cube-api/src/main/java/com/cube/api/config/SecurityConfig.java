@@ -2,6 +2,7 @@ package com.cube.api.config;
 
 import com.cube.api.filter.JwtAuthenticationEntryPoint;
 import com.cube.api.filter.JwtAuthenticationFilter;
+import com.cube.api.filter.PathExistenceFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,18 +29,21 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final PathExistenceFilter pathExistenceFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          PathExistenceFilter pathExistenceFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.pathExistenceFilter = pathExistenceFilter;
     }
 
     /**
      * 配置Security过滤链
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // 禁用CSRF（因为使用JWT，不需要CSRF保护）
                 .csrf(AbstractHttpConfigurer::disable)
@@ -60,10 +64,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // 其他所有请求都需要认证
                         .anyRequest().authenticated()
-                )
+                );
 
-                // 添加JWT认证过滤器
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // 添加自定义过滤器到过滤器链
+        http.addFilterBefore(pathExistenceFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -72,7 +77,7 @@ public class SecurityConfig {
      * 认证管理器
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

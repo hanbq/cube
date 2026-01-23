@@ -43,7 +43,6 @@ public class LogMaskingAspect {
         // 记录请求日志（脱敏）
         if (logMasking.maskRequest() && args != null && args.length > 0) {
             String maskedArgs = maskArguments(args);
-            LOG.info("Request to {}: {}", methodName, maskedArgs);
         }
 
         // 执行目标方法
@@ -52,7 +51,6 @@ public class LogMaskingAspect {
         // 记录响应日志（脱敏）
         if (logMasking.maskResponse() && result != null) {
             String maskedResult = maskObject(result);
-            LOG.info("Response from {}: {}", methodName, maskedResult);
         }
 
         return result;

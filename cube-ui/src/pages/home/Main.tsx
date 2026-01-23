@@ -138,7 +138,7 @@ class MainClass extends React.Component<MainProps> {
             })}
           </Breadcrumbs>
         </Box>
-        <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
+        <Box sx={{ flex: 1, overflow: 'auto', p: 1.5 }}>
           <Outlet />
         </Box>
       </Box>

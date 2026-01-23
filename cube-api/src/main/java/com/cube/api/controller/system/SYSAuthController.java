@@ -33,11 +33,15 @@ public class SYSAuthController {
     @SysLog(value = "用户注册", operation = "USER_REGISTER")
     @LogMasking(maskRequest = true, maskResponse = false)
     public CubeResponse<SYSRegisterResponse> register(@RequestBody SYSRegisterRequest registerRequest) {
-        SYSRegisterResponse response = authService.register(registerRequest);
-        if (response.isSuccess()) {
-            return CubeResponse.success(response, "Registration successful");
-        } else {
-            return CubeResponse.failed(response.getMessage());
+        try {
+            SYSRegisterResponse response = authService.register(registerRequest);
+            if (response.isSuccess()) {
+                return CubeResponse.success(response, "Registration successful");
+            } else {
+                return CubeResponse.failed(response.getMessage());
+            }
+        } catch (Exception e) {
+            return CubeResponse.failed(e.getMessage());
         }
     }
 
@@ -48,8 +52,12 @@ public class SYSAuthController {
     @SysLog(value = "用户登录", operation = "USER_LOGIN")
     @LogMasking(maskRequest = true, maskResponse = false)
     public CubeResponse<SYSLoginResponse> login(@RequestBody SYSLoginRequest loginRequest) {
-        SYSLoginResponse response = authService.login(loginRequest);
-        return CubeResponse.success(response, "Login successful");
+        try {
+            SYSLoginResponse response = authService.login(loginRequest);
+            return CubeResponse.success(response, "Login successful");
+        } catch (Exception e) {
+            return CubeResponse.failed(e.getMessage());
+        }
     }
 
     /**

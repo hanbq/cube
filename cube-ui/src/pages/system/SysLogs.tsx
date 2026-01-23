@@ -399,11 +399,17 @@ export default function SysLogs() {
                         <TableCell>{log.method}</TableCell>
                         <TableCell>
                           {log.params ? (
-                            <Tooltip title={<pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(log.params, null, 2)}</pre>} arrow>
-                              <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {typeof log.params === 'string' ? log.params : JSON.stringify(log.params).replace(/\\\//g, '/')}
-                              </Typography>
-                            </Tooltip>
+                            (() => {
+                              const raw = typeof log.params === 'string' ? log.params : JSON.stringify(log.params, null, 2);
+                              const display = raw.replace(/\\\//g, '/');
+                              return (
+                                <Tooltip title={<pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{display}</pre>} arrow>
+                                  <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {display}
+                                  </Typography>
+                                </Tooltip>
+                              );
+                            })()
                           ) : (
                             '-'
                           )}
@@ -467,8 +473,8 @@ export default function SysLogs() {
         <DialogTitle>{t('sysLogManagement.confirmDelete')}</DialogTitle>
         <DialogContent>
           {isBatchDelete 
-            ? t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length }, `确定要删除选中的 ${selectedLogs.length} 条日志吗?`)
-            : t('sysLogManagement.deleteWarning', undefined, '确定要删除这条日志吗?')
+            ? t('sysLogManagement.confirmBatchDelete', { count: selectedLogs.length })
+            : t('sysLogManagement.deleteWarning', undefined)
           }
         </DialogContent>
         <DialogActions>
