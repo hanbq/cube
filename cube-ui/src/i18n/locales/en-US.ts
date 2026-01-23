@@ -34,6 +34,7 @@ export default {
       placeholder: 'Please enter...',
       required: 'Required',
       updating: 'Updating...',
+      resize: 'Resize',
     },
 
     // Error Messages
@@ -44,6 +45,7 @@ export default {
       forbidden: 'Forbidden - insufficient permissions',
       notFound: 'Resource not found',
       serverError: 'Internal server error',
+      serverUnavailable: 'Backend service has stopped, please check if the backend service is running',
       apiError: 'API error with status {status}: {message}',
       noResponse: 'No response received from server: {message}',
       requestSetupError: 'Request setup error: {message}',
@@ -363,6 +365,8 @@ export default {
       selectWorkspace: 'Select Workspace',
       defaultWorkspace: 'Default Workspace',
       noWorkspace: 'No Workspace',
+      noWidgets: 'No Widgets',
+      noWidgetsDescription: 'Click the button below to add the widgets you need',
       loading: 'Loading...',
       // Workspace Dialog
       dialog: {
@@ -464,6 +468,11 @@ export default {
         textRequired: 'Please enter text content',
         updateFailed: 'Failed to update widget',
       },
+    },
+
+    // Resize Widget Dialog
+    resizeWidgetDialog: {
+      title: 'Resize Widget: {{widgetTitle}}',
     },
   },
 };

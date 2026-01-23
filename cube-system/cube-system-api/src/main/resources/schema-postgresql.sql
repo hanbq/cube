@@ -94,8 +94,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_MENU (
     created_by      VARCHAR(100),
     updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_by      VARCHAR(100),
-    deleted         BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_menu_parent FOREIGN KEY (parent_id) REFERENCES CUBE_SYS_MENU(menu_id) ON DELETE CASCADE
+    deleted         BOOLEAN DEFAULT FALSE
 );
 
 COMMENT ON TABLE CUBE_SYS_MENU IS '菜单表';
@@ -123,10 +122,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_USER_ROLE (
     created_by      VARCHAR(100),
     updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_by      VARCHAR(100),
-    deleted         BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_user_role_user FOREIGN KEY (user_id) REFERENCES CUBE_SYS_USER(user_id) ON DELETE CASCADE,
-    CONSTRAINT fk_user_role_role FOREIGN KEY (role_id) REFERENCES CUBE_SYS_ROLE(role_id) ON DELETE CASCADE,
-    CONSTRAINT uk_user_role UNIQUE (user_id, role_id)
+    deleted         BOOLEAN DEFAULT FALSE
 );
 
 COMMENT ON TABLE CUBE_SYS_USER_ROLE IS '用户角色关联表';
@@ -150,10 +146,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_MENU_ROLE (
     created_by      VARCHAR(100),
     updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_by      VARCHAR(100),
-    deleted         BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_menu_role_menu FOREIGN KEY (menu_id) REFERENCES CUBE_SYS_MENU(menu_id) ON DELETE CASCADE,
-    CONSTRAINT fk_menu_role_role FOREIGN KEY (role_id) REFERENCES CUBE_SYS_ROLE(role_id) ON DELETE CASCADE,
-    CONSTRAINT uk_menu_role UNIQUE (menu_id, role_id)
+    deleted         BOOLEAN DEFAULT FALSE
 );
 
 COMMENT ON TABLE CUBE_SYS_MENU_ROLE IS '菜单角色关联表';
@@ -177,10 +170,7 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_BUTTON_ROLE (
     created_by      VARCHAR(100),
     updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_by      VARCHAR(100),
-    deleted         BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_button_role_button FOREIGN KEY (button_id) REFERENCES CUBE_SYS_BUTTON(button_id) ON DELETE CASCADE,
-    CONSTRAINT fk_button_role_role FOREIGN KEY (role_id) REFERENCES CUBE_SYS_ROLE(role_id) ON DELETE CASCADE,
-    CONSTRAINT uk_button_role UNIQUE (button_id, role_id)
+    deleted         BOOLEAN DEFAULT FALSE
 );
 
 COMMENT ON TABLE CUBE_SYS_BUTTON_ROLE IS '按钮角色关联表';
@@ -272,3 +262,53 @@ ON CONFLICT (role_name) DO NOTHING;
 -- ========================================
 -- 完成
 -- ========================================
+
+
+-- 工作区相关数据库表设计
+-- 适配前端 Workspace 和 Widget 接口
+
+-- ========================================
+-- 1. 工作区表 (workspaces)
+-- 存储工作区的基本信息
+-- ========================================
+CREATE TABLE IF NOT EXISTS CUBE_SYS_WORKSPACES (
+    ID   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    is_default BOOLEAN DEFAULT FALSE,
+    created_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by      VARCHAR(100),
+    updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_by      VARCHAR(100),
+    user_id         BIGSERIAL
+);
+
+-- 创建索引
+CREATE INDEX idx_workspaces_name ON workspaces(name);
+CREATE INDEX idx_workspaces_is_default ON workspaces(is_default);
+CREATE INDEX idx_workspaces_created_time ON workspaces(created_time);
+
+-- ========================================
+-- 2. 小组件表 (widgets)
+-- 存储工作区内的小组件信息
+-- ========================================
+CREATE TABLE IF NOT EXISTS CUBE_SYS_WIDGETS (
+    id VARCHAR(36) PRIMARY KEY,
+    workspace_id INT8 NOT NULL,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('statistic', 'chart', 'table', 'text')),
+    title VARCHAR(100) NOT NULL,
+    size VARCHAR(10) NOT NULL CHECK (size IN ('small', 'medium', 'large')),
+    data JSON,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by      VARCHAR(100),
+    updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_by      VARCHAR(100),
+    user_id        INT8 NOT NULL,
+);
+
+-- 创建索引
+CREATE INDEX idx_widgets_workspace_id ON widgets(workspace_id);
+CREATE INDEX idx_widgets_type ON widgets(type);
+CREATE INDEX idx_widgets_position ON widgets(workspace_id, position);
+CREATE INDEX idx_widgets_created_time ON widgets(created_time);

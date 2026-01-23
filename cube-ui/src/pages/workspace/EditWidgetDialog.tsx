@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Stack, Alert } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Stack, Alert, useTheme, alpha, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import type { Widget as WidgetType } from './WorkspaceTypes';
+import type { Widget as WidgetType } from '../../types/workspace';
+import { getWidgetEditComponent } from './widgets';
 
 interface Props {
   open: boolean;
@@ -12,23 +13,16 @@ interface Props {
 
 export default function EditWidgetDialog({ open, onClose, widget, onUpdate }: Props) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [title, setTitle] = useState('');
-  const [value, setValue] = useState('');
-  const [description, setDescription] = useState('');
-  const [text, setText] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [widgetData, setWidgetData] = useState<any>({});
 
   useEffect(() => {
     if (widget) {
       setTitle(widget.title);
-      if (widget.type === 'statistic' && widget.data) {
-        setValue(widget.data.value || '');
-        setDescription(widget.data.description || '');
-      }
-      if (widget.type === 'text' && widget.data) {
-        setText(widget.data.text || '');
-      }
+      setWidgetData(widget.data || {});
     }
     setError('');
   }, [widget]);
@@ -36,15 +30,13 @@ export default function EditWidgetDialog({ open, onClose, widget, onUpdate }: Pr
   const handleUpdate = async () => {
     if (!widget) return;
     if (!title.trim()) { setError(t('editWidgetDialog.errors.titleRequired')); return; }
-    if (widget.type === 'statistic' && !value.trim()) { setError(t('editWidgetDialog.errors.valueRequired')); return; }
-    if (widget.type === 'text' && !text.trim()) { setError(t('editWidgetDialog.errors.textRequired')); return; }
 
     setSubmitting(true); setError('');
     try {
       const updatedWidget: WidgetType = {
         ...widget,
         title,
-        data: widget.type === 'statistic' ? { value, description } : widget.type === 'text' ? { text } : widget.data,
+        data: widgetData,
       };
       onUpdate(updatedWidget);
       onClose();
@@ -57,6 +49,9 @@ export default function EditWidgetDialog({ open, onClose, widget, onUpdate }: Pr
 
   if (!widget) return null;
 
+  // 获取对应类型的小部件编辑组件
+  const WidgetEditComponent = getWidgetEditComponent(widget.type);
+
   return (
     <Dialog 
       open={open} 
@@ -65,13 +60,14 @@ export default function EditWidgetDialog({ open, onClose, widget, onUpdate }: Pr
       fullWidth
     >
       <DialogTitle sx={{ 
-        bgcolor: 'primary.main', 
-        color: 'white',
-        fontSize: '1.2rem',
-        fontWeight: 600,
-        py: 2
+        pb: 1, 
+        pt: 2,
+        borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+        bgcolor: alpha(theme.palette.primary.main, 0.02),
       }}>
-        {t('editWidgetDialog.title')}
+        <Typography variant="h5" component="div" fontWeight={600}>
+          {t('editWidgetDialog.title')}
+        </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 3 }}>
         {error && (
@@ -96,67 +92,16 @@ export default function EditWidgetDialog({ open, onClose, widget, onUpdate }: Pr
             disabled={submitting}
             variant="outlined"
           />
-          {widget.type === 'statistic' && (
-            <div style={{ display: 'flex', gap: 16 }}>
-              <TextField 
-                fullWidth 
-                label={t('common.value')} 
-                value={value} 
-                onChange={(e) => setValue(e.target.value)} 
-                required 
-                disabled={submitting}
-                variant="outlined"
-                InputProps={{
-                  sx: {
-                    borderRadius: 2,
-                    '&:hover fieldset': {
-                      borderColor: 'primary.main',
-                    }
-                  }
-                }}
-              />
-              <TextField 
-                fullWidth 
-                label={t('common.description')} 
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-                disabled={submitting}
-                variant="outlined"
-                InputProps={{
-                  sx: {
-                    borderRadius: 2,
-                    '&:hover fieldset': {
-                      borderColor: 'primary.main',
-                    }
-                  }
-                }}
-              />
-            </div>
-          )}
-          {widget.type === 'text' && (
-            <TextField 
-              fullWidth 
-              label={t('widget.textContent')} 
-              multiline 
-              rows={4} 
-              value={text} 
-              onChange={(e) => setText(e.target.value)} 
-              required 
+          {WidgetEditComponent && (
+            <WidgetEditComponent
+              data={widgetData}
+              onChange={setWidgetData}
               disabled={submitting}
-              variant="outlined"
-              InputProps={{
-                sx: {
-                  borderRadius: 2,
-                  '&:hover fieldset': {
-                    borderColor: 'primary.main',
-                  }
-                }
-              }}
             />
           )}
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ p: 3, bgcolor: 'grey.50' }}>
+      <DialogActions sx={{ px: 3, py: 2, borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
         <Button 
           onClick={onClose} 
           disabled={submitting} 
@@ -170,7 +115,11 @@ export default function EditWidgetDialog({ open, onClose, widget, onUpdate }: Pr
           variant="contained" 
           disabled={submitting} 
           size="medium"
-          sx={{ borderRadius: 2, px: 3 }}
+          sx={{
+            borderRadius: 2,
+            px: 3,
+            boxShadow: (theme) => theme.shadows[3],
+          }}
         >
           {submitting ? t('common.updating') : t('common.update')}
         </Button>

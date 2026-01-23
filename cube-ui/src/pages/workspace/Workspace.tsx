@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -28,7 +28,8 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStr
 import Widget from './Widget';
 import AddWidgetDialog from './AddWidgetDialog';
 import EditWidgetDialog from './EditWidgetDialog';
-import type { Widget as WidgetType } from './WorkspaceTypes';
+import ResizeWidgetDialog from './ResizeWidgetDialog';
+import type { Widget as WidgetType } from '../../types/workspace';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import type { Workspace } from '../../types/workspace';
 
@@ -38,12 +39,16 @@ export default function Workspace() {
   const { 
     workspaces, 
     currentWorkspace, 
-    setCurrentWorkspace, 
+    setCurrentWorkspaceOnly,
     loading, 
     updateWorkspace, 
     createWorkspace, 
     deleteWorkspace,
-    fetchWorkspaces 
+    // Widget methods
+    addWidget,
+    updateWidget,
+    deleteWidget,
+    updateWidgetPositions,
   } = useWorkspace();
   
   // 工作区管理状态
@@ -55,55 +60,61 @@ export default function Workspace() {
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   
-  // 使用当前工作区的小部件，如果没有则使用默认小部件
-  const [widgets, setWidgets] = useState<WidgetType[]>([
-    { id: 'widget-1', type: 'statistic', title: t('dashboard.totalUsers'), size: 'small', data: { value: '1,234', description: t('dashboard.totalUsersDesc') } },
-    { id: 'widget-2', type: 'statistic', title: t('dashboard.totalWorkflows'), size: 'small', data: { value: '56', description: t('dashboard.totalWorkflowsDesc') } },
-    { id: 'widget-3', type: 'statistic', title: t('dashboard.activeTasks'), size: 'small', data: { value: '89', description: t('dashboard.activeTasksDesc') } },
-    { id: 'widget-4', type: 'statistic', title: t('dashboard.completionRate'), size: 'small', data: { value: '92%', description: t('dashboard.completionRateDesc') } },
-  ]);
-
-  // 当当前工作区变化时，更新小部件
-  useEffect(() => {
-    if (currentWorkspace && currentWorkspace.widgets && currentWorkspace.widgets.length > 0) {
-      setWidgets(currentWorkspace.widgets);
-    }
-  }, [currentWorkspace]);
+  // 小部件状态直接使用currentWorkspace.widgets，不需要本地状态
+  const widgets = currentWorkspace?.widgets || [];
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<WidgetType | null>(null);
+  const [resizeDialogOpen, setResizeDialogOpen] = useState(false);
+  const [resizingWidget, setResizingWidget] = useState<WidgetType | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
-  const handleDragStart = (event: any) => setActiveId(event.active.id);
+  const handleDragStart = (event: any) => setActiveId(event.active.id.toString());
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (!over) { setActiveId(null); return; }
     if (active.id !== over.id) {
       const newWidgets = arrayMove(widgets, widgets.findIndex((item) => item.id === active.id), widgets.findIndex((item) => item.id === over.id));
-      setWidgets(newWidgets);
       
-      // 更新当前工作区的小部件
+      // 更新position属性以反映新的顺序
+      const updatedWidgetsWithPosition = newWidgets.map((widget, index) => ({
+        ...widget,
+        position: index
+      }));
+      
+      // 调用API更新小部件位置
       if (currentWorkspace) {
-        updateWorkspace(currentWorkspace.id, { widgets: newWidgets }).catch(err => {
-          console.error('Failed to update workspace widgets:', err);
+        const positionUpdates = updatedWidgetsWithPosition.map(widget => ({
+          id: widget.id,
+          position: widget.position
+        }));
+        
+        updateWidgetPositions(currentWorkspace.id, positionUpdates).catch(err => {
+          console.error('Failed to update widget positions:', err);
+          // 如果API调用失败，回滚到本地状态
+          const finalUpdatedWorkspace = { ...currentWorkspace, widgets: updatedWidgetsWithPosition };
+          setCurrentWorkspaceOnly(finalUpdatedWorkspace);
         });
       }
     }
     setActiveId(null);
   };
 
-  const handleAddWidget = (widget: WidgetType) => {
-    const newWidgets = [...widgets, widget];
-    setWidgets(newWidgets);
+  const handleAddWidget = (widget: Omit<WidgetType, 'id'>) => {
+    // 确保新添加的小部件有 position 属性
+    const newWidget = {
+      ...widget,
+      position: widgets.length,
+    };
     
-    // 更新当前工作区的小部件
+    // 使用新的addWidget方法添加小部件
     if (currentWorkspace) {
-      updateWorkspace(currentWorkspace.id, { widgets: newWidgets }).catch(err => {
-        console.error('Failed to update workspace widgets:', err);
+      addWidget(currentWorkspace.id, newWidget).catch(err => {
+        console.error('Failed to add widget:', err);
       });
     }
   };
@@ -114,34 +125,43 @@ export default function Workspace() {
   };
   
   const handleUpdateWidget = (updatedWidget: WidgetType) => {
-    const newWidgets = widgets.map(w => w.id === updatedWidget.id ? updatedWidget : w);
-    setWidgets(newWidgets);
-    
-    // 更新当前工作区的小部件
+    // 使用新的updateWidget方法更新小部件
     if (currentWorkspace) {
-      updateWorkspace(currentWorkspace.id, { widgets: newWidgets }).catch(err => {
-        console.error('Failed to update workspace widgets:', err);
+      updateWidget(currentWorkspace.id, updatedWidget.id, updatedWidget).catch(err => {
+        console.error('Failed to update widget:', err);
       });
     }
   };
   
+  const handleResizeWidget = async (widget: WidgetType) => {
+    setResizingWidget(widget);
+    setResizeDialogOpen(true);
+  };
+  
+  const handleConfirmResize = async (widget: WidgetType, size: 'small' | 'medium' | 'large') => {
+    if (!currentWorkspace) return;
+    const updatedWidget = { ...widget, size };
+    updateWidget(currentWorkspace.id, updatedWidget.id, updatedWidget).catch(err => {
+      console.error('Failed to resize widget:', err);
+    });
+    setResizeDialogOpen(false);
+    setResizingWidget(null);
+  };
+  
   const handleDeleteWidget = (id: string) => {
-    const newWidgets = widgets.filter(w => w.id !== id);
-    setWidgets(newWidgets);
-    
-    // 更新当前工作区的小部件
+    // 使用新的deleteWidget方法删除小部件
     if (currentWorkspace) {
-      updateWorkspace(currentWorkspace.id, { widgets: newWidgets }).catch(err => {
-        console.error('Failed to update workspace widgets:', err);
+      deleteWidget(currentWorkspace.id, id).catch(err => {
+        console.error('Failed to delete widget:', err);
       });
     }
   };
 
-  const handleWorkspaceChange = (event: any) => {
+  const handleWorkspaceChange = async (event: any) => {
     const workspaceId = event.target.value;
     const selectedWorkspace = workspaces.find(w => w.id === workspaceId);
     if (selectedWorkspace) {
-      setCurrentWorkspace(selectedWorkspace);
+      await setCurrentWorkspaceOnly(selectedWorkspace);
     }
   };
 
@@ -183,7 +203,7 @@ export default function Workspace() {
           widgets: [],
         });
       }
-      await fetchWorkspaces();
+      // 不需要重新获取所有工作区，因为updateWorkspace和createWorkspace内部已经处理了
       handleCloseWorkspaceDialog();
     } catch (err) {
       console.error('Failed to save workspace:', err);
@@ -200,11 +220,11 @@ export default function Workspace() {
     
     try {
       await deleteWorkspace(currentWorkspace.id);
-      await fetchWorkspaces();
+      // 不需要重新获取所有工作区，因为deleteWorkspace内部已经处理了
       // 切换到默认工作区
       const defaultWorkspace = workspaces.find(w => w.isDefault);
       if (defaultWorkspace) {
-        setCurrentWorkspace(defaultWorkspace);
+        await setCurrentWorkspaceOnly(defaultWorkspace);
       }
       setDeleteDialogOpen(false);
     } catch (err) {
@@ -290,25 +310,29 @@ export default function Workspace() {
             
             {/* 工作区编辑和删除按钮 */}
             <Tooltip title={t('common.edit')}>
-              <IconButton 
-                size="small" 
-                onClick={() => handleOpenWorkspaceDialog(currentWorkspace || undefined)}
-                disabled={!currentWorkspace}
-                sx={{ ml: 1 }}
-              >
-                <EditWorkspaceIcon fontSize="small" />
-              </IconButton>
+              <span>
+                <IconButton 
+                  size="small" 
+                  onClick={() => handleOpenWorkspaceDialog(currentWorkspace || undefined)}
+                  disabled={!currentWorkspace}
+                  sx={{ ml: 1 }}
+                >
+                  <EditWorkspaceIcon fontSize="small" />
+                </IconButton>
+              </span>
             </Tooltip>
             
             <Tooltip title={t('common.delete')}>
-              <IconButton 
-                size="small" 
-                onClick={handleDeleteWorkspace}
-                disabled={!currentWorkspace || currentWorkspace.isDefault}
-                sx={{ ml: 0.5 }}
-              >
-                <DeleteWorkspaceIcon fontSize="small" />
-              </IconButton>
+              <span>
+                <IconButton 
+                  size="small" 
+                  onClick={handleDeleteWorkspace}
+                  disabled={!currentWorkspace || currentWorkspace.isDefault}
+                  sx={{ ml: 0.5 }}
+                >
+                  <DeleteWorkspaceIcon fontSize="small" />
+                </IconButton>
+              </span>
             </Tooltip>
             
             <Tooltip title={t('common.add')}>
@@ -351,14 +375,42 @@ export default function Workspace() {
       >
         <SortableContext items={widgets.map(w => w.id)} strategy={rectSortingStrategy}>
           <Grid container spacing={1.5}>
-            {widgets.map(w => {
-              const col = w.size === 'small' ? 4 : w.size === 'medium' ? 8 : 12;
-              return (
-                <Grid size={col} key={w.id}>
-                  <Widget widget={w} onEdit={handleEditWidget} onDelete={handleDeleteWidget} />
-                </Grid>
-              );
-            })}
+            {widgets.length === 0 ? (
+              <Grid size={12}>
+                <Paper 
+                  sx={{ 
+                    p: 4, 
+                    textAlign: 'center',
+                    border: `2px dashed ${alpha(theme.palette.divider, 0.5)}`,
+                    borderRadius: 2,
+                    bgcolor: alpha(theme.palette.background.paper, 0.5),
+                  }}
+                >
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    {t('workspace.noWidgets')}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {t('workspace.noWidgetsDescription')}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => setAddDialogOpen(true)}
+                  >
+                    {t('workspace.addWidget')}
+                  </Button>
+                </Paper>
+              </Grid>
+            ) : (
+              widgets.map(w => {
+                const col = w.size === 'small' ? 4 : w.size === 'medium' ? 8 : 12;
+                return (
+                  <Grid size={col} key={w.id}>
+                    <Widget widget={w} onEdit={handleEditWidget} onDelete={handleDeleteWidget} onResize={handleResizeWidget} />
+                  </Grid>
+                );
+              })
+            )}
           </Grid>
         </SortableContext>
 
@@ -383,6 +435,12 @@ export default function Workspace() {
 
       <AddWidgetDialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)} onAdd={handleAddWidget} />
       <EditWidgetDialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} widget={editingWidget} onUpdate={handleUpdateWidget} />
+      <ResizeWidgetDialog 
+        open={resizeDialogOpen} 
+        onClose={() => setResizeDialogOpen(false)} 
+        widget={resizingWidget} 
+        onResize={handleConfirmResize} 
+      />
       
       <WorkspaceDialog
         open={workspaceDialogOpen}
@@ -397,7 +455,6 @@ export default function Workspace() {
       <Dialog 
         open={deleteDialogOpen} 
         onClose={cancelDeleteWorkspace}
-        PaperProps={{ sx: { minWidth: '300px' } }}
       >
         <DialogTitle>{t('common.confirm')}</DialogTitle>
         <DialogContent>

@@ -208,7 +208,7 @@ const UserProfile: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label={t('userProfile.username')}
@@ -227,7 +227,7 @@ const UserProfile: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label={t('userProfile.password')}
@@ -246,7 +246,7 @@ const UserProfile: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               label={t('userProfile.email')}
@@ -266,7 +266,7 @@ const UserProfile: React.FC = () => {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               label={t('userProfile.description')}

@@ -4,15 +4,11 @@ import Main from './Main';
 import Menu from './Menu';
 import { Box } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMenuStore } from '../../store/menuStore';
-import { userMenuService } from '../../services/userMenuService';
 import { authService } from '../../services/authService';
-import { workspaceService } from '../../services/workspaceService';
 
 interface HomeProps {
   navigate?: (path: string) => void;
   currentPath?: string;
-  menusLoading?: boolean;
   userName?: string;
 }
 
@@ -88,7 +84,6 @@ class HomeClass extends React.Component<HomeProps> {
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setMenus, setLoading, setError, loading } = useMenuStore();
   const [userName, setUserName] = React.useState<string>('');
 
   // 检查认证状态并获取用户信息
@@ -114,39 +109,10 @@ export default function Home() {
     }
   }, [navigate]);
 
-  // 在函数组件中直接使用 useEffect 加载菜单
-  React.useEffect(() => {
-    const loadMenus = async () => {
-      // 再次检查 token，确保有效
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const menus = await userMenuService.getUserMenus();
-        setMenus(menus);
-        
-        // 初始化默认工作区
-        await workspaceService.initializeDefaultWorkspace();
-      } catch (error) {
-        console.error('[Home] 加载菜单失败:', error);
-        setError(error as Error);
-        // 如果是认证错误，会由 axios interceptor 处理跳转
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadMenus();
-  }, [setMenus, setLoading, setError]);
-
   return (
     <HomeClass
       navigate={navigate}
       currentPath={location.pathname}
-      menusLoading={loading}
       userName={userName}
     />
   );

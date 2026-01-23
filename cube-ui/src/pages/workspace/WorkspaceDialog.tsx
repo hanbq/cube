@@ -8,13 +8,7 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-
-interface Workspace {
-  id: string;
-  name: string;
-  description?: string;
-  isDefault?: boolean;
-}
+import type { Workspace } from '../../types/workspace';
 
 interface WorkspaceDialogProps {
   open: boolean;

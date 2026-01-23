@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTranslation as useI18n } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -42,7 +41,6 @@ import type { SYSMenu, MenuFormData } from '../../types/menu';
 
 export default function MenuManagement() {
   const { t } = useTranslation();
-  const i18n = useI18n();
   const {
     menus,
     loading,

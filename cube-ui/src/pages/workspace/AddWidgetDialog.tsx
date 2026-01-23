@@ -22,12 +22,13 @@ import {
   Tab,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import type { Widget as WidgetType } from './WorkspaceTypes';
+import type { Widget as WidgetType } from '../../types/workspace';
+import { getAllWidgetConfigs } from './widgets';
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onAdd: (widget: WidgetType) => void;
+  onAdd: (widget: Omit<WidgetType, 'id'>) => void;
 }
 
 interface TabPanelProps {
@@ -62,28 +63,26 @@ export default function AddWidgetDialog({ open, onClose, onAdd }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [tabValue, setTabValue] = useState(0);
 
+  // 从注册表获取所有小部件配置
+  const allWidgetConfigs = getAllWidgetConfigs();
+
+  // 获取所有类别
   const categories = [
     { id: 'all', name: t('common.all'), icon: '📊' },
-    { id: 'charts', name: t('addWidgetDialog.categories.charts'), icon: '📈' },
-    { id: 'reports', name: t('addWidgetDialog.categories.reports'), icon: '📋' },
-    { id: 'statistics', name: t('addWidgetDialog.categories.statistics'), icon: '🔢' },
-    { id: 'other', name: t('addWidgetDialog.categories.other'), icon: '📌' },
+    ...Array.from(new Set(allWidgetConfigs.map(config => config.category)))
+      .filter(Boolean)
+      .map(category => ({
+        id: category,
+        name: t(`addWidgetDialog.categories.${category}`, category),
+        icon: allWidgetConfigs.find(config => config.category === category)?.icon || '📌'
+      }))
   ];
 
-  const allWidgets = [
-    { id: 'statistic', name: t('addWidgetDialog.widgets.statistic.name'), category: 'statistics', description: t('addWidgetDialog.widgets.statistic.description'), preview: t('addWidgetDialog.widgets.statistic.preview') },
-    { id: 'chart', name: t('addWidgetDialog.widgets.chart.name'), category: 'charts', description: t('addWidgetDialog.widgets.chart.description'), preview: t('addWidgetDialog.widgets.chart.preview') },
-    { id: 'bar-chart', name: t('addWidgetDialog.widgets.barChart.name'), category: 'charts', description: t('addWidgetDialog.widgets.barChart.description'), preview: t('addWidgetDialog.widgets.barChart.preview') },
-    { id: 'line-chart', name: t('addWidgetDialog.widgets.lineChart.name'), category: 'charts', description: t('addWidgetDialog.widgets.lineChart.description'), preview: t('addWidgetDialog.widgets.lineChart.preview') },
-    { id: 'table', name: t('addWidgetDialog.widgets.table.name'), category: 'reports', description: t('addWidgetDialog.widgets.table.description'), preview: t('addWidgetDialog.widgets.table.preview') },
-    { id: 'text', name: t('addWidgetDialog.widgets.text.name'), category: 'other', description: t('addWidgetDialog.widgets.text.description'), preview: t('addWidgetDialog.widgets.text.preview') },
-    { id: 'activity', name: t('addWidgetDialog.widgets.activity.name'), category: 'reports', description: t('addWidgetDialog.widgets.activity.description'), preview: t('addWidgetDialog.widgets.activity.preview') },
-    { id: 'calendar', name: t('addWidgetDialog.widgets.calendar.name'), category: 'other', description: t('addWidgetDialog.widgets.calendar.description'), preview: t('addWidgetDialog.widgets.calendar.preview') },
-  ];
-
-  const filteredWidgets = allWidgets.filter(widget => {
+  // 过滤小部件
+  const filteredWidgets = allWidgetConfigs.filter(widget => {
     const matchesCategory = selectedCategory === 'all' || widget.category === selectedCategory;
-    const matchesSearch = widget.name.toLowerCase().includes(searchTerm.toLowerCase()) || widget.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = widget.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         widget.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -91,13 +90,15 @@ export default function AddWidgetDialog({ open, onClose, onAdd }: Props) {
     if (!selectedWidget) return;
     setSubmitting(true);
     try {
-      const widgetType = selectedWidget as WidgetType['type'];
-      const newWidget: WidgetType = {
-        id: `widget-${Date.now()}`,
-        title: allWidgets.find(w => w.id === selectedWidget)?.name || t('addWidgetDialog.widgets.newWidget'),
-        type: widgetType,
+      const widgetConfig = allWidgetConfigs.find(w => w.type === selectedWidget);
+      if (!widgetConfig) return;
+      
+      const newWidget: Omit<WidgetType, 'id'> = {
+        title: t(`addWidgetDialog.widgets.${widgetConfig.type}.name`, widgetConfig.name),
+        type: widgetConfig.type as WidgetType['type'],
         size: selectedSize,
-        data: widgetType === 'statistic' ? { value: '0', description: t('common.description') } : widgetType === 'text' ? { text: t('widget.textContent') } : undefined,
+        data: widgetConfig.defaultData || {},
+        position: 0, // 添加position属性，初始值为0
       };
       onAdd(newWidget);
       onClose();
@@ -216,35 +217,39 @@ export default function AddWidgetDialog({ open, onClose, onAdd }: Props) {
             
             {/* 右侧小部件列表 */}
             <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {filteredWidgets.map(widget => (
-                  <Grid size ={{ xs: 12, sm:6, md: 4 }} key={widget.id}>
+                  <Grid key={widget.type}>
                     <Card 
                       sx={{ 
                         cursor: 'pointer',
-                        border: selectedWidget === widget.id 
+                        border: selectedWidget === widget.type 
                           ? `2px solid ${theme.palette.primary.main}` 
                           : `1px solid ${alpha(theme.palette.divider, 0.5)}`,
                         borderRadius: 2,
                         transition: 'all 0.2s ease',
                         overflow: 'hidden',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
                         '&:hover': {
                           borderColor: theme.palette.primary.main,
                           transform: 'translateY(-2px)',
                           boxShadow: (theme) => theme.shadows[4],
                         },
-                        ...(selectedWidget === widget.id && {
+                        ...(selectedWidget === widget.type && {
                           boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`,
                         })
                       }}
-                      onClick={() => handleWidgetSelect(widget.id)}
+                      onClick={() => handleWidgetSelect(widget.type)}
                     >
-                      <CardContent sx={{ pb: 1.5, p: 2 }}>
+                      <CardContent sx={{ pb: 1.5, p: 2, flex: 1 }}>
                         <Typography variant="h6" component="div" gutterBottom fontWeight={600}>
-                          {widget.name}
+                          {widget.icon && <span style={{ marginRight: 8 }}>{widget.icon}</span>}
+                          {t(`addWidgetDialog.widgets.${widget.type}.name`, widget.name)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.4 }}>
-                          {widget.description}
+                          {t(`addWidgetDialog.widgets.${widget.type}.description`, widget.description)}
                         </Typography>
                         <Box sx={{ 
                           bgcolor: alpha(theme.palette.grey[100], 0.5), 
@@ -258,7 +263,7 @@ export default function AddWidgetDialog({ open, onClose, onAdd }: Props) {
                           maxHeight: 60,
                           border: `1px dashed ${alpha(theme.palette.divider, 0.3)}`
                         }}>
-                          {widget.preview}
+                          {t(`addWidgetDialog.widgets.${widget.type}.preview`, widget.description)}
                         </Box>
                       </CardContent>
                     </Card>

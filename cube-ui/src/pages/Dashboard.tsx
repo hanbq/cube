@@ -9,7 +9,7 @@ export default class Dashboard extends React.Component {
           仪表盘
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary">
                 总用户数
@@ -19,7 +19,7 @@ export default class Dashboard extends React.Component {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary">
                 工作流数
@@ -29,7 +29,7 @@ export default class Dashboard extends React.Component {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary">
                 活跃任务
@@ -39,7 +39,7 @@ export default class Dashboard extends React.Component {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary">
                 完成率

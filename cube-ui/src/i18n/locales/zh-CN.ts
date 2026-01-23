@@ -34,6 +34,7 @@ export default {
       placeholder: '请输入...',
       required: '必填项',
       updating: '更新中...',
+      resize: '调整大小',
     },
 
     // 错误信息
@@ -44,6 +45,7 @@ export default {
       forbidden: '禁止访问 - 权限不足',
       notFound: '资源未找到',
       serverError: '服务器内部错误',
+      serverUnavailable: '后端服务已停止，请检查后端服务是否已启动',
       apiError: 'API 错误 (状态码 {status}): {message}',
       noResponse: '服务器无响应: {message}',
       requestSetupError: '请求配置错误: {message}',
@@ -367,6 +369,8 @@ export default {
       selectWorkspace: '选择工作区',
       defaultWorkspace: '默认工作区',
       noWorkspace: '暂无工作区',
+      noWidgets: '暂无小部件',
+      noWidgetsDescription: '点击下方按钮添加您需要的小部件',
       loading: '加载中...',
       // 工作区对话框
       dialog: {
@@ -468,6 +472,11 @@ export default {
         textRequired: '请输入文本内容',
         updateFailed: '更新小部件失败',
       },
+    },
+
+    // 调整小部件大小对话框
+    resizeWidgetDialog: {
+      title: '调整小部件大小: {{widgetTitle}}',
     },
   },
 };
