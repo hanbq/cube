@@ -1,13 +1,13 @@
-package com.cube.workflow.task;
+package com.cube.workflow.handler;
 
 import com.cube.workflow.event.WFEvent;
 import com.cube.workflow.event.WFUnexpectedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WFUnexpectedTask extends WFTask {
+public class WFUnexpectedHandler extends WFHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(WFUnexpectedTask.class);
+    private static final Logger log = LoggerFactory.getLogger(WFUnexpectedHandler.class);
 
     @Override
     public void handle(WFEvent event) {

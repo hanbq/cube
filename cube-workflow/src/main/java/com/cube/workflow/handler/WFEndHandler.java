@@ -1,12 +1,12 @@
-package com.cube.workflow.task;
+package com.cube.workflow.handler;
 
 import com.cube.workflow.event.WFEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WFEndTask extends WFTask {
+public class WFEndHandler extends WFHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(WFEndTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(WFEndHandler.class);
 
     @Override
     public void handle(WFEvent event){

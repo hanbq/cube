@@ -1,12 +1,12 @@
 package com.cube.workflow.event;
 
-import com.cube.workflow.task.WFEndTask;
+import com.cube.workflow.handler.WFEndHandler;
 
 public class WFEndEvent extends WFEvent {
 
     @Override
-    public Class<WFEndTask> getClazz() {
-        return WFEndTask.class;
+    public Class<WFEndHandler> getClazz() {
+        return WFEndHandler.class;
     }
 
 }

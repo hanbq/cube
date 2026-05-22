@@ -2,7 +2,7 @@ package com.cube.workflow.listener;
 
 import com.cube.workflow.event.WFEvent;
 import com.cube.workflow.exception.WFException;
-import com.cube.workflow.task.WFTask;
+import com.cube.workflow.handler.WFHandler;
 import com.google.common.eventbus.Subscribe;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class WFListener {
         workflowExecutor.execute(() -> {
             try {
                 Object taskInstance = taskClass.getDeclaredConstructor().newInstance();
-                if (taskInstance instanceof WFTask task) {
+                if (taskInstance instanceof WFHandler task) {
                     task.execute(event);
                 }
             } catch (Exception e) {
