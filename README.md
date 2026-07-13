@@ -35,7 +35,7 @@ cube/
 │   └── cube-system-core/ # User, auth, and log implementations
 ├── cube-workflow/        # Event-driven workflow engine
 │   ├── event/            # Event definitions
-│   ├── task/             # Task handlers
+│   ├── handler/          # Task handlers
 │   └── engine/           # Workflow execution engine
 └── cube-ui/              # React frontend (Vite + TypeScript)
 ```
