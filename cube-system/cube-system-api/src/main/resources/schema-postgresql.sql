@@ -111,6 +111,34 @@ COMMENT ON COLUMN CUBE_SYS_MENU.updated_time IS '更新时间';
 COMMENT ON COLUMN CUBE_SYS_MENU.updated_by IS '更新人';
 COMMENT ON COLUMN CUBE_SYS_MENU.deleted IS '删除标记';
 
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(2, '菜单管理', '/system/menu', '', 1, 1, '/system/MenuManagement', '2025-12-30 15:48:26.375', NULL, '2025-12-30 15:58:14.761', NULL, false, 'Menu Management');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(3, '角色管理', '/system/role', '', 1, 2, '/system/RoleManagement', '2025-12-30 15:59:49.190', NULL, '2025-12-30 15:59:49.190', NULL, false, 'Role Managment');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(4, '用户管理', '/system/user', '', 1, 3, '/system/UserManagement', '2025-12-30 16:01:38.880', NULL, '2025-12-30 16:01:38.880', NULL, false, 'User Mangement');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(6, 'Dashboard', '/dashboard', '', NULL, 1, '/Dashboard', '2025-12-30 16:04:13.776', NULL, '2025-12-30 16:04:13.776', NULL, false, 'Dashboard');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(5, '权限管理', '/system/permission', '', 1, 5, '/system/PermissionManagement', '2025-12-30 16:03:01.692', NULL, '2025-12-30 16:04:54.246', NULL, false, 'Permission Management');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(7, '系统日志', '/system/syslog', '', 1, 0, '/system/SysLogs', '2025-12-30 17:30:02.894', NULL, '2025-12-30 17:30:02.894', NULL, false, 'System Log');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(8, '我的资料', '/system/profile', '', 1, 6, '/system/UserProfile', '2025-12-31 20:13:22.296', NULL, '2025-12-31 21:22:27.072', NULL, true, 'Personal Profile');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(1, '系统管理', '/system', NULL, NULL, 10, '', '2025-12-30 15:46:59.158', NULL, '2026-01-15 13:27:28.984', NULL, false, 'System Management');
+INSERT INTO public.cube_sys_menu
+(menu_id, menu_name, "path", icon_cls, parent_id, sort, component, created_time, created_by, updated_time, updated_by, deleted, menu_name_eng)
+VALUES(9, '工作空间', '/workspace', '', NULL, 2, '/workspace/Workspace', '2026-01-15 13:28:42.898', NULL, '2026-01-15 17:10:58.482', NULL, false, 'Workspace');
+
 -- ========================================
 -- 5. 用户角色关联表 (SYSUserRole)
 -- ========================================
@@ -284,9 +312,9 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_WORKSPACES (
 );
 
 -- 创建索引
-CREATE INDEX idx_workspaces_name ON workspaces(name);
-CREATE INDEX idx_workspaces_is_default ON workspaces(is_default);
-CREATE INDEX idx_workspaces_created_time ON workspaces(created_time);
+CREATE INDEX idx_workspaces_name ON CUBE_SYS_WORKSPACES(name);
+CREATE INDEX idx_workspaces_is_default ON CUBE_SYS_WORKSPACES(is_default);
+CREATE INDEX idx_workspaces_created_time ON CUBE_SYS_WORKSPACES(created_time);
 
 -- ========================================
 -- 2. 小组件表 (widgets)
@@ -304,11 +332,11 @@ CREATE TABLE IF NOT EXISTS CUBE_SYS_WIDGETS (
     created_by      VARCHAR(100),
     updated_time    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_by      VARCHAR(100),
-    user_id        INT8 NOT NULL,
+    user_id        INT8 NOT NULL
 );
 
 -- 创建索引
-CREATE INDEX idx_widgets_workspace_id ON widgets(workspace_id);
-CREATE INDEX idx_widgets_type ON widgets(type);
-CREATE INDEX idx_widgets_position ON widgets(workspace_id, position);
-CREATE INDEX idx_widgets_created_time ON widgets(created_time);
+CREATE INDEX idx_widgets_workspace_id ON CUBE_SYS_WIDGETS(workspace_id);
+CREATE INDEX idx_widgets_type ON CUBE_SYS_WIDGETS(type);
+CREATE INDEX idx_widgets_position ON CUBE_SYS_WIDGETS(workspace_id, position);
+CREATE INDEX idx_widgets_created_time ON CUBE_SYS_WIDGETS(created_time);
