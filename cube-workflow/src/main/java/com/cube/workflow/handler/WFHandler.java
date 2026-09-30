@@ -1,4 +1,4 @@
-package com.cube.workflow.task;
+package com.cube.workflow.handler;
 
 
 import com.cube.workflow.event.WFEndEvent;
@@ -10,13 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
-public abstract class WFTask {
+public abstract class WFHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(WFTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(WFHandler.class);
 
     protected WFEngine engine;
 
-    protected WFTask() {
+    protected WFHandler() {
         this.engine = WFSpringUtil.getBean(WFEngine.class);
     }
 
@@ -55,7 +55,7 @@ public abstract class WFTask {
     public void postEnd(WFEvent event) {
         var endEvent = new WFEndEvent();
         BeanUtils.copyProperties(event, endEvent);
-        endEvent.setClazz(WFEndTask.class);
+        endEvent.setClazz(WFEndHandler.class);
         engine.post(endEvent);
     }
 }

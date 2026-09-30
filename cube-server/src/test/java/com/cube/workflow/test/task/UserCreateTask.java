@@ -1,13 +1,13 @@
 package com.cube.workflow.test.task;
 
 import com.cube.workflow.event.WFEvent;
-import com.cube.workflow.task.WFTask;
+import com.cube.workflow.handler.WFHandler;
 import com.cube.workflow.test.event.BaseTestEvent;
 import com.cube.workflow.test.event.WelcomeEmailEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserCreateTask extends WFTask {
+public class UserCreateTask extends WFHandler {
 
     private static final Logger log = LoggerFactory.getLogger(UserCreateTask.class);
 

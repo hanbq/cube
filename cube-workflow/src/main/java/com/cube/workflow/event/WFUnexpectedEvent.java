@@ -1,6 +1,6 @@
 package com.cube.workflow.event;
 
-import com.cube.workflow.task.WFUnexpectedTask;
+import com.cube.workflow.handler.WFUnexpectedHandler;
 
 public class WFUnexpectedEvent extends WFEvent {
 
@@ -25,7 +25,7 @@ public class WFUnexpectedEvent extends WFEvent {
     }
 
     @Override
-    public Class<WFUnexpectedTask> getClazz() {
-        return WFUnexpectedTask.class;
+    public Class<WFUnexpectedHandler> getClazz() {
+        return WFUnexpectedHandler.class;
     }
 }

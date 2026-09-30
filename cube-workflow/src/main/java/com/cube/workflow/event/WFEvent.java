@@ -1,12 +1,12 @@
 package com.cube.workflow.event;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WFEvent {
 
     Long requestId;
 
-    Map<String, Object> extension;
+    ConcurrentHashMap<String, Object> extension;
 
     Class<?> clazz;
 
@@ -20,11 +20,11 @@ public class WFEvent {
         this.requestId = requestId;
     }
 
-    public Map<String, Object> getExtension() {
+    public ConcurrentHashMap<String, Object> getExtension() {
         return extension;
     }
 
-    public void setExtension(Map<String, Object> extension) {
+    public void setExtension(ConcurrentHashMap<String, Object> extension) {
         this.extension = extension;
     }
 
