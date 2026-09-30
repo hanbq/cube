@@ -360,7 +360,7 @@ export default function SysLogs() {
                     </TableCell>
                     <TableCell>ID</TableCell>
                     <TableCell>{t('sysLogManagement.status')}</TableCell>
-                    <TableCell>{t('sysLogManagement.username')}</TableCell>
+                    <TableCell sx={{ minWidth: 80 }}>{t('sysLogManagement.username')}</TableCell>
                     <TableCell>{t('sysLogManagement.operation')}</TableCell>
                     <TableCell>{t('sysLogManagement.method')}</TableCell>
                     <TableCell>{t('sysLogManagement.params')}</TableCell>
