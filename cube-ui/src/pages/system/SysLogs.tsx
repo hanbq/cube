@@ -208,7 +208,6 @@ export default function SysLogs() {
 
   return (
     <Box sx={{ 
-      m: -3, 
       height: '100%', 
       display: 'flex', 
       flexDirection: 'column' 
@@ -223,7 +222,7 @@ export default function SysLogs() {
         {/* 工具栏 */}
         <Box 
           sx={{ 
-            mb: 3,
+            mb: 2,
             p: 2,
             border: 1,
             borderColor: 'divider',

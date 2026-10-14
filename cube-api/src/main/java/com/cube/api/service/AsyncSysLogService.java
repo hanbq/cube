@@ -27,7 +27,7 @@ public class AsyncSysLogService {
      *
      * @param sysLog 系统日志对象
      */
-    @Async
+    @Async("sysLogExecutor")
     public void saveSysLogAsync(SYSSysLog sysLog) {
         try {
             sysLogService.createSysLog(sysLog);

@@ -288,7 +288,6 @@ export default function UserManagement() {
 
   return (
     <Box sx={{ 
-      m: -3, 
       height: '100%', 
       display: 'flex', 
       flexDirection: 'column' 
