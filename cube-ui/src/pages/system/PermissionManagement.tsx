@@ -543,7 +543,7 @@ export default function PermissionManagement() {
   };
 
   return (
-    <Box sx={{ m: -3, height: 'calc(100vh - 105px)' }}>
+    <Box sx={{ height: 'calc(100vh - 128px)' }}>
       <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
           {t('permissionManagement.title')}
