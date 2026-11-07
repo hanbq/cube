@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Box,
   Paper,
   List,
   ListItemButton,
@@ -8,6 +9,7 @@ import {
   IconButton,
   Divider,
   Tooltip,
+  Popper,
   Collapse,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -40,6 +42,8 @@ interface MenuState {
   selectedPath: string;
   collapsed: boolean;
   expandedMenus: Set<number>;
+  hoveredMenuId: number | null;
+  hoverAnchorEl: HTMLElement | null;
 }
 
 // 图标映射表
@@ -58,6 +62,8 @@ const iconMap: Record<string, any> = {
 };
 
 class MenuClass extends React.Component<MenuProps, MenuState> {
+  private hoverPanelElement: HTMLElement | null = null;
+
   constructor(props: MenuProps) {
     super(props);
     // 初始化时如果提供了currentPath，则使用它
@@ -65,6 +71,8 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
       selectedPath: props.currentPath || '',
       collapsed: false,
       expandedMenus: new Set(),
+      hoveredMenuId: null,
+      hoverAnchorEl: null,
     };
   }
 
@@ -83,7 +91,7 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
     if (prevProps.currentPath !== this.props.currentPath && this.props.currentPath) {
       this.updateSelectedPath(this.props.currentPath);
     }
-    
+
     // 当菜单数据加载完成时，重新设置选中状态
     if ((!prevProps.menus || prevProps.menus.length === 0) && 
         this.props.menus && this.props.menus.length > 0 && 
@@ -166,6 +174,18 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
   };
 
   handleMenuItemClick = (menu: SYSMenu) => {
+    if (this.state.collapsed) {
+      if (menu.children && menu.children.length > 0) {
+        return;
+      }
+
+      this.setState({ selectedPath: menu.path || '' });
+      if (this.props.onNavigate && menu.path) {
+        this.props.onNavigate(menu.path);
+      }
+      return;
+    }
+
     // 如果有子菜单,切换展开状态
     if (menu.children && menu.children.length > 0) {
       if (menu.menuId) {
@@ -195,13 +215,42 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
 
   handleToggleCollapse = () => {
     this.setState(
-      (prevState) => ({ collapsed: !prevState.collapsed }),
+      (prevState) => ({ collapsed: !prevState.collapsed, hoveredMenuId: null, hoverAnchorEl: null }),
       () => {
         if (this.props.onCollapseChange) {
           this.props.onCollapseChange(this.state.collapsed);
         }
       }
     );
+  };
+
+  handleMenuHover = (menu: SYSMenu, event: React.MouseEvent<HTMLElement>) => {
+    if (!menu.menuId) {
+      return;
+    }
+
+    if (!this.state.collapsed) {
+      return;
+    }
+
+    if (menu.children && menu.children.length > 0) {
+      this.setState({ hoveredMenuId: menu.menuId, hoverAnchorEl: event.currentTarget });
+    } else if (this.state.hoveredMenuId !== null) {
+      this.setState({ hoveredMenuId: null, hoverAnchorEl: null });
+    }
+  };
+
+  handleMenuLeave = (menu: SYSMenu, event: React.MouseEvent<HTMLElement>) => {
+    const nextTarget = event.relatedTarget;
+    const movingWithinMenu = nextTarget instanceof Node && (
+      this.state.hoverAnchorEl?.contains(nextTarget) ||
+      this.hoverPanelElement?.contains(nextTarget) ||
+      (nextTarget instanceof Element && nextTarget.closest('[data-menu-item]') !== null)
+    );
+
+    if (!movingWithinMenu && this.state.hoveredMenuId === menu.menuId) {
+      this.setState({ hoveredMenuId: null, hoverAnchorEl: null });
+    }
   };
 
   getMenuLabel = (menu: SYSMenu) => {
@@ -212,22 +261,66 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
     return menu.menuName;
   };
 
+  renderChildMenuItem = (menu: SYSMenu, level = 0): React.ReactNode => {
+    const IconComponent = menu.iconCls && iconMap[menu.iconCls]
+      ? iconMap[menu.iconCls]
+      : DashboardIcon;
+    const isSelected = this.state.selectedPath === menu.path;
+
+    return (
+      <ListItemButton
+        key={menu.menuId || menu.path || Math.random()}
+        selected={isSelected}
+        onClick={() => this.handleMenuItemClick(menu)}
+        sx={{
+          minHeight: 36,
+          px: 1.5,
+          py: 0.75,
+          borderRadius: 1,
+          pl: 1.5 + level * 1.5,
+        }}
+      >
+        <ListItemIcon sx={{ minWidth: 32 }}>
+          {React.isValidElement(IconComponent) ? (
+            IconComponent
+          ) : (
+            <IconComponent fontSize="small" />
+          )}
+        </ListItemIcon>
+        <ListItemText
+          primary={this.getMenuLabel(menu)}
+          slotProps={{
+            primary: {
+              fontSize: '0.875rem',
+            },
+          }}
+        />
+      </ListItemButton>
+    );
+  };
+
   renderMenuItems = (menus: SYSMenu[], level = 0): React.ReactNode => {
-    const { selectedPath, collapsed, expandedMenus } = this.state;
+    const { selectedPath, collapsed, expandedMenus, hoveredMenuId, hoverAnchorEl } = this.state;
 
     return menus.map(menu => {
-      // 确保图标组件存在，如果不存在则使用默认图标
-      const IconComponent = menu.iconCls && iconMap[menu.iconCls] 
-        ? iconMap[menu.iconCls] 
+      const IconComponent = menu.iconCls && iconMap[menu.iconCls]
+        ? iconMap[menu.iconCls]
         : DashboardIcon;
-      
+
       const hasChildren = menu.children && menu.children.length > 0;
       const isExpanded = menu.menuId ? expandedMenus.has(menu.menuId) : false;
       const isSelected = selectedPath === menu.path;
       const label = this.getMenuLabel(menu);
+      const shouldRenderChildren = hasChildren && !collapsed && isExpanded;
 
       const menuItem = (
-        <React.Fragment key={menu.menuId || menu.path || Math.random()}>
+        <Box
+          key={menu.menuId || menu.path || Math.random()}
+          data-menu-item
+          onMouseEnter={(event) => this.handleMenuHover(menu, event)}
+          onMouseLeave={(event) => this.handleMenuLeave(menu, event)}
+          sx={{ position: 'relative' }}
+        >
           <ListItemButton
             selected={isSelected}
             onClick={() => this.handleMenuItemClick(menu)}
@@ -268,23 +361,49 @@ class MenuClass extends React.Component<MenuProps, MenuState> {
             )}
           </ListItemButton>
 
-          {hasChildren && !collapsed && (
+          {shouldRenderChildren && (
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {this.renderMenuItems(menu.children || [], level + 1)}
               </List>
             </Collapse>
           )}
-        </React.Fragment>
+
+          {collapsed && hasChildren && menu.menuId && hoveredMenuId === menu.menuId && hoverAnchorEl && (
+            <Popper
+              open
+              anchorEl={hoverAnchorEl}
+              placement="right-start"
+              modifiers={[{ name: 'offset', options: { offset: [0, 1] } }]}
+              ref={(element: HTMLElement | null) => {
+                this.hoverPanelElement = element;
+              }}
+              onMouseLeave={(event: React.MouseEvent<HTMLElement>) => this.handleMenuLeave(menu, event)}
+              sx={{ zIndex: 1300 }}
+            >
+              <Paper elevation={2} sx={{ minWidth: 180, p: 0.5, borderRadius: 2, boxShadow: '0 8px 24px rgba(0, 0, 0, 0.16)' }}>
+                <List component="div" disablePadding>
+                  {(menu.children || []).map(child => this.renderChildMenuItem(child, 1))}
+                </List>
+              </Paper>
+            </Popper>
+          )}
+        </Box>
       );
 
-      return collapsed && level === 0 ? (
-        <Tooltip key={menu.menuId || menu.path || Math.random()} title={label} placement="right">
-          {menuItem}
-        </Tooltip>
-      ) : (
-        menuItem
-      );
+      if (collapsed && level > 0) {
+        return null;
+      }
+
+      if (collapsed && level === 0 && !hasChildren) {
+        return (
+          <Tooltip key={menu.menuId || menu.path || Math.random()} title={label} placement="right">
+            {menuItem}
+          </Tooltip>
+        );
+      }
+
+      return menuItem;
     });
   };
 
